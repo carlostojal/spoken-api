@@ -4,6 +4,18 @@ const utils = require("./utils.js");
 exports.resolvers = {
     Query: {
 
+        login: (parent, args, context, info) => {
+            let query = db.queries.LOGIN.split("user_login").join(args.login).replace("user_password", args.password);
+            return db.query_db(query).then(results => {
+                if(results.length == 1) {
+                    results = results[0];
+                    return results;
+                } else {
+                    return null;
+                }
+            });
+        },
+
         // User resolvers
         users: (parent, args, context, info) => {
             let query = db.queries.GET_USERS;

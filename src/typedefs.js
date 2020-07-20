@@ -5,10 +5,10 @@ exports.typedefs = gql`
   type User {
     id: ID!,
     email: String!,
-    name: String!,
+    name: String,
     bio: String,
-    username: String!,
-    password: String!,
+    username: String,
+    password: String,
     posts: [Post]
   }
 
@@ -20,6 +20,7 @@ exports.typedefs = gql`
   }
 
   type Query {
+    login(login: String!, password: String!): User
     users(username_like: String, name_like: String): [User]
     user(id: ID, email: String, username: String): User
     posts: [Post]

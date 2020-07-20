@@ -1,6 +1,7 @@
 const mysql = require("mysql");
 
 exports.queries = {
+    LOGIN: "SELECT id, email, username FROM user WHERE (email = 'user_login' OR username = 'user_login') AND password = 'user_password'",
     // User queries
     GET_USERS: "SELECT * FROM user",
     GET_USER_BY_ID: "SELECT * FROM user WHERE user.id = '???'",
