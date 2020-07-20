@@ -88,7 +88,6 @@ exports.resolvers = {
     Mutation: {
         register: async (parent, args, context, info) => {
             let query = db.queries.REGISTER.replace("user_email", args.email).replace("user_name", args.name).replace("user_username", args.username).replace("user_password", await bcrypt.hash(args.password, 12));
-            console.log(query);
             return new Promise((resolve, reject) => {
                 db.query_db(query).then(results => {
                     return db.query_db(db.queries.GET_USER_BY_EMAIL.replace("???", args.email)).then(results => {
