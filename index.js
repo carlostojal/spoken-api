@@ -9,5 +9,5 @@ const server = new ApolloServer({
 });
 
 server.listen().then(({ url }) => {
-    console.log(`GraphQL running at ${url}`);
+    console.log(`GraphQL Playground running at ${url}`);
 });

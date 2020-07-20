@@ -8,7 +8,8 @@ exports.typedefs = gql`
     name: String!,
     bio: String,
     username: String!,
-    password: String!
+    password: String!,
+    posts: [Post]
   }
 
   type Post {
