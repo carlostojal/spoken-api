@@ -11,9 +11,18 @@ exports.typedefs = gql`
     password: String!
   }
 
+  type Post {
+    id: ID!,
+    user: User!,
+    time: Int!,
+    text: String!
+  }
+
   type Query {
     users(username_like: String, name_like: String): [User]
     user(id: ID, email: String, username: String): User
+    posts: [Post]
+    post(id: ID): Post
   }
 
 `;
