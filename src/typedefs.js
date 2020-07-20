@@ -27,5 +27,9 @@ exports.typedefs = gql`
     post(id: ID): Post
   }
 
+  type Mutation {
+    register(email: String!, name: String!, username: String!, password: String!): User
+  }
+
 `;
 

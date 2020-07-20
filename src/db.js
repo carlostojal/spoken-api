@@ -1,6 +1,9 @@
 const mysql = require("mysql");
 
 exports.queries = {
+    // Register query
+    REGISTER: "INSERT into user (email, name, username, password) VALUES ('user_email', 'user_name', 'user_username', 'user_password')",
+    // Login query
     LOGIN: "SELECT id, email, username FROM user WHERE (email = 'user_login' OR username = 'user_login') AND password = 'user_password'",
     // User queries
     GET_USERS: "SELECT * FROM user",
