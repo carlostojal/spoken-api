@@ -1,7 +1,7 @@
-import apollo from "apollo-server";
-const { ApolloServer } = apollo;
-import typedefs from "./src/typedefs.js";
-import resolvers from "./src/resolvers.js";
+const { ApolloServer } = require("apollo-server");
+const { typedefs } = require("./src/typedefs.js");
+const { resolvers } = require("./src/resolvers");
+require("dotenv").config();
 
 const server = new ApolloServer({
     typeDefs: typedefs,
@@ -9,5 +9,5 @@ const server = new ApolloServer({
 });
 
 server.listen().then(({ url }) => {
-    console.log(`SpokenNetwork API running at ${url}`);
+    console.log(`GraphQL running at ${url}`);
 });

@@ -1,10 +1,9 @@
-import apollo from "apollo-server";
-const { gql } = apollo;
+const { gql } = require("apollo-server");
 
-const typedefs = gql`
+exports.typedefs = gql`
   
   type User {
-    id: Int!,
+    id: ID!,
     email: String!,
     name: String!,
     bio: String,
@@ -13,9 +12,9 @@ const typedefs = gql`
   }
 
   type Query {
-    users: [User]
+    users(username_like: String, name_like: String): [User]
+    user(id: ID, email: String, username: String): User
   }
 
 `;
 
-export default typedefs;
