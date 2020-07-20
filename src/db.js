@@ -10,7 +10,7 @@ exports.queries = {
     GET_USERS_NAME_LIKE: "SELECT * FROM user WHERE name LIKE '%???%'",
     // Post queries
     GET_POSTS: "SELECT post.*, user.email, user.name, user.bio, user.username, user.password FROM post INNER JOIN user ON post.user = user.id",
-    GET_POST_BY_ID: "SELECT * FROM post WHERE id = '???'",
+    GET_POST_BY_ID: "SELECT post.*, user.email, user.name, user.bio, user.username, user.password FROM post INNER JOIN user ON post.user = user.id WHERE post.id = '???'",
 }
 
 exports.createConnection = () => {

@@ -1,4 +1,5 @@
 const db = require("./db.js");
+const utils = require("./utils.js");
 
 exports.resolvers = {
     Query: {
@@ -33,19 +34,7 @@ exports.resolvers = {
             return db.query_db(query).then(results => {
                 console.log(results);
                 results.map((post) => {
-                    post.user = {
-                        id: post.user,
-                        email: post.email,
-                        name: post.name,
-                        bio: post.bio,
-                        username: post.username,
-                        password: post.password
-                    };
-                    delete post.email;
-                    delete post.name;
-                    delete post.bio;
-                    delete post.username;
-                    delete post.password;
+                    utils.extract_user_from_post(post);
                 });
                 console.log(results);
                 return results;
@@ -55,9 +44,10 @@ exports.resolvers = {
             let query;
             if(args.id)
                 query = db.queries.GET_POST_BY_ID.replace("???", args.id);
-            return db.query_db(query).then(
-                results => results
-            );
+            return db.query_db(query).then(results => {
+                utils.extract_user_from_post(results);
+                return results;
+            });
         }
     }
 }
