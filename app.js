@@ -1,5 +1,6 @@
 const { ApolloServer } = require("apollo-server");
 require("dotenv").config();
+require("./config/mongo");
 
 /*
 const server = new ApolloServer({
