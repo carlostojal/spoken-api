@@ -3,8 +3,8 @@ const Schema = mongoose.Schema;
 const User = require("./User");
 
 module.exports = new Schema({
-  poster: Schema.ObjectId,
-  time: Number,
+  poster: { type: Schema.ObjectId, ref: 'User' },
+  time: String,
   text: String
 });
 

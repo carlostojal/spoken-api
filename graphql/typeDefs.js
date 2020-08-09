@@ -1,6 +1,7 @@
 const { gql } = require("apollo-server");
 
 exports.typeDefs = gql`
+
   type User {
     id: ID,
     name: String,
@@ -11,6 +12,16 @@ exports.typeDefs = gql`
     username: String,
     profile_pic_url: String,
     profile_type: String,
+    posts: [Post],
+    following: [User],
+    followers: [User]
+  }
+
+  type Post {
+    id: ID,
+    poster: User,
+    time: String,
+    text: String
   }
 
   type Query {
