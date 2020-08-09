@@ -5,13 +5,24 @@ const { typeDefs } = require("./graphql/typeDefs");
 const { resolvers } = require("./graphql/resolvers");
 const User = require("./models/User.js");
 const Post = require("./models/Post.js");
+const getUserByToken = require("./helpers/getUserByToken");
 
 // apollo server startup
 const server = new ApolloServer({
   typeDefs: typeDefs,
   resolvers: resolvers,
-  context: ({ req, res }) => {
-    return { req, res };
+  context: async ({ req, res }) => {
+
+    // get access token from headers
+    const token = req.headers.authorization;
+
+    let user = null;
+
+    // get user from token
+    if(token)
+      user = await getUserByToken(token);
+
+    return { req, res, user };
   }
 });
 

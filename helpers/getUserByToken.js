@@ -9,3 +9,5 @@ const getUserByToken = (token) => {
     });
   });
 }
+
+module.exports = getUserByToken;
