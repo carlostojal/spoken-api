@@ -112,7 +112,12 @@ exports.resolvers = {
 
         post.save().then((result) => {
           console.log("Post made");
-          resolve(result.populate("poster"));
+          let query = Post.findOne({_id: result._id}, "_id time text"); // find post from ID
+          query.populate("poster", "name surname username profile_pic_url"); // populate poster info from poster ID
+          query.exec((err, post) => {
+            if (err) reject(err);
+            resolve(post);
+          });
         }).catch((err) => {
           reject(err);
         });
