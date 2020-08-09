@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+const createToken = require("../helpers/createToken");
 const User = require("../models/User");
 
 exports.resolvers = {
@@ -10,15 +10,21 @@ exports.resolvers = {
           password: args.password
         }).then((result) => {
           if(result) { // user exists
-            const token_expiry = Date.now() + (60 * process.env.TOKEN_DURATION * 1000);
-            const token = jwt.sign({
-              exp: token_expiry,
-              data: {
-                user_id: result._id
-              }
-            }, process.env.TOKEN_SECRET);
-            User.updateOne({ _id: result._id }, { $set: { active_token: token, token_expiry: token_expiry } }).then((updateResult) => {
-              resolve(token);
+
+            // create tokens with specified duration and user id
+            const refresh_token = createToken(result._id, "refresh");
+            const access_token = createToken(result._id, "access");
+
+            User.updateOne({ _id: result._id }, { $set: { // set tokens in database
+              access_token: access_token,
+              refresh_token: refresh_token
+            }}).then((updateResult) => {
+              // set httpOnly cookie containing the refresh token
+              context.res.cookie("refresh_token", refresh_token.value, {
+                expires: new Date(refresh_token.expiry),
+                httpOnly: true
+              });
+              resolve(access_token.value);
             }).catch((error) => {
               reject(error);
             });

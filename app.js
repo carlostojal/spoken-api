@@ -11,9 +11,9 @@ const Post = require("./models/Post.js");
 const server = new ApolloServer({
   typeDefs: typeDefs,
   resolvers: resolvers,
-  context: ({ res }) => ({
-    res
-  })
+  context: ({ req, res }) => {
+    return { req, res };
+  }
 });
 
 server.listen().then(({ url }) => {
@@ -22,8 +22,14 @@ server.listen().then(({ url }) => {
 
 /*
 const user = new User({
-  active_token: "carlostojal_token",
-  token_expiry: 1231243243,
+  access_token: {
+    value: null,
+    expiry: null
+  },
+  refresh_token: {
+    value: null,
+    expiry: null
+  },
   name: "Carlos",
   surname: "Tojal",
   birthdate: 156425353242,
@@ -42,5 +48,4 @@ user
   })
   .catch((err) => {
     console.error(err);
-  });
-  */
+  }); */
