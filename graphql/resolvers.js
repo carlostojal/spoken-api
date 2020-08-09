@@ -1,6 +1,8 @@
 const bcrypt = require("bcrypt");
 const createToken = require("../helpers/createToken");
 const User = require("../models/User");
+const Post = require("../models/Post");
+const { AuthenticationError } = require("apollo-server");
 
 exports.resolvers = {
   Query: {
@@ -91,6 +93,28 @@ exports.resolvers = {
             });
 
           });
+        });
+      });
+    },
+
+    // creates a new post
+    createPost: (parent, args, context, info) => {
+      return new Promise((resolve, reject) => {
+
+        if(!context.user)
+          reject(new AuthenticationError("Bad authentication"));
+
+        const post = new Post({
+          poster: context.user._id,
+          time: Date.now().toString(),
+          text: args.text
+        });
+
+        post.save().then((result) => {
+          console.log("Post made");
+          resolve(result.populate("poster"));
+        }).catch((err) => {
+          reject(err);
         });
       });
     }

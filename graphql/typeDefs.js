@@ -30,5 +30,6 @@ exports.typeDefs = gql`
 
   type Mutation {
     registerUser(name: String!, surname: String!, birthdate: String, email: String!, username: String!, password: String!, profile_pic_url: String, profile_type: String!): User
+    createPost(text: String!): Post
   }
 `
