@@ -12,10 +12,16 @@ module.exports  = new Schema({
   },
   name: String,
   surname: String,
-  birthdate: Number, // epoch time of birth day
-  email: String,
+  birthdate: String, // epoch time of birth day
+  email: {
+    type: String,
+    unique: true
+  },
   email_confirmed: Boolean,
-  username: String,
+  username: {
+    type: String,
+    unique: true
+  },
   password: String,
   profile_pic_url: String,
   profile_type: String // "public" or "private"

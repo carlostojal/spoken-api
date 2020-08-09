@@ -32,7 +32,7 @@ const user = new User({
   },
   name: "Carlos",
   surname: "Tojal",
-  birthdate: 156425353242,
+  birthdate: ""156425353242"",
   email: "carlos.tojal@mail.com",
   "email_confirmed": true,
   "username": "carlostojal",
