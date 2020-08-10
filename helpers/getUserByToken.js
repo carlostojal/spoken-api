@@ -2,10 +2,9 @@ const User = require("../models/User");
 
 const getUserByToken = (token) => {
   return new Promise((resolve, reject) => {
-    User.findOne({ "access_token.value": token }).then((result) => {
+    User.findOne({ "access_tokens.value": token, "access_tokens.expiry": { $gt: Date.now() } }).then((result) => {
       if(result) {
-        if(parseInt(result.access_token.expiry) > Date.now()) // token is not expired
-          resolve(result);
+        resolve(result);
       }
       resolve(null);
     }).catch((err) => {
