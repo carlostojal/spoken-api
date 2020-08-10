@@ -104,19 +104,25 @@ exports.resolvers = {
         if(!context.user)
           reject(new AuthenticationError("Bad authentication"));
 
-        const post = new Post({
+        const post = new Post({ // create post
           poster: context.user._id,
           time: Date.now().toString(),
           text: args.text
         });
 
-        post.save().then((result) => {
+        post.save().then((result) => { // save post
           console.log("Post made");
           let query = Post.findOne({_id: result._id}, "_id time text"); // find post from ID
           query.populate("poster", "name surname username profile_pic_url"); // populate poster info from poster ID
           query.exec((err, post) => {
             if (err) reject(err);
-            resolve(post);
+            User.findOne({_id: context.user._id}, (err, result) => { // update user posts array
+              if (err) reject(err);
+              result.posts.push(post._id);
+              result.save().then((err, result) => {
+                resolve(post);
+              })
+            });
           });
         }).catch((err) => {
           reject(err);
