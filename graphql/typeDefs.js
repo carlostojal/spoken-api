@@ -8,13 +8,13 @@ exports.typeDefs = gql`
     surname: String,
     birthdate: String,
     email: String,
-    email_confirmed: Boolean,
     username: String,
     profile_pic_url: String,
     profile_type: String,
     posts: [Post],
-    following: [User],
-    followers: [User]
+    following: [Follower],
+    followers: [Follower]
+    }]
   }
 
   type Post {
@@ -24,8 +24,14 @@ exports.typeDefs = gql`
     text: String
   }
 
+  type Follower {
+    user: User,
+    accepted: Boolean
+  }
+
   type Query {
     getToken(username: String!, password: String!): String
+    getUserData(id: String): String
   }
 
   type Mutation {

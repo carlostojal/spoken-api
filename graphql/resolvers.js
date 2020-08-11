@@ -68,6 +68,41 @@ exports.resolvers = {
           reject(error);
         });
       });
+    },
+
+    getUserData: (parent, args, context, info) => {
+      return new Promise((resolve, reject) => {
+        if(context.user) {  
+          if(args.id) {
+            if(context.user._id == args.id) {
+              resolve(context.user);
+            } else {
+              let query = User.findOne({_id: args.id});
+              query.populate("following.user");
+              query.populate("followers.user");
+              query.exec((err, user) => {
+                if (err) reject(err);
+                // remove email and birthdate for privacy reasons
+                user.email = null;
+                user.birthdate = null;
+                user.n_following = user.following.length;
+                user.n_followers = user.followers.length;
+                let filteredFollowing = context.user.following.filter(following => following.user == args.id && following.accepted);
+                // private accounts following and follower list are private
+                if(user.profile_type == "private" && filteredFollowing.length == 1) {
+                  user.following = null;
+                  user.follower = null;
+                }
+                resolve(error);
+              });
+            }
+          } else {
+            resolve(context.user);
+          }
+        } else {
+          reject(new AuthenticationError("Bad authentication."));
+        }
+      });
     }
   },
 
