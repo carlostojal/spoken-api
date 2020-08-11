@@ -26,7 +26,13 @@ module.exports  = new Schema({
   profile_pic_url: String,
   profile_type: String, // "public" or "private"
   posts: [{ type: Schema.ObjectId, ref: 'Post' }],
-  following: [{ type: Schema.ObjectId, ref: 'User' }],
-  followers: [{ type: Schema.ObjectId, ref: 'User' }]
+  following: [{
+    user: { type: Schema.ObjectId, ref='User' },
+    accepted: Boolean
+  }],
+  followers: [{ 
+    user: { type: Schema.ObjectId, ref: 'User' },
+    accepted: Boolean
+  }]
 });
 
