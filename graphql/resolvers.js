@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const createToken = require("../helpers/createToken");
 const User = require("../models/User");
 const Post = require("../models/Post");
+const FollowRelation = require("../models/FollowRelation");
 const { AuthenticationError } = require("apollo-server");
 
 exports.resolvers = {
@@ -72,32 +73,48 @@ exports.resolvers = {
 
     getUserData: (parent, args, context, info) => {
       return new Promise((resolve, reject) => {
-        if(context.user) {  
+        if(context.user) { 
           if(args.id) {
-            if(context.user._id == args.id) {
-              resolve(context.user);
-            } else {
-              let query = User.findOne({_id: args.id});
-              query.populate("following.user");
-              query.populate("followers.user");
-              query.exec((err, user) => {
-                if (err) reject(err);
-                // remove email and birthdate for privacy reasons
-                user.email = null;
-                user.birthdate = null;
-                user.n_following = user.following.length;
-                user.n_followers = user.followers.length;
-                let filteredFollowing = context.user.following.filter(following => following.user == args.id && following.accepted);
-                // private accounts following and follower list are private
-                if(user.profile_type == "private" && filteredFollowing.length == 1) {
-                  user.following = null;
-                  user.follower = null;
-                }
-                resolve(error);
-              });
+            let userIsFollowing = false;
+            for(let i = 0; i < context.user.following.length; i++) {
+              if(context.user.following[i].user == args.id && context.user.following[i].accepted == true)
+                  userIsFollowing = true;
             }
+            const query = User.findOne({ _id: args.id});
+            if(userIsFollowing)
+              query.populate("posts");
+            query.exec((err, user) => {
+
+              if(err) reject(err);
+
+              if(!user)
+                reject(new Error("Invalid user ID"));
+
+              if(!userIsFollowing)
+                user.posts = [];
+
+              // remove email and birthdate for privacy reasons
+              user.email = null;
+              user.birthdate = null;
+              user.n_following = user.following.length;
+              user.n_followers = user.followers.length;
+
+              resolve(user);
+
+            });
           } else {
-            resolve(context.user);
+            const query = User.findOne({ _id: context.user._id});
+            query.populate("posts");
+            query.exec((err, user) => {
+
+              if (err) reject(err);
+
+              user.n_following = user.following.length;
+              user.n_followers = user.followers.length;
+
+              resolve(user);
+
+            });
           }
         } else {
           reject(new AuthenticationError("Bad authentication."));
@@ -133,7 +150,10 @@ exports.resolvers = {
               username: args.username,
               password: hash_password,
               profile_pic_url: null,
-              profile_type: args.profile_type
+              profile_type: args.profile_type || "public",
+              posts: [],
+              following:  [],
+              followers: []
             });
 
             user.save().then((result) => {
@@ -177,6 +197,150 @@ exports.resolvers = {
           });
         }).catch((err) => {
           reject(err);
+        });
+      });
+    },
+
+    // starts following user
+    followUser: (parent, args, context, info) => {
+      return new Promise((resolve, reject) => {
+
+        if(!context.user)
+          reject(new AuthenticationError("Bad authentication"));
+
+        if(!args.id)
+          reject(new Error("No user ID provided"));
+
+        if(args.id == context.user._id)
+          reject(new Error("User can't follow himself"));
+
+        // find user from provided ID
+        User.findOne({ _id: args.id }).then((user) => {
+
+          if(!user)
+            reject(new Error("User doesn't exist."));
+
+          const accepted = user.profile_type == "public";
+
+          User.findOne({ _id: context.user._id }).then((currentUser) => {
+            
+            // create follow relation
+            const followRelation = new FollowRelation({
+              user: context.user._id,
+              follows: args.id,
+              accepted
+            });
+
+            followRelation.save().then((result) => {
+              // add follow relation to the current user following array
+              currentUser.following.push(result._id);
+              currentUser.save().then(() => {
+                // add follow relation to the other user followers array
+                user.followers.push(result._id);
+                user.save().then(() => {
+                  resolve(user);
+                }).catch((error) => {
+                  reject(error);
+                })
+              }).catch((error) => {
+                reject(error);
+              });
+              resolve(user);
+            }).catch((error) => {
+              reject(error);
+            });
+
+          }).catch((error) => {
+            reject(error);
+          });
+
+        }).catch((error) => {
+          reject(error);
+        });
+      });
+    },
+
+    // stops following user
+    unfollowUser: (parent, args, context, info) => {
+      return new Promise((resolve, reject) => {
+
+        if(!context.user)
+          reject(new AuthenticationError("Bad authentication"));
+
+        if(!args.id)
+          reject(new Error("No user ID provided"));
+
+        // find user from provided ID
+        User.findOne({ _id: args.id }).then((user) => {
+
+          if(!result)
+            reject(new Error("User doesn't exist."));
+
+          for(let i = 0; i < user.followers.length; i++) {
+            if(user.followers[i].user == context.user._id) {
+              user.followers.splice(i, 1);
+              i--;
+            }
+          }
+
+          user.save().then((result) => {
+            User.findOne({ _id: context.user._id }).then((result) => {
+              for(let i = 0; i < result.following.length; i++) {
+                if(result.following[i].user == args.id) {
+                  user.following.splice(i, 1);
+                  i--;
+                }
+              }
+            }).catch((error) => {
+              reject(error);
+            });
+          }).catch((error) => {
+            reject(error);
+          })
+        }).catch((error) => {
+          reject(error);
+        });
+      });
+    },
+
+    acceptFollowRequest: (parent, args, context, info) => {
+      return new Promise((resolve, reject) => {
+
+        if(!context.user)
+          resolve(new AuthenticationError("Bad authentication"));
+
+        if(!args.user_id)
+          resolve(new Error("No user ID provided"));
+
+        // find session user
+        User.findOne({ _id: context.user._id }).then((user) => {
+
+          for(let i = 0; i < user.following.length; i++) {
+            if(user.following[i].user == args.user_id) {
+              user.following[i].accepted = true;
+              user.save().then((res) => {
+                User.findOne({ _id: args.user_id }).then((user) => {
+                  if(!user)
+                    reject(new Error("Invalid user ID"));
+
+                  for(let i = 0; i < user.followers.length; i++) {
+                    if(user.followers[i].user == context.user._id) {
+                      user.followers[i].accepted = true;
+                      user.save().then((res) => {
+                        resolve(res);
+                      }).catch((error) => {
+                        reject(error);
+                      });
+                    }
+                  }
+                });
+              }).catch((error) => {
+                reject(error);
+              });
+            }
+          }
+        }).catch((error) => {
+          reject(error);
         });
       });
     }

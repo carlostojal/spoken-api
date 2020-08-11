@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-module.exports  = new Schema({
+module.exports = new Schema({
   access_tokens: [{
     value: String,
     expiry: Number
@@ -26,13 +26,7 @@ module.exports  = new Schema({
   profile_pic_url: String,
   profile_type: String, // "public" or "private"
   posts: [{ type: Schema.ObjectId, ref: 'Post' }],
-  following: [{
-    user: { type: Schema.ObjectId, ref='User' },
-    accepted: Boolean
-  }],
-  followers: [{ 
-    user: { type: Schema.ObjectId, ref: 'User' },
-    accepted: Boolean
-  }]
+  following: [{ type: Schema.ObjectId, ref: 'FollowRelation' }],
+  followers: [{ type: Schema.ObjectId, ref: 'FollowRelation' }],
 });
 

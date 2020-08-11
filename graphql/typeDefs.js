@@ -12,9 +12,10 @@ exports.typeDefs = gql`
     profile_pic_url: String,
     profile_type: String,
     posts: [Post],
-    following: [Follower],
-    followers: [Follower]
-    }]
+    n_following: Int,
+    following: [FollowRelation],
+    n_followers: Int,
+    followers: [FollowRelation]
   }
 
   type Post {
@@ -24,18 +25,22 @@ exports.typeDefs = gql`
     text: String
   }
 
-  type Follower {
+  type FollowRelation {
     user: User,
+    follows: User,
     accepted: Boolean
   }
 
   type Query {
     getToken(username: String!, password: String!): String
-    getUserData(id: String): String
+    getUserData(id: String): User
   }
 
   type Mutation {
-    registerUser(name: String!, surname: String!, birthdate: String, email: String!, username: String!, password: String!, profile_pic_url: String, profile_type: String!): User
+    registerUser(name: String!, surname: String!, birthdate: String, email: String!, username: String!, password: String!, profile_pic_url: String, profile_type: String): User
     createPost(text: String!): Post
+    followUser(id: String!): User
+    unfollowUser(id: String!): User
+    acceptFollowRequest(user_id: String!): User
   }
 `
