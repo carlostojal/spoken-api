@@ -5,7 +5,8 @@ const registerUser = require("../helpers/registerUser");
 const createPost = require("../helpers/createPost");
 const followUser = require("../helpers/followUser");
 const unfollowUser = require("../helpers/unfollowUser");
-const acceptFollowRequest = require("../helpers/acceptFollowRequest");;
+const acceptFollowRequest = require("../helpers/acceptFollowRequest");
+const deletePost = require("../helpers/deletePost");
 
 const resolvers = {
   Query: {
@@ -46,8 +47,13 @@ const resolvers = {
       return unfollowUser(args.id, context);
     },
 
+    // accepts follow request from user ID
     acceptFollowRequest: (parent, args, context, info) => {
       return acceptFollowRequest(args.user_id, context);
+    },
+
+    deletePost: (parent, args, context, info) => {
+      return deletePost(args.id, context);
     }
   }
 }
