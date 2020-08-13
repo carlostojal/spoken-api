@@ -3,6 +3,7 @@ const { AuthenticationError } = require("apollo-server");
 const getToken = require("../helpers/getToken");
 const getUserData = require("../helpers/getUserData");
 const getUserFeed = require("../helpers/getUserFeed");
+const registerUser = require("../helpers/registerUser");
 const User = require("../models/User");
 const Post = require("../models/Post");
 const FollowRelation = require("../models/FollowRelation");
@@ -28,46 +29,7 @@ const resolvers = {
   Mutation: {
     // registers a new user
     registerUser: (parent, args, context, info) => {
-      return new Promise((resolve, reject) => {
-        bcrypt.genSalt(parseInt(process.env.HASH_SALT_ROUNDS), (err, salt) => {
-          if (err) reject(err);
-
-          bcrypt.hash(args.password, salt, (err, hash_password) => {
-            if (err) reject(err);
-
-            const user = new User({
-              access_token: {
-                value: null,
-                expiry: null
-              },
-              refresh_token: {
-                value: null,
-                expiry: null
-              },
-              name: args.name,
-              surname: args.surname,
-              birthdate: new Date(parseInt(args.birthdate)).getTime().toString(),
-              email: args.email,
-              email_confirmed: false,
-              username: args.username,
-              password: hash_password,
-              profile_pic_url: null,
-              profile_type: args.profile_type || "public",
-              posts: [],
-              following:  [],
-              followers: []
-            });
-
-            user.save().then((result) => {
-              console.log("User registered.");
-              resolve(result);
-            }).catch((err) => {
-              reject(err);
-            });
-
-          });
-        });
-      });
+      return registerUser(args.name, args.surname, args.birthdate, args.email, args.username, args.password, args.profile_type);
     },
 
     // creates a new post
