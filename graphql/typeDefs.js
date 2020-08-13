@@ -1,6 +1,6 @@
 const { gql } = require("apollo-server");
 
-exports.typeDefs = gql`
+const typeDefs = gql`
 
   type User {
     id: ID,
@@ -44,4 +44,6 @@ exports.typeDefs = gql`
     unfollowUser(id: String!): User
     acceptFollowRequest(user_id: String!): User
   }
-`
+`;
+
+module.exports = typeDefs;

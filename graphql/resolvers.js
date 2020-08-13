@@ -6,7 +6,7 @@ const User = require("../models/User");
 const Post = require("../models/Post");
 const FollowRelation = require("../models/FollowRelation");
 
-exports.resolvers = {
+const resolvers = {
   Query: {
     // get user tokens from username and password
     getToken: (parent, args, context, info) => {
@@ -295,3 +295,5 @@ exports.resolvers = {
     }
   }
 }
+
+module.exports = resolvers;
