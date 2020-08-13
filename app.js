@@ -20,9 +20,6 @@ const server = new ApolloServer({
     if(token)
       user = await getUserByToken(token);
 
-    if(!user.email_confirmed)
-      user = null;
-
     return { req, res, user };
   }
 });
