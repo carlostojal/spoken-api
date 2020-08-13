@@ -73,41 +73,63 @@ exports.resolvers = {
 
     getUserData: (parent, args, context, info) => {
       return new Promise((resolve, reject) => {
+
+        const checkRelation = (relation) => {
+          return relation.accepted;
+        }
+
         if(context.user) { 
           if(args.id) {
-            let userIsFollowing = false;
-            for(let i = 0; i < context.user.following.length; i++) {
-              if(context.user.following[i].user == args.id && context.user.following[i].accepted == true)
-                  userIsFollowing = true;
-            }
-            const query = User.findOne({ _id: args.id});
-            if(userIsFollowing)
-              query.populate("posts");
+            
+            const query = User.findOne({ _id: args.id });
+            query.populate("posts");
+            query.populate({
+              path: "followers",
+              populate: {
+                path: "user"
+              }
+            });
             query.exec((err, user) => {
+              
+              if (err) reject(err);
 
-              if(err) reject(err);
+              let userIsFollowing = false;
 
-              if(!user)
-                reject(new Error("Invalid user ID"));
+              for(let i = 0; i < user.followers.length; i++) {
+                // the current user is in the requested user followers array and the follow request was accepted
+                if(user.followers[i].user._id.equals(context.user._id) && user.followers[i].accepted) {
+                  userIsFollowing = true;
+                }
+              }
 
-              if(!userIsFollowing)
-                user.posts = [];
+              // only send to frontend the following and follower array of accepted relations
+              user.following = user.following.filter(checkRelation);
+              user.followers = user.followers.filter(checkRelation);
 
-              // remove email and birthdate for privacy reasons
-              user.email = null;
-              user.birthdate = null;
               user.n_following = user.following.length;
               user.n_followers = user.followers.length;
 
-              resolve(user);
+              user.email = null;
 
+              // if the user is not following, don't provide private information
+              if(!userIsFollowing)
+                user.posts = [];
+
+              resolve(user);
             });
+
           } else {
             const query = User.findOne({ _id: context.user._id});
             query.populate("posts");
+            query.populate("following");
+            query.populate("followers");
             query.exec((err, user) => {
 
               if (err) reject(err);
+
+              // only send to frontend the following and follower array of accepted relations
+              user.following = user.following.filter(checkRelation);
+              user.followers = user.followers.filter(checkRelation);
 
               user.n_following = user.following.length;
               user.n_followers = user.followers.length;
@@ -270,37 +292,57 @@ exports.resolvers = {
         if(!args.id)
           reject(new Error("No user ID provided"));
 
-        // find user from provided ID
-        User.findOne({ _id: args.id }).then((user) => {
+          FollowRelation.findOne({ user: context.user._id, follows: args.id }).then((followRelation) => {
+            if(!followRelation)
+              resolve({});
 
-          if(!result)
-            reject(new Error("User doesn't exist."));
+            // find user that will be unfollowed
+            User.findOne({ _id: args.id }).then((user) => {
 
-          for(let i = 0; i < user.followers.length; i++) {
-            if(user.followers[i].user == context.user._id) {
-              user.followers.splice(i, 1);
-              i--;
-            }
-          }
-
-          user.save().then((result) => {
-            User.findOne({ _id: context.user._id }).then((result) => {
-              for(let i = 0; i < result.following.length; i++) {
-                if(result.following[i].user == args.id) {
-                  user.following.splice(i, 1);
+              if(!user)
+                reject(new Error("User doesn't exist."));
+              
+              // remove follow relation from followers array
+              for(let i = 0; i < user.followers.length; i++) {
+                if(user.followers[i]._id == followRelation._id) {
+                  user.followers.splice(i, 1);
                   i--;
                 }
               }
+
+              user.save().then(() => {
+
+                // find current session user
+                User.findOne({ _id: context.user._id }).then((currentUser) => {
+
+                  for(let i = 0; i < currentUser.following.length; i++) {
+                    if(currentUser.following[i]._id == followRelation._id) {
+                      user.followers.splice(i, 1);
+                      i--;
+                    }
+                  }
+
+                  currentUser.save().then(() => {
+                    // resolve with the unfollowed user
+                    resolve(user);
+                  }).catch((error) => {
+                    reject(error);
+                  })
+      
+                }).catch((error) => {
+                  reject(error);
+                });
+
+              }).catch((error) => {
+                reject(error);
+              });
             }).catch((error) => {
               reject(error);
             });
           }).catch((error) => {
             reject(error);
-          })
-        }).catch((error) => {
-          reject(error);
-        });
-      });
+          });
+        });          
     },
 
     acceptFollowRequest: (parent, args, context, info) => {

@@ -10,4 +10,3 @@ const followRelation = new Schema({
 followRelation.index({ user: 1, follows: 1 }, { unique: true });
 
 module.exports = followRelation;
-
