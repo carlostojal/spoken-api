@@ -115,6 +115,7 @@ exports.resolvers = {
               if(!userIsFollowing)
                 user.posts = [];
 
+              console.log("Got user data");
               resolve(user);
             });
 
@@ -134,6 +135,7 @@ exports.resolvers = {
               user.n_following = user.following.length;
               user.n_followers = user.followers.length;
 
+              console.log("Got user data");
               resolve(user);
 
             });
@@ -213,6 +215,7 @@ exports.resolvers = {
               if (err) reject(err);
               result.posts.push(post._id);
               result.save().then((err, result) => {
+                console.log("Post created.");
                 resolve(post);
               })
             });
@@ -260,6 +263,7 @@ exports.resolvers = {
                 // add follow relation to the other user followers array
                 user.followers.push(result._id);
                 user.save().then(() => {
+                  console.log("User followed");
                   resolve(user);
                 }).catch((error) => {
                   reject(error);
@@ -293,8 +297,9 @@ exports.resolvers = {
           reject(new Error("No user ID provided"));
 
           FollowRelation.findOne({ user: context.user._id, follows: args.id }).then((followRelation) => {
+
             if(!followRelation)
-              resolve({});
+              return reject(new Error("Relation not existent"));
 
             // find user that will be unfollowed
             User.findOne({ _id: args.id }).then((user) => {
@@ -324,6 +329,7 @@ exports.resolvers = {
 
                   currentUser.save().then(() => {
                     // resolve with the unfollowed user
+                    console.log("User unfollowed.");
                     resolve(user);
                   }).catch((error) => {
                     reject(error);
@@ -349,40 +355,29 @@ exports.resolvers = {
       return new Promise((resolve, reject) => {
 
         if(!context.user)
-          resolve(new AuthenticationError("Bad authentication"));
+          reject(new AuthenticationError("Bad authentication"));
 
         if(!args.user_id)
-          resolve(new Error("No user ID provided"));
+          reject(new Error("No user ID provided"));
 
-        // find session user
-        User.findOne({ _id: context.user._id }).then((user) => {
+        const query = FollowRelation.findOne({ user: args.user_id, follows: context.user._id });
+        query.populate("user");
+        query.exec((error, relation) => {
 
-          for(let i = 0; i < user.following.length; i++) {
-            if(user.following[i].user == args.user_id) {
-              user.following[i].accepted = true;
-              user.save().then((res) => {
-                User.findOne({ _id: args.user_id }).then((user) => {
-                  if(!user)
-                    reject(new Error("Invalid user ID"));
+          if(error) 
+            reject(error);
+          
+          if(!relation)
+            return reject(new Error("Relation not existent."));
 
-                  for(let i = 0; i < user.followers.length; i++) {
-                    if(user.followers[i].user == context.user._id) {
-                      user.followers[i].accepted = true;
-                      user.save().then((res) => {
-                        resolve(res);
-                      }).catch((error) => {
-                        reject(error);
-                      });
-                    }
-                  }
-                });
-              }).catch((error) => {
-                reject(error);
-              });
-            }
-          }
-        }).catch((error) => {
-          reject(error);
+          relation.accepted = true;
+
+          relation.save().then(() => {
+            console.log("Follow request accepted.");
+            resolve(relation.user);
+          }).catch((error) => {
+            reject(error);
+          });
         });
       });
     }
