@@ -177,7 +177,7 @@ exports.resolvers = {
           followingArray.push(context.user._id);
 
           const query = Post.find({ poster: { $in: followingArray }});
-          query.populate("poster", "_id name surname username");
+          query.populate("poster", "_id name surname username profile_pic_url");
           query.limit(args.perPage);
           query.skip(args.perPage * (args.page - 1));
           query.sort({time: -1});
