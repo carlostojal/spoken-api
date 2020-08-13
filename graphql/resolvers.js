@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const { AuthenticationError } = require("apollo-server");
 const getToken = require("../helpers/getToken");
 const getUserData = require("../helpers/getUserData");
+const getUserFeed = require("../helpers/getUserFeed");
 const User = require("../models/User");
 const Post = require("../models/Post");
 const FollowRelation = require("../models/FollowRelation");
@@ -20,42 +21,7 @@ const resolvers = {
 
     // get user feed posts
     getUserFeed: (parent, args, context, info) => {
-      return new Promise((resolve, reject) => {
-
-        if(!context.user)
-          return reject(new AuthenticationError("Bad authentication."));
-
-        // get all posts which poster ID is in the current user following array
-        const query = User.findOne({ _id: context.user._id });
-        query.populate({
-          path: "following",
-          populate: {
-            path: "follows"
-          }
-        });
-        query.exec((error, user) => {
-          if (error) return reject(error);
-
-          let followingArray = [];
-
-          user.following.map((relation) => {
-            if(relation.accepted)
-              followingArray.push(relation.follows._id);
-          });
-
-          followingArray.push(context.user._id);
-
-          const query = Post.find({ poster: { $in: followingArray }});
-          query.populate("poster", "_id name surname username profile_pic_url");
-          query.limit(args.perPage);
-          query.skip(args.perPage * (args.page - 1));
-          query.sort({time: -1});
-          query.exec((error, posts) => {
-            if (error) return reject(error);
-            resolve(posts);
-          });
-        });
-      });
+      return getUserFeed(args.page, args.perPage, context);
     }
   },
 
