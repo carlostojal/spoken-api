@@ -1,5 +1,3 @@
-const bcrypt = require("bcrypt");
-const { AuthenticationError } = require("apollo-server");
 const getToken = require("../helpers/getToken");
 const getUserData = require("../helpers/getUserData");
 const getUserFeed = require("../helpers/getUserFeed");
@@ -7,11 +5,7 @@ const registerUser = require("../helpers/registerUser");
 const createPost = require("../helpers/createPost");
 const followUser = require("../helpers/followUser");
 const unfollowUser = require("../helpers/unfollowUser");
-const User = require("../models/User");
-const Post = require("../models/Post");
-const FollowRelation = require("../models/FollowRelation");
-const { create } = require("../models/User");
-const followRelation = require("../schemas/FollowRelation");
+const acceptFollowRequest = require("../helpers/acceptFollowRequest");;
 
 const resolvers = {
   Query: {
@@ -53,34 +47,7 @@ const resolvers = {
     },
 
     acceptFollowRequest: (parent, args, context, info) => {
-      return new Promise((resolve, reject) => {
-
-        if(!context.user)
-          reject(new AuthenticationError("Bad authentication"));
-
-        if(!args.user_id)
-          reject(new Error("No user ID provided"));
-
-        const query = FollowRelation.findOne({ user: args.user_id, follows: context.user._id });
-        query.populate("user");
-        query.exec((error, relation) => {
-
-          if(error) 
-            reject(error);
-          
-          if(!relation)
-            return reject(new Error("Relation not existent."));
-
-          relation.accepted = true;
-
-          relation.save().then(() => {
-            console.log("Follow request accepted.");
-            resolve(relation.user);
-          }).catch((error) => {
-            reject(error);
-          });
-        });
-      });
+      return acceptFollowRequest(args.user_id, context);
     }
   }
 }
