@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const { AuthenticationError } = require("apollo-server");
 const getToken = require("../helpers/getToken");
+const getUserData = require("../helpers/getUserData");
 const User = require("../models/User");
 const Post = require("../models/Post");
 const FollowRelation = require("../models/FollowRelation");
@@ -14,78 +15,7 @@ exports.resolvers = {
 
     // get user data from ID or for the current user
     getUserData: (parent, args, context, info) => {
-      return new Promise((resolve, reject) => {
-
-        const checkRelation = (relation) => {
-          return relation.accepted;
-        }
-
-        if(context.user) { 
-          if(args.id) {
-            
-            const query = User.findOne({ _id: args.id });
-            query.populate("posts");
-            query.populate({
-              path: "followers",
-              populate: {
-                path: "user"
-              }
-            });
-            query.exec((err, user) => {
-              
-              if (err) reject(err);
-
-              let userIsFollowing = false;
-
-              for(let i = 0; i < user.followers.length; i++) {
-                // the current user is in the requested user followers array and the follow request was accepted
-                if(user.followers[i].user._id.equals(context.user._id) && user.followers[i].accepted) {
-                  userIsFollowing = true;
-                }
-              }
-
-              // only send to frontend the following and follower array of accepted relations
-              user.following = user.following.filter(checkRelation);
-              user.followers = user.followers.filter(checkRelation);
-
-              user.n_following = user.following.length;
-              user.n_followers = user.followers.length;
-
-              user.email = null;
-
-              // if the user is not following, don't provide private information
-              if(!userIsFollowing)
-                user.posts = [];
-
-              console.log("Got user data");
-              resolve(user);
-            });
-
-          } else {
-            const query = User.findOne({ _id: context.user._id});
-            query.populate("posts");
-            query.populate("following");
-            query.populate("followers");
-            query.exec((err, user) => {
-
-              if (err) reject(err);
-
-              // only send to frontend the following and follower array of accepted relations
-              user.following = user.following.filter(checkRelation);
-              user.followers = user.followers.filter(checkRelation);
-
-              user.n_following = user.following.length;
-              user.n_followers = user.followers.length;
-
-              console.log("Got user data");
-              resolve(user);
-
-            });
-          }
-        } else {
-          reject(new AuthenticationError("Bad authentication."));
-        }
-      });
+      return getUserData(args.id, context);
     },
 
     // get user feed posts
