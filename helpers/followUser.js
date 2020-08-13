@@ -1,3 +1,4 @@
+const { AuthenticationError } = require("apollo-server");
 const User = require("../models/User");
 const FollowRelation = require("../models/FollowRelation");
 
