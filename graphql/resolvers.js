@@ -4,6 +4,8 @@ const User = require("../models/User");
 const Post = require("../models/Post");
 const FollowRelation = require("../models/FollowRelation");
 const { AuthenticationError } = require("apollo-server");
+const followRelation = require("../schemas/FollowRelation");
+const { aggregate } = require("../models/User");
 
 exports.resolvers = {
   Query: {
@@ -71,6 +73,7 @@ exports.resolvers = {
       });
     },
 
+    // get user data from ID or for the current user
     getUserData: (parent, args, context, info) => {
       return new Promise((resolve, reject) => {
 
@@ -143,6 +146,46 @@ exports.resolvers = {
         } else {
           reject(new AuthenticationError("Bad authentication."));
         }
+      });
+    },
+
+    // get user feed posts
+    getUserFeed: (parent, args, context, info) => {
+      return new Promise((resolve, reject) => {
+
+        if(!context.user)
+          return reject(new AuthenticationError("Bad authentication."));
+
+        // get all posts which poster ID is in the current user following array
+        const query = User.findOne({ _id: context.user._id });
+        query.populate({
+          path: "following",
+          populate: {
+            path: "follows"
+          }
+        });
+        query.exec((error, user) => {
+          if (error) return reject(error);
+
+          let followingArray = [];
+
+          user.following.map((relation) => {
+            if(relation.accepted)
+              followingArray.push(relation.follows._id);
+          });
+
+          followingArray.push(context.user._id);
+
+          const query = Post.find({ poster: { $in: followingArray }});
+          query.populate("poster", "_id name surname username");
+          query.limit(args.perPage);
+          query.skip(args.perPage * (args.page - 1));
+          query.sort({time: -1});
+          query.exec((error, posts) => {
+            if (error) return reject(error);
+            resolve(posts);
+          });
+        });
       });
     }
   },

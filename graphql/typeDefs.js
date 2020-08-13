@@ -34,6 +34,7 @@ exports.typeDefs = gql`
   type Query {
     getToken(username: String!, password: String!): String
     getUserData(id: String): User
+    getUserFeed(page: Int!, perPage: Int!): [Post]
   }
 
   type Mutation {
