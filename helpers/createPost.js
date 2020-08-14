@@ -10,7 +10,8 @@ const createPost = (text, context) => {
     const post = new Post({ // create post
       poster: context.user._id,
       time: Date.now().toString(),
-      text: text
+      text: text,
+      edited: false
     });
 
     post.save().then((result) => { // save post

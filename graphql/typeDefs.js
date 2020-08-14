@@ -22,7 +22,8 @@ const typeDefs = gql`
     id: ID,
     poster: User,
     time: String,
-    text: String
+    text: String,
+    edited: Boolean
   }
 
   type FollowRelation {
