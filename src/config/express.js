@@ -1,11 +1,13 @@
 const express = require("express");
 const fileUpload = require("express-fileupload");
+const { Types } = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const fs = require("fs");
 const morgan = require("morgan");
 const User = require("../models/User");
 const Media = require("../models/Media");
-const { Types } = require("mongoose");
+const compressImage = require("../helpers/compressImage");
 
 const app = express();
 
@@ -30,7 +32,7 @@ app.post("/upload", async (req, res) => {
       const token = req.headers.authorization;
 
       if(!token || token == "")
-        return res.status(500).send(new Error("No access token provided."));
+        return res.status(403).send(new Error("No access token provided."));
 
       // get uploader from token
       User.findOne({"access_tokens.value": token, "access_tokens.expiry": { $gt: Date.now() }}).then((user) => {
@@ -39,34 +41,47 @@ app.post("/upload", async (req, res) => {
         
         const media_file = req.files.media;
 
-        const path = `uploads/${media_file.name}`;
+        const path = `uploads/temp/${media_file.name}`;
+        const dest_path = "uploads";
+
   
         // move media to uploads path
         media_file.mv(path);
-  
-        // save path and uploader in DB
-        const media = new Media({
-          uploader: user._id,
-          path
-        });
-  
-        media.save().then((media) => {
-          res.send({
-            status: true,
-            message: "File uploaded.",
-            data: {
-              id: media._id
-            }
+
+        compressImage(path, dest_path).then((image) => {
+          const final_path = image.destinationPath;
+          console.log(final_path);
+
+          fs.unlink(path, (error) => {
+            if (error) res.status(500).send(error);
+
+            // save path and uploader in DB
+            const media = new Media({
+              uploader: user._id,
+              path: final_path
+            });
+
+            media.save().then((media) => {
+              res.send({
+                status: true,
+                message: "File uploaded.",
+                data: {
+                  id: media._id
+                }
+              });
+            }).catch((error) => {
+              return res.status(500).send(error);
+            });
           });
         }).catch((error) => {
-          res.status(500).send(error);
-        });
-        
+          return res.status(500).send(error);
+        });        
       }).catch((error) => {
         res.status(500).send(error);
       });
     }
   } catch (error) {
+    console.log(error);
     res.status(500).send(error);
   }
 });

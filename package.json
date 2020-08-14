@@ -29,6 +29,8 @@
     "express-fileupload": "^1.1.10",
     "graphql": "^15.3.0",
     "imagemin": "^7.0.1",
+    "imagemin-mozjpeg": "^9.0.0",
+    "imagemin-pngquant": "^9.0.0",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.0",
     "mongoose": "^5.9.28",
