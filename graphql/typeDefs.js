@@ -34,6 +34,7 @@ const typeDefs = gql`
 
   type Query {
     getToken(username: String!, password: String!): String
+    refreshToken: String
     getUserData(id: String): User
     getUserFeed(page: Int!, perPage: Int!): [Post]
   }
