@@ -29,7 +29,7 @@ const refreshToken = (refresh_token, res) => {
       user.save().then(() => {
         // set refresh token cookie in response
         res.cookie("refresh_token", new_refresh_token.value, {
-          expires: new Date(refresh_token.expiry),
+          expires: new Date(new_refresh_token.expiry),
           httpOnly: true
         });
         console.log("User refresh token.");
