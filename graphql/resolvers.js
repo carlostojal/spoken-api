@@ -7,6 +7,7 @@ const followUser = require("../helpers/followUser");
 const unfollowUser = require("../helpers/unfollowUser");
 const acceptFollowRequest = require("../helpers/acceptFollowRequest");
 const deletePost = require("../helpers/deletePost");
+const editPost = require("../helpers/editPost");
 
 const resolvers = {
   Query: {
@@ -52,8 +53,14 @@ const resolvers = {
       return acceptFollowRequest(args.user_id, context);
     },
 
+    // deletes post from post ID
     deletePost: (parent, args, context, info) => {
       return deletePost(args.id, context);
+    },
+
+    // edits post from post ID. updates text
+    editPost: (parent, args, context, info) => {
+      return editPost(args.id, args.text, context);
     }
   }
 }

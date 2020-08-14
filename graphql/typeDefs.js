@@ -45,6 +45,7 @@ const typeDefs = gql`
     unfollowUser(id: String!): User
     acceptFollowRequest(user_id: String!): User
     deletePost(id: String!): Post
+    editPost(id: String!, text: String!): Post
   }
 `;
 
