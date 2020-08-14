@@ -22,7 +22,8 @@ const typeDefs = gql`
     id: ID,
     poster: User,
     time: String,
-    text: String
+    text: String,
+    edited: Boolean
   }
 
   type FollowRelation {
@@ -43,6 +44,8 @@ const typeDefs = gql`
     followUser(id: String!): User
     unfollowUser(id: String!): User
     acceptFollowRequest(user_id: String!): User
+    deletePost(id: String!): Post
+    editPost(id: String!, text: String!): Post
   }
 `;
 
