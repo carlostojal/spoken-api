@@ -23,6 +23,7 @@ const typeDefs = gql`
     poster: User,
     time: String,
     text: String,
+    media_url: String,
     edited: Boolean
   }
 
@@ -42,7 +43,7 @@ const typeDefs = gql`
 
   type Mutation {
     registerUser(name: String!, surname: String!, birthdate: String, email: String!, username: String!, password: String!, profile_pic_url: String, profile_type: String): User
-    createPost(text: String!): Post
+    createPost(text: String!, media_id: String): Post
     followUser(id: String!): User
     unfollowUser(id: String!): User
     acceptFollowRequest(user_id: String!): User

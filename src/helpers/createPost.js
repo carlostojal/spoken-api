@@ -1,7 +1,8 @@
+const { AuthenticationError } = require("apollo-server");
 const User = require("../models/User");
 const Post = require("../models/Post");
 
-const createPost = (text, context) => {
+const createPost = (text, media_id, context) => {
   return new Promise((resolve, reject) => {
 
     if(!context.user)
@@ -11,6 +12,7 @@ const createPost = (text, context) => {
       poster: context.user._id,
       time: Date.now().toString(),
       text: text,
+      media: media_id || null,
       edited: false
     });
 

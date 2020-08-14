@@ -30,11 +30,18 @@ const getUserFeed = (page, perPage, context) => {
 
       const query = Post.find({ poster: { $in: followingArray }});
       query.populate("poster", "_id name surname username profile_pic_url");
+      query.populate("media");
       query.limit(perPage);
       query.skip(perPage * (page - 1));
       query.sort({time: -1});
       query.exec((error, posts) => {
         if (error) return reject(error);
+        posts.map((post) => {
+          // post has media
+          if(post.media) {
+            post.media_url = `${process.env.EXPRESS_ADDRESS}:${process.env.EXPRESS_PORT}/media/${post.media._id}`;
+          }
+        })
         resolve(posts);
       });
     });
