@@ -1,4 +1,7 @@
 const getToken = require("../helpers/getToken");
+const logout = require("../helpers/logout");
+const refreshToken = require("../helpers/refreshToken");
+const getCookieByName = require("../helpers/getCookieByName");
 const getUserData = require("../helpers/getUserData");
 const getUserFeed = require("../helpers/getUserFeed");
 const registerUser = require("../helpers/registerUser");
@@ -14,6 +17,19 @@ const resolvers = {
     // get user tokens from username and password
     getToken: (parent, args, context, info) => {
       return getToken(args.username, args.password, context);
+    },
+
+    // logout
+    logout: (parent, args, context, info) => {
+      const refresh_token = getCookieByName("refresh_token", context.req.headers.cookie);
+      const access_token = context.req.headers.authorization;
+      return logout(refresh_token, access_token, context.res);
+    },
+
+    // provide new access token from refresh token
+    refreshToken: (parent, args, context, info) => {
+      const refresh_token = getCookieByName("refresh_token", context.req.headers.cookie);
+      return refreshToken(refresh_token, context.res);
     },
 
     // get user data from ID or for the current user

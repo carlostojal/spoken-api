@@ -20,20 +20,10 @@ const getToken = (username, password, context) => {
               const access_token = createToken(user._id, "access");
 
               // remove expired refresh tokens
-              for(let i = 0; i < user.refresh_tokens.length; i++) {
-                if(user.refresh_tokens[i].expiry < Date.now()) {
-                  user.refresh_tokens.splice(i, 1);
-                  i--;
-                }
-              }
+              user.refresh_tokens = user.refresh_tokens.filter((refresh_token) => refresh_token.expiry > Date.now());
 
               // remove expired access tokens
-              for(let i = 0; i < user.access_tokens.length; i++) {
-                if(user.access_tokens[i].expiry < Date.now()) {
-                  user.access_tokens.splice(i, 1);
-                  i--;
-                }
-              }
+              user.access_tokens = user.access_tokens.filter((access_token) => access_token.expiry > Date.now());
 
               user.refresh_tokens.push(refresh_token);
               user.access_tokens.push(access_token);
