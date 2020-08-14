@@ -9,6 +9,11 @@ const getUserByToken = require("./helpers/getUserByToken");
 const server = new ApolloServer({
   typeDefs: typeDefs,
   resolvers: resolvers,
+  playground: {
+    settings: {
+      "request.credentials": "include"
+    }
+  },
   context: async ({ req, res }) => {
 
     // get access token from headers
