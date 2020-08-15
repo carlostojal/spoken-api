@@ -24,7 +24,7 @@ module.exports = new Schema({
   },
   password: String,
   profile_pic_url: String,
-  profile_type: String, // "public" or "private"
+  profile_privacy_type: String, // "public" or "private"
   posts: [{ type: Schema.ObjectId, ref: 'Post' }],
   following: [{ type: Schema.ObjectId, ref: 'FollowRelation' }],
   followers: [{ type: Schema.ObjectId, ref: 'FollowRelation' }],
