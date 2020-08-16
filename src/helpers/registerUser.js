@@ -25,7 +25,7 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
           email_confirmed: false,
           username: username,
           password: hash_password,
-          profile_pic_url: null,
+          profile_pic_media_id: null,
           profile_privacy_type: profile_privacy_type || "public",
           posts: [],
           following:  [],

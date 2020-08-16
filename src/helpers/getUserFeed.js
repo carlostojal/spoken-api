@@ -1,6 +1,7 @@
 const { AuthenticationError } = require("apollo-server");
 const User = require("../models/User");
 const Post = require("../models/Post");
+const mediaIdToUrl = require("./mediaIdToUrl");
 
 const getUserFeed = (page, perPage, context) => {
   return new Promise((resolve, reject) => {
@@ -30,7 +31,6 @@ const getUserFeed = (page, perPage, context) => {
 
       const query = Post.find({ poster: { $in: followingArray }});
       query.populate("poster", "_id name surname username profile_pic_url");
-      query.populate("media");
       query.limit(perPage);
       query.skip(perPage * (page - 1));
       query.sort({time: -1});
@@ -39,7 +39,7 @@ const getUserFeed = (page, perPage, context) => {
         posts.map((post) => {
           // post has media
           if(post.media) {
-            post.media_url = `${process.env.EXPRESS_ADDRESS}:${process.env.EXPRESS_PORT}/media/${post.media._id}`;
+            post.media_url = mediaIdToUrl(post.media);
           }
         })
         resolve(posts);

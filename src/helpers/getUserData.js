@@ -1,5 +1,6 @@
 const { AuthenticationError } = require("apollo-server");
 const User = require("../models/User");
+const mediaIdToUrl = require("./mediaIdToUrl");
 
 const getUserData = (id, context) => {
   return new Promise((resolve, reject) => {
@@ -31,6 +32,9 @@ const getUserData = (id, context) => {
               userIsFollowing = true;
             }
           }
+
+          if(user.profile_pic_media)
+            user.profile_pic_url = mediaIdToUrl(user.profile_pic_media._id);
 
           // only send to frontend the following and follower array of accepted relations
           user.following = user.following.filter(checkRelation);

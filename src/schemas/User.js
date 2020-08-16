@@ -23,7 +23,7 @@ module.exports = new Schema({
     unique: true
   },
   password: String,
-  profile_pic_url: String,
+  profile_pic_media: [{ type: Schema.ObjectId, ref: 'Media' }],
   profile_privacy_type: String, // "public" or "private"
   posts: [{ type: Schema.ObjectId, ref: 'Post' }],
   following: [{ type: Schema.ObjectId, ref: 'FollowRelation' }],
