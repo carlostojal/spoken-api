@@ -1,5 +1,5 @@
 const { ApolloServer } = require("apollo-server");
-require("dotenv").config();
+require("dotenv").config({ path: "../.env" });
 require("./config/mongoose");
 require("./config/express");
 const typeDefs = require("./graphql/typeDefs");
