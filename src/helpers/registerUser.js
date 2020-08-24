@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
 
-const registerUser = (name, surname, birthdate, email, username, password, profile_privacy_type) => {
+const registerUser = (name, surname, birthdate, email, username, password, profile_type, profile_privacy_type) => {
   return new Promise((resolve, reject) => {
     bcrypt.genSalt(parseInt(process.env.HASH_SALT_ROUNDS), (err, salt) => {
       if (err) reject(err);
@@ -26,7 +26,8 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
           username: username,
           password: hash_password,
           profile_pic_media_id: null,
-          profile_privacy_type: profile_privacy_type || "public",
+          profile_type: profile_type,
+          profile_privacy_type: profile_privacy_type,
           posts: [],
           following:  [],
           followers: []

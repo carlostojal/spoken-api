@@ -2,6 +2,16 @@ const { gql } = require("apollo-server");
 
 const typeDefs = gql`
 
+  enum ProfileType {
+    personal
+    business
+  }
+
+  enum ProfilePrivacyType {
+    public
+    private
+  }
+
   type User {
     id: ID,
     name: String,
@@ -10,6 +20,7 @@ const typeDefs = gql`
     email: String,
     username: String,
     profile_pic_url: String,
+    profile_type: String,
     profile_privacy_type: String,
     posts: [Post],
     n_following: Int,
@@ -42,8 +53,8 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    registerUser(name: String!, surname: String!, birthdate: String, email: String!, username: String!, password: String!, profile_pic_media_id: String, profile_privacy_type: String): User
-    editUser(name: String!, surname: String!, email: String!, username: String!, password: String!, profile_pic_media_id: String, profile_privacy_type: String!): User
+    registerUser(name: String!, surname: String!, birthdate: String, email: String!, username: String!, password: String!, profile_pic_media_id: String, profile_type: ProfileType!, profile_privacy_type: ProfilePrivacyType): User
+    editUser(name: String!, surname: String!, email: String!, username: String!, password: String!, profile_pic_media_id: String, profile_privacy_type: ProfilePrivacyType): User
     createPost(text: String!, media_id: String): Post
     followUser(id: String!): User
     unfollowUser(id: String!): User
