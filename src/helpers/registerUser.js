@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
+const sendConfirmationEmail = require("./sendConfirmationEmail");
 
 const registerUser = (name, surname, birthdate, email, username, password, profile_type, profile_privacy_type) => {
   return new Promise((resolve, reject) => {
@@ -34,8 +35,13 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
         });
 
         user.save().then((result) => {
-          console.log("User registered.");
-          resolve(result);
+          // saved user, now send confirmation email
+          sendConfirmationEmail(user).then(() => {
+            console.log("User registered.");
+            resolve(result);
+          }).catch((err) => {
+            reject(err);
+          });
         }).catch((err) => {
           reject(err);
         });
