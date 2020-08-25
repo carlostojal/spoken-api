@@ -19,7 +19,7 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
             value: null,
             expiry: null
           },
-          name: name,
+          name: name.toLowerCase(),
           surname: surname,
           birthdate: new Date(parseInt(birthdate)).getTime().toString(),
           email: email,
@@ -41,10 +41,20 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
             console.log("User registered.");
             resolve(result);
           }).catch((err) => {
-            reject(err);
+            console.log(err);
+            reject(new Error("ERROR_SENDING_CONFIRMATION_EMAIL"));
           });
         }).catch((err) => {
-          reject(err);
+          let error;
+          if(err.code == 11000) { // duplicate key error
+            if(err.keyValue.username) // duplicate username
+              error = new Error("USERNAME_ALREADY_TAKEN");
+            else if(err.keyValue.email)
+              error = new Error("EMAIL_ALREADY_TAKEN");
+          } else {
+            error = new Error("ERROR_SAVING_USER");
+          }
+          reject(error);
         });
 
       });
