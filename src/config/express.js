@@ -5,6 +5,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const fs = require("fs");
 const morgan = require("morgan");
+const mongoose = require("mongoose");
 const User = require("../models/User");
 const Media = require("../models/Media");
 const compressImage = require("../helpers/compressImage");
@@ -21,6 +22,40 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 // app.use(morgan("dev"));
 
+
+// email confirmation
+app.get("/confirm", (req, res) => {
+  try {
+
+    User.findById(req.query.uid).then((user) => {
+
+      if (!user) return res.send("Bad confirmation link.");
+
+      if(user.email_confirmed)
+        return res.send("Account already confirmed. You can close this.");
+
+      // the confirmation code is correct
+      if(user.confirmation_code == req.query.confirmation_code) {
+        user.email_confirmed = true;
+        user.save().then(() => {
+          return res.send("Email confirmed successfully. You can now close this.");
+        }).catch((e) => {
+          return res.status(500).send("Error saving user. Please refresh this page.");
+        })
+      } else {
+        return res.send("Bad confirmation link.");
+      }
+    }).catch((e) => {
+      console.log(e);
+      return res.status(500).send("Error loading confirmation link. Please refresh this page.");
+    });
+  } catch(e) {
+    console.log(e);
+    res.status(500).send("Unexpected error. Please refresh this page.");
+  }
+});
+
+// media upload
 app.post("/upload", async (req, res) => {
   try {
     if(!req.files) {
@@ -85,6 +120,7 @@ app.post("/upload", async (req, res) => {
   }
 });
 
+// get media
 app.get("/media/:id/:token?", async (req, res) => {
   const media_id = req.params.id;
   const token = req.params.token;

@@ -24,6 +24,7 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
           birthdate: new Date(parseInt(birthdate)).getTime().toString(),
           email: email,
           email_confirmed: false,
+          confirmation_code: Math.floor(Math.random() * 1000),
           username: username,
           password: hash_password,
           profile_pic_media_id: null,

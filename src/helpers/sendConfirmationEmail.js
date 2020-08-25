@@ -8,7 +8,7 @@ const sendConfirmationEmail = (user) => {
       from: process.env.EMAIL_ADDRESS,
       to: user.email,
       subject: "SpokenNetwork Account Confirmation",
-      html: `Hello, ${user.name}.<br><br>Welcome to SpokenNetwork!`
+      html: `Hello, ${user.name}.<br><br>Welcome to SpokenNetwork!<br>Click <a href="${process.env.EXPRESS_ADDRESS}:${process.env.EXPRESS_PORT}/confirm?uid=${user._id}&confirmation_code=${user.confirmation_code}">this</a> to confirm your account.<br><br>Best regards,<br>SpokenNetwork Team.`
     }
 
     transport.sendMail(mailOptions, (err, info) => {

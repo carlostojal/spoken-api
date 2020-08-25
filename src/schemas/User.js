@@ -18,6 +18,7 @@ module.exports = new Schema({
     unique: true
   },
   email_confirmed: Boolean,
+  confirmation_code: Number,
   username: {
     type: String,
     unique: true
