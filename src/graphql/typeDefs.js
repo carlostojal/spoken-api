@@ -53,14 +53,15 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    registerUser(name: String!, surname: String!, birthdate: String, email: String!, username: String!, password: String!, profile_pic_media_id: String, profile_type: ProfileType!, profile_privacy_type: ProfilePrivacyType): User
-    editUser(name: String!, surname: String!, email: String!, username: String!, password: String!, profile_pic_media_id: String, profile_privacy_type: ProfilePrivacyType): User
+    registerUser(name: String!, surname: String!, birthdate: String!, email: String!, username: String!, password: String!, profile_pic_media_id: String, profile_type: ProfileType!, profile_privacy_type: ProfilePrivacyType!): User
+    editUser(name: String!, surname: String!, email: String!, username: String!, password: String!, profile_pic_media_id: String, profile_privacy_type: ProfilePrivacyType!): User
     createPost(text: String!, media_id: String): Post
     followUser(id: String!): User
     unfollowUser(id: String!): User
     acceptFollowRequest(user_id: String!): User
     deletePost(id: String!): Post
     editPost(id: String!, text: String!): Post
+    reactPost(id: String!): Post
   }
 `;
 

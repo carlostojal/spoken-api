@@ -12,6 +12,7 @@ const unfollowUser = require("../helpers/unfollowUser");
 const acceptFollowRequest = require("../helpers/acceptFollowRequest");
 const deletePost = require("../helpers/deletePost");
 const editPost = require("../helpers/editPost");
+const reactPost = require("../helpers/reactPost");
 
 const resolvers = {
   Query: {
@@ -83,6 +84,11 @@ const resolvers = {
     // edits post from post ID. updates text
     editPost: (parent, args, context, info) => {
       return editPost(args.id, args.text, context);
+    },
+
+    // react to post
+    reactPost: (parent, args, context, info) => {
+      return reactPost(args.id, context.user);
     }
   }
 }
