@@ -15,7 +15,7 @@ const reactPost = (post_id, user) => {
       populate: {
         path: "followers"
       }
-    }).exec((err, post) => {
+    }).populate("reactions").exec((err, post) => {
 
       if (err) return reject(new Error("ERROR_FINDING_POST"));
 
@@ -46,17 +46,28 @@ const reactPost = (post_id, user) => {
             return reject(new Error("ERROR_SAVING_REACTION"));
           }
         } else { // the reaction already exists, so remove it
+          // remove from post reactions array
           for(let i = 0; i < post.reactions.length; i++) {
-            if(post.reactions[i].user == user._id && post.reactions[i].post == post._id) {
+            console.log(post.reactions[i]);
+            if(post.reactions[i].user.equals(user._id)) {
               post.reactions.splice(i, 1);
               break;
             }
+          }
+
+          // remove from reactions document
+          try {
+            await PostReaction.findByIdAndDelete(reaction._id);
+          } catch(e) {
+            console.log(e);
+            return reject(new Error("ERROR_REMOVING_REACTION"));
           }
         }
 
         // save the post with the changes made
         try {
           await post.save();
+          console.log("Post reaction state update.");
           return resolve(post);
         } catch(e) {
           console.log(e);
