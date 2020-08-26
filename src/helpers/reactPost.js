@@ -48,7 +48,6 @@ const reactPost = (post_id, user) => {
         } else { // the reaction already exists, so remove it
           // remove from post reactions array
           for(let i = 0; i < post.reactions.length; i++) {
-            console.log(post.reactions[i]);
             if(post.reactions[i].user.equals(user._id)) {
               post.reactions.splice(i, 1);
               break;
@@ -68,6 +67,7 @@ const reactPost = (post_id, user) => {
         try {
           await post.save();
           console.log("Post reaction state update.");
+          post.user_reacted = reaction ? false : true;
           return resolve(post);
         } catch(e) {
           console.log(e);
