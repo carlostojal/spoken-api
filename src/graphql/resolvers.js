@@ -13,6 +13,7 @@ const acceptFollowRequest = require("../helpers/acceptFollowRequest");
 const deletePost = require("../helpers/deletePost");
 const editPost = require("../helpers/editPost");
 const reactPost = require("../helpers/reactPost");
+const commentPost = require("../helpers/commentPost");
 
 const resolvers = {
   Query: {
@@ -89,6 +90,11 @@ const resolvers = {
     // react to post
     reactPost: (parent, args, context, info) => {
       return reactPost(args.id, context.user);
+    },
+
+    // create comment in post
+    commentPost: (parent, args, context, info) => {
+      return commentPost(args.id, context.user, args.text);
     }
   }
 }

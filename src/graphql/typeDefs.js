@@ -62,6 +62,7 @@ const typeDefs = gql`
     deletePost(id: String!): Post
     editPost(id: String!, text: String!): Post
     reactPost(id: String!): Post
+    commentPost(id: String!, text: String!): Post
   }
 `;
 

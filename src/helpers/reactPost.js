@@ -19,7 +19,7 @@ const reactPost = (post_id, user) => {
 
       if (err) return reject(new Error("ERROR_FINDING_POST"));
 
-      if (!post) return reject(new Error("POST_NOW_FOUND"));
+      if (!post) return reject(new Error("POST_NOT_FOUND"));
 
       const user_has_permission = userHasViewPermission(user, post)
 
@@ -45,15 +45,22 @@ const reactPost = (post_id, user) => {
             console.log(e);
             return reject(new Error("ERROR_SAVING_REACTION"));
           }
-
-          // save the post with the changes made
-          try {
-            await post.save();
-            return resolve(post);
-          } catch(e) {
-            console.log(e);
-            return reject(new Error("ERROR_REGISTERING_REACTION"));
+        } else { // the reaction already exists, so remove it
+          for(let i = 0; i < post.reactions.length; i++) {
+            if(post.reactions[i].user == user._id && post.reactions[i].post == post._id) {
+              post.reactions.splice(i, 1);
+              break;
+            }
           }
+        }
+
+        // save the post with the changes made
+        try {
+          await post.save();
+          return resolve(post);
+        } catch(e) {
+          console.log(e);
+          return reject(new Error("ERROR_REGISTERING_REACTION"));
         }
       }).catch((e) => {
         console.log(e);
