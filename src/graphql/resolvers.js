@@ -12,6 +12,8 @@ const unfollowUser = require("../helpers/unfollowUser");
 const acceptFollowRequest = require("../helpers/acceptFollowRequest");
 const deletePost = require("../helpers/deletePost");
 const editPost = require("../helpers/editPost");
+const reactPost = require("../helpers/reactPost");
+const commentPost = require("../helpers/commentPost");
 
 const resolvers = {
   Query: {
@@ -47,7 +49,7 @@ const resolvers = {
   Mutation: {
     // registers a new user
     registerUser: (parent, args, context, info) => {
-      return registerUser(args.name, args.surname, args.birthdate, args.email, args.username, args.password, args.profile_privacy_type);
+      return registerUser(args.name, args.surname, args.birthdate, args.email, args.username, args.password, args.profile_type, args.profile_privacy_type);
     },
 
     // edit current user data
@@ -83,6 +85,16 @@ const resolvers = {
     // edits post from post ID. updates text
     editPost: (parent, args, context, info) => {
       return editPost(args.id, args.text, context);
+    },
+
+    // react to post
+    reactPost: (parent, args, context, info) => {
+      return reactPost(args.id, context.user);
+    },
+
+    // create comment in post
+    commentPost: (parent, args, context, info) => {
+      return commentPost(args.id, context.user, args.text);
     }
   }
 }

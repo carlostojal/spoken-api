@@ -18,12 +18,14 @@ module.exports = new Schema({
     unique: true
   },
   email_confirmed: Boolean,
+  confirmation_code: Number,
   username: {
     type: String,
     unique: true
   },
   password: String,
-  profile_pic_media: [{ type: Schema.ObjectId, ref: 'Media' }],
+  profile_pic_media: { type: Schema.ObjectId, ref: 'Media' },
+  profile_type: String, // "personal" or "business"
   profile_privacy_type: String, // "public" or "private"
   posts: [{ type: Schema.ObjectId, ref: 'Post' }],
   following: [{ type: Schema.ObjectId, ref: 'FollowRelation' }],

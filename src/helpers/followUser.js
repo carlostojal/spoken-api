@@ -20,7 +20,7 @@ const followUser = (id, context) => {
       if(!user)
         reject(new Error("User doesn't exist."));
 
-      const accepted = user.profile_type == "public";
+      const accepted = user.profile_privacy_type == "public";
 
       User.findOne({ _id: context.user._id }).then((currentUser) => {
         
