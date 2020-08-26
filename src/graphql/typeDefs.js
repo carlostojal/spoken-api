@@ -35,13 +35,26 @@ const typeDefs = gql`
     time: String,
     text: String,
     media_url: String,
-    edited: Boolean
+    edited: Boolean,
+    reactions: [Reaction],
+    comments: [Comment]
   }
 
   type FollowRelation {
     user: User,
     follows: User,
     accepted: Boolean
+  }
+
+  type Reaction {
+    time: String,
+    user: User
+  }
+
+  type Comment {
+    time: String,
+    user: User,
+    text: String
   }
 
   type Query {

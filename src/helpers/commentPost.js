@@ -36,17 +36,18 @@ const commentPost = (post_id, user, text) => {
       // save the comment to the database
       newComment.save().then(() => {
         post.comments.push(newComment._id);
+
+        // save the post with the changes made
+        post.save().then(() => {
+          return resolve(post);
+        }).catch((e) => {
+          console.log(e);
+          return reject(new Error("ERROR_REGISTERING_COMMENT"));
+        });
+        
       }).catch((e) => {
         console.log(e);
         return reject(new Error("ERROR_SAVING_COMMENT"));
-      });
-
-      // save the post with the changes made
-      post.save().then(() => {
-        return resolve(post);
-      }).catch((e) => {
-        console.log(e);
-        return reject(new Error("ERROR_REGISTERING_COMMENT"));
       });
     });
   });

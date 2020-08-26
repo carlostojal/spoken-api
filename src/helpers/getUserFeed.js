@@ -31,6 +31,18 @@ const getUserFeed = (page, perPage, context) => {
 
       const query = Post.find({ poster: { $in: followingArray }});
       query.populate("poster", "_id name surname username profile_pic_url");
+      query.populate({
+        path: "reactions",
+        populate: {
+          path: "user"
+        }
+      });
+      query.populate({
+        path: "comments",
+        populate: {
+          path: "user"
+        }
+      });
       query.limit(perPage);
       query.skip(perPage * (page - 1));
       query.sort({time: -1});
