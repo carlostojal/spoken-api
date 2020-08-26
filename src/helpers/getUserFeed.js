@@ -2,6 +2,7 @@ const { AuthenticationError } = require("apollo-server");
 const User = require("../models/User");
 const Post = require("../models/Post");
 const mediaIdToUrl = require("./mediaIdToUrl");
+const userReacted = require("./userReacted");
 
 const getUserFeed = (page, perPage, context) => {
   return new Promise((resolve, reject) => {
@@ -53,6 +54,7 @@ const getUserFeed = (page, perPage, context) => {
           if(post.media) {
             post.media_url = mediaIdToUrl(post.media);
           }
+          post.user_reacted = userReacted(user, post);
         })
         resolve(posts);
       });

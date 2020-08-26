@@ -36,7 +36,7 @@ const typeDefs = gql`
     text: String,
     media_url: String,
     edited: Boolean,
-    reactions: [Reaction],
+    user_reacted: Boolean,
     comments: [Comment]
   }
 
@@ -44,11 +44,6 @@ const typeDefs = gql`
     user: User,
     follows: User,
     accepted: Boolean
-  }
-
-  type Reaction {
-    time: String,
-    user: User
   }
 
   type Comment {
