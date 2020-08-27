@@ -1,7 +1,8 @@
+const { AuthenticationError } = require("apollo-server");
 const Post = require("../models/Post");
 const PostReaction = require("../models/PostReaction");
 const userHasViewPermission = require("./userHasViewPermission");
-const { AuthenticationError } = require("apollo-server");
+const mediaIdToUrl = require("./mediaIdToUrl");
 
 const reactPost = (post_id, user) => {
   return new Promise((resolve, reject) => {
@@ -10,12 +11,21 @@ const reactPost = (post_id, user) => {
       return reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
     // find and populate post from ID
-    Post.findById(post_id).populate({
-      path: "poster",
+    const query = Post.findById(post_id);
+    query.populate("poster", "_id name surname username profile_pic_url");
+    query.populate({
+      path: "reactions",
       populate: {
-        path: "followers"
+        path: "user"
       }
-    }).populate("reactions").exec((err, post) => {
+    });
+    query.populate({
+      path: "comments",
+      populate: {
+        path: "user"
+      }
+    });
+    query.exec((err, post) => {
 
       if (err) return reject(new Error("ERROR_FINDING_POST"));
 
@@ -68,6 +78,9 @@ const reactPost = (post_id, user) => {
           await post.save();
           console.log("Post reaction state update.");
           post.user_reacted = reaction ? false : true;
+          // post has media
+          if(post.media)
+            post.media_url = mediaIdToUrl(post.media);
           return resolve(post);
         } catch(e) {
           console.log(e);

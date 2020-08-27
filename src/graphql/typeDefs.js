@@ -47,6 +47,7 @@ const typeDefs = gql`
   }
 
   type Comment {
+    id: String,
     time: String,
     user: User,
     text: String
