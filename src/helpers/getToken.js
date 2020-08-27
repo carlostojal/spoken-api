@@ -5,7 +5,10 @@ const createToken = require("./createToken");
 const getToken = (username, password, context) => {
   return new Promise((resolve, reject) => {
     User.findOne({
-      username: username,
+      $or: [
+        {username: username},
+        {email: username}
+      ]
     }).then((user) => {
       if(user) { // user exists
 
