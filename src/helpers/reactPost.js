@@ -12,7 +12,12 @@ const reactPost = (post_id, user) => {
 
     // find and populate post from ID
     const query = Post.findById(post_id);
-    query.populate("poster", "_id name surname username profile_pic_url");
+    query.populate({
+      path: "poster", 
+      populate: {
+        path: "followers"
+      }
+    });
     query.populate({
       path: "reactions",
       populate: {
