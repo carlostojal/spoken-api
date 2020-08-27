@@ -53,7 +53,17 @@ const commentPost = (post_id, user, text) => {
           if(post.media)
             post.media_url = mediaIdToUrl(post.media);
           post.user_reacted = userReacted(user, post);
-          return resolve(post);
+          Post.populate(post, {
+            path: "comments",
+            populate: {
+              path: "user"
+            }
+          }, (err, post) => {
+
+            if (err) return reject(new Error("ERROR_REFRESHING_COMMENTS"));
+            
+            return resolve(post);
+          });
         }).catch((e) => {
           console.log(e);
           return reject(new Error("ERROR_REGISTERING_COMMENT"));
