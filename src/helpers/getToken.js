@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const User = require("../models/User");
 const createToken = require("./createToken");
 
-const getToken = (username, password, context) => {
+const getToken = (username, password) => {
   return new Promise((resolve, reject) => {
     User.findOne({
       $or: [
@@ -10,50 +10,46 @@ const getToken = (username, password, context) => {
         {email: username}
       ]
     }).then((user) => {
-      if(user) { // user exists
 
-        if(user.email_confirmed) { // user confirmed the email, so can login
+      if(!user)
+        return reject(new Error("USER_NOT_EXISTENT"));
 
-          bcrypt.compare(password, user.password, (err, compareSuccess) => {
-            if (err) reject(err);
+      if(!user.email_confirmed) 
+        return reject(new Error("EMAIL_NOT_CONFIRMED"));
 
-            if(compareSuccess) { // correct password
-              // create tokens with specified duration and user id
-              const refresh_token = createToken(user._id, "refresh");
-              const access_token = createToken(user._id, "access");
+      bcrypt.compare(password, user.password, (err, compareSuccess) => { // compare the provided password with the user one
+        
+        if (err) return reject(new Error("AUTHENTICATION_ERROR"));
 
-              // remove expired refresh tokens
-              user.refresh_tokens = user.refresh_tokens.filter((refresh_token) => refresh_token.expiry > Date.now());
+        if(!compareSuccess) return reject(new Error("WRONG_PASSWORD"));
 
-              // remove expired access tokens
-              user.access_tokens = user.access_tokens.filter((access_token) => access_token.expiry > Date.now());
+        // create tokens with specified duration and user id
+        const refresh_token = createToken(user._id, "refresh");
+        const access_token = createToken(user._id, "access");
 
-              user.refresh_tokens.push(refresh_token);
-              user.access_tokens.push(access_token);
+        // remove expired refresh tokens
+        user.refresh_tokens = user.refresh_tokens.filter((refresh_token) => refresh_token.expiry > Date.now());
 
-              user.save().then((res) => {
-                // send refresh token as httpOnly cookie
-                context.res.cookie("refresh_token", refresh_token.value, {
-                  expires: new Date(refresh_token.expiry),
-                  httpOnly: true
-                });
-                console.log("User got tokens.");
-                resolve(access_token.value); // send access token as query response
-              }).catch((error) => {
-                reject(error);
-              });
-            } else { // user exists but password is not correct
-              reject(new Error("Wrong password."));
-            }
-          });
-        } else {
-          reject(new Error("Email not confirmed."));
-        }
-      } else {
-        reject(new Error("User not existent."));
-      }
+        // remove expired access tokens
+        user.access_tokens = user.access_tokens.filter((access_token) => access_token.expiry > Date.now());
+
+        // add the new tokens
+        user.refresh_tokens.push(refresh_token);
+        user.access_tokens.push(access_token);
+
+        // update the user in the database
+        user.save().then(() => {
+          console.log("User got tokens.");
+          resolve({ access_token, refresh_token }); // return tokens to resolvers
+        }).catch((error) => {
+          console.log(error);
+          return reject(new Error("ERROR_UPDATING_USER"));
+        });
+
+      });
     }).catch((error) => {
-      reject(error);
+      console.log(error);
+      return reject(new Error("ERROR_GETTING_USER"));
     });
   });
 }
