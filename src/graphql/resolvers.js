@@ -38,8 +38,11 @@ const resolvers = {
 
     // provide new access token from refresh token
     refreshToken: async (parent, args, context, info) => {
+      // get refresh token from cookies
       const refresh_token = getCookieByName("refresh_token", context.req.headers.cookie);
+      // get new tokens from refresh token
       const tokens = await refreshToken(refresh_token);
+      // send new refresh token through cookies
       context.res.cookie("refresh_token", tokens.refresh_token.value, {
         expires: new Date(tokens.refresh_token.expiry),
         httpOnly: true
@@ -49,7 +52,7 @@ const resolvers = {
 
     // get user data from ID or for the current user
     getUserData: (parent, args, context, info) => {
-      return getUserData(args.id, context);
+      return getUserData(args.id, context, context.user);
     },
 
     // get user feed posts
