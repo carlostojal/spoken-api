@@ -39,7 +39,6 @@ const logout = (refresh_token, access_token, user) => {
     user.access_tokens.filter((token) => token.value != access_token);
 
     user.save().then((user) => {
-      // clean refresh token from cookies
       return resolve(user);
     }).catch((error) => {
       console.log(error);

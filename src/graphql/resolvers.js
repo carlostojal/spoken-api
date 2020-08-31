@@ -37,9 +37,14 @@ const resolvers = {
     },
 
     // provide new access token from refresh token
-    refreshToken: (parent, args, context, info) => {
+    refreshToken: async (parent, args, context, info) => {
       const refresh_token = getCookieByName("refresh_token", context.req.headers.cookie);
-      return refreshToken(refresh_token, context.res);
+      const tokens = await refreshToken(refresh_token);
+      context.res.cookie("refresh_token", tokens.refresh_token.value, {
+        expires: new Date(tokens.refresh_token.expiry),
+        httpOnly: true
+      });
+      return tokens.access_token.value;
     },
 
     // get user data from ID or for the current user
