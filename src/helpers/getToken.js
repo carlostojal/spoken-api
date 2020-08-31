@@ -15,8 +15,14 @@ const createToken = require("./createToken");
 *   String: password
 *
 * Return Value:
-*   Promise: User resulting access token and refresh token and respective 
-*   expiration dates in epoch time.
+*   Promise: 
+*     Object: tokens
+*       Object: access_token
+*         String: value
+*         Number: expiry
+*       Object: refresh_token
+*         String: value
+*         Number: expiry
 *
 * Description:
 *   This function receives user credentials and generates a new access
