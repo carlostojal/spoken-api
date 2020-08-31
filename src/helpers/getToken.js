@@ -2,6 +2,29 @@ const bcrypt = require("bcrypt");
 const User = require("../models/User");
 const createToken = require("./createToken");
 
+/*
+*
+* Promise getToken(username, password)
+*
+* Summary:
+*   The getToken function receives the user username/email and password
+*   and returns a promise with the resulting tokens.
+*
+* Parameters:
+*   String: username or email
+*   String: password
+*
+* Return Value:
+*   Promise: User resulting access token and refresh token and respective 
+*   expiration dates in epoch time.
+*
+* Description:
+*   This function receives user credentials and generates a new access
+*   and refresh token that are resolved in a promise.
+*   If not successfull an error is returned.
+*   
+*/
+
 const getToken = (username, password) => {
   return new Promise((resolve, reject) => {
     User.findOne({
