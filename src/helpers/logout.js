@@ -1,36 +1,49 @@
-const User = require("../models/User")
+const { AuthenticationError } = require("apollo-server");
 
-const logout = (refresh_token, access_token, res) => {
+/*
+*
+* Promise logout(refresh_token, access_token, user)
+*
+* Summary:
+*   The logout function receives the current access token and refresh token
+*   and removes them from the database. Also receives the user object to 
+*   perform the needed updates in the database. Returns the logged out
+*   user.
+*
+* Parameters:
+*   String: refresh_token
+*   String: access_token
+*   Object: user
+*
+* Return Value:
+*   Promise: 
+*     Object: user
+*
+* Description:
+*   This function receives the current tokens and removes them from the 
+*   user model. Also resets the refresh token cookie in browser.
+*   Returns the logged out user.
+*   
+*/
+
+const logout = (refresh_token, access_token, user) => {
+
   return new Promise((resolve, reject) => {
-    User.findOne({ "refresh_tokens.value": refresh_token }).then((user) => {
 
-      // remove refresh token
-      for(let i = 0; i < user.refresh_tokens.length; i++) {
-        if(user.refresh_tokens[i].value == refresh_token) {
-          user.refresh_tokens.splice(i, 1);
-          i--;
-          break;
-        }
-      }
+    if (!user) return reject(new AuthenticationError("USER_NOT_AUTHENTICATED"));
 
-      // remove access token
-      for(let i = 0; i < user.access_tokens.length; i++) {
-        if(user.access_tokens[i].value == access_token) {
-          user.refresh_tokens.splice(i, 1);
-          i--;
-          break;
-        }
-      }
+    // remove refresh token
+    user.refresh_tokens.filter((token) => token.value != refresh_token);
 
-      user.save().then((user) => {
-        // clean refresh token from cookies
-        res.cookie("refresh_token", null);
-        return resolve(user);
-      }).catch((error) => {
-        return reject(error);
-      })
+    // remove access token
+    user.access_tokens.filter((token) => token.value != access_token);
+
+    user.save().then((user) => {
+      // clean refresh token from cookies
+      return resolve(user);
     }).catch((error) => {
-      return reject(error);
+      console.log(error);
+      return reject(new Error("ERROR_SAVING_USER"));
     });
   });
 };

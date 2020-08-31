@@ -32,7 +32,8 @@ const resolvers = {
     logout: (parent, args, context, info) => {
       const refresh_token = getCookieByName("refresh_token", context.req.headers.cookie);
       const access_token = context.req.headers.authorization;
-      return logout(refresh_token, access_token, context.res);
+      context.res.cookie("refresh_token", null);
+      return logout(refresh_token, access_token, context.user);
     },
 
     // provide new access token from refresh token
