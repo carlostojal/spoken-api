@@ -12,7 +12,7 @@ const sendConfirmationEmail = (user) => {
     }
 
     transport.sendMail(mailOptions, (err, info) => {
-      if (err) reject(err);
+      if (err) return reject(err);
 
       resolve(info);
     });

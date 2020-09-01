@@ -29,17 +29,23 @@ const sendConfirmationEmail = require("./sendConfirmationEmail");
 *   This function takes user data, encrypts the provided password,
 *   checks for duplicated key values and then sends a confirmation 
 *   email.
-*   After this the registered user array is returned.
+*   After this the registered user object is returned.
 *   
 */
 
 const registerUser = (name, surname, birthdate, email, username, password, profile_type, profile_privacy_type) => {
   return new Promise((resolve, reject) => {
     bcrypt.genSalt(parseInt(process.env.HASH_SALT_ROUNDS), (err, salt) => {
-      if (err) console.error(err), reject(new Error("ERROR_HASHING_PASSWORD"));
+      if (err) {
+        console.error(err);
+        return reject(new Error("ERROR_HASHING_PASSWORD"));
+      }
 
       bcrypt.hash(password, salt, (err, hash_password) => {
-        if (err) console.error(err), reject(new Error("ERROR_HASHING_PASSWORD"));
+        if (err) {
+          console.error(err);
+          return reject(new Error("ERROR_HASHING_PASSWORD"));
+        }
 
         const user = new User({
           access_token: {
