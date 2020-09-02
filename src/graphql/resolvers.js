@@ -79,7 +79,7 @@ const resolvers = {
 
     // starts following user
     followUser: (parent, args, context, info) => {
-      return followUser(args.id, context);
+      return followUser(args.id, context.user);
     },
 
     // stops following user
