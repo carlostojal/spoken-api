@@ -12,4 +12,8 @@ client.on("error", (error) => {
   console.error(error);
 });
 
+client.flushall((error, success) => {
+  if (error) console.error(error);
+});
+
 module.exports = client;

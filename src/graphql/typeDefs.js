@@ -13,7 +13,7 @@ const typeDefs = gql`
   }
 
   type User {
-    id: ID,
+    _id: ID,
     name: String,
     surname: String,
     birthdate: String,
@@ -30,7 +30,7 @@ const typeDefs = gql`
   }
 
   type Post {
-    id: ID,
+    _id: ID,
     poster: User,
     time: String,
     text: String,
@@ -47,7 +47,7 @@ const typeDefs = gql`
   }
 
   type Comment {
-    id: String,
+    _id: ID,
     time: String,
     user: User,
     text: String

@@ -28,39 +28,28 @@ const mediaIdToUrl = require("./mediaIdToUrl");
 *   
 */
 
-const getUserData = (id, user) => {
+const getUserData = (id, user, redisClient) => {
   return new Promise((resolve, reject) => {
 
-    // filter to check if the follow request was accepted
-    const checkRelation = (relation) => {
-      return relation.accepted;
-    }
-
     // function to remove private user data and return
-    const clearAndReturnUser = (user) => {
+    const clearAndReturnUser = (resUser) => {
+
       // get profile pic url from media ID
-      if(user.profile_pic_media)
-          user.profile_pic_url = mediaIdToUrl(user.profile_pic_media);
+      if(resUser.profile_pic_media)
+          resUser.profile_pic_url = mediaIdToUrl(resUser.profile_pic_media);
 
-      // only count the accepted relations
-      user.following.filter(checkRelation);
-      user.followers.filter(checkRelation);
-
+      /*
       // get number of relations
       user.n_following = user.following.length;
-      user.n_followers = user.followers.length;
-
-      // clear for privacy and optimization reasons
-      user.following = null;
-      user.followers = null;
+      user.n_followers = user.followers.length;*/
 
       // remove email for privacy reasons
-      user.email = null;
+      if(id && user._id.toString() != id)
+        resUser.email = null;
 
-      console.log("Get user data.");
-
-      return resolve(user);
+      return resolve(resUser);
     }
+
 
     if(!user) return reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
@@ -70,17 +59,40 @@ const getUserData = (id, user) => {
         return clearAndReturnUser(user);
       }
 
-      const query = User.findOne({ _id: id });
-      query.populate("following");
-      query.populate("followers");
-      query.exec((err, query_user) => {
-        
-        if (err) return reject(new Error("ERROR_GETTING_USER"));
+      // try to get from cache
+      redisClient.get(`userdata-${id}`, (error, result) => {
 
-        if (!query_user) return reject(new Error("USER_NOT_EXISTENT"));
+        if (error) {
+          console.error(error);
+          return reject(new Error("ERROR_ACCESSING_CACHE"));
+        }
 
-        return clearAndReturnUser(query_user);
-      });      
+        if(result) {
+          console.log("Get user data from cache.");
+          return clearAndReturnUser(JSON.parse(result));
+        }
+
+        const query = User.findOne({ _id: id });
+        query.exec((err, query_user) => {
+          
+          if (err) return reject(new Error("ERROR_GETTING_USER"));
+
+          if (!query_user) return reject(new Error("USER_NOT_EXISTENT"));
+
+          // save the data got to cache
+          redisClient.set(`userdata-${query_user._id}`, JSON.stringify(query_user), "EX", 1200, (error, result) => {
+
+            if(error)
+              console.error(error);
+
+          });
+
+          console.log("Get user data from DB.");
+
+          return clearAndReturnUser(query_user);
+        });
+      });
+
     } else { // the user is querying his own data
       return clearAndReturnUser(user);
     }

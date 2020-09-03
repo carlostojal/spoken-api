@@ -51,7 +51,7 @@ const resolvers = {
 
     // get user data from ID or for the current user
     getUserData: (parent, args, context, info) => {
-      return getUserData(args.id, context.user);
+      return getUserData(args.id, context.user, context.redisClient);
     },
 
     // get user feed posts
