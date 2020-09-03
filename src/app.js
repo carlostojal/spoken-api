@@ -4,6 +4,7 @@ require("./config/mongoose");
 require("./config/express");
 const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers");
+const redisClient = require("./config/redis");
 const getUserByToken = require("./helpers/getUserByToken");
 
 // apollo server startup
@@ -26,7 +27,7 @@ const server = new ApolloServer({
     if(token)
       user = await getUserByToken(token);
 
-    return { req, res, user };
+    return { req, res, user, redisClient };
   }
 });
 
