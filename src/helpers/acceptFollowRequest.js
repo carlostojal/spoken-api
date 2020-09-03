@@ -1,22 +1,42 @@
 const { AuthenticationError } = require("apollo-server");
 const FollowRelation = require("../models/FollowRelation");
 
-const acceptFollowRequest = (user_id, context) => {
+/*
+*
+* Promise acceptFollowRequest(user_id, user)
+*
+* Summary:
+*   The acceptFollowRequest function accepts the 
+*   follow request from the user with the provided ID.
+*
+* Parameters:
+*   String: user_id
+*   Object: user
+*
+* Return Value:
+*   Promise: 
+*     Object: user
+*
+* Description:
+*   This function takes the user ID of the user following
+*   the session user.
+*   After this the accepted user object is returned.
+*   
+*/
+
+const acceptFollowRequest = (user_id, user) => {
   return new Promise((resolve, reject) => {
 
-    if(!context.user)
-      reject(new AuthenticationError("BAD_AUTHENTICATION"));
+    if(!user)
+      return reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
-    if(!user_id)
-      reject(new Error("NO_USER_ID"));
-
-    const query = FollowRelation.findOne({ user: user_id, follows: context.user._id });
+    const query = FollowRelation.findOne({ user: user_id, follows: user._id });
     query.populate("user");
     query.exec((error, relation) => {
 
       if(error) {
-        console.log(error);
-        reject(new Error("ERROR_FINDING_RELATION"));
+        console.error(error);
+        return reject(new Error("ERROR_FINDING_RELATION"));
       }
       
       if(!relation)
@@ -25,11 +45,16 @@ const acceptFollowRequest = (user_id, context) => {
       relation.accepted = true;
 
       relation.save().then(() => {
-        console.log("Follow request accepted.");
-        resolve(relation.user);
+        FollowRelation.populate(relation, "user").then((relation) => {
+          console.log(`${user.username} accepted ${relation.user.username} follow request.`);
+          return resolve(relation.user);
+        }).catch((error) => {
+          console.error(error);
+          return reject(new Error("ERROR_GETTING_USER"));
+        });
       }).catch((error) => {
-        console.log(error);
-        reject(new Error("ERROR_SAVING_RELATION"));
+        console.error(error);
+        return reject(new Error("ERROR_SAVING_RELATION"));
       });
     });
   });

@@ -8,7 +8,6 @@ const registerUser = require("../helpers/registerUser");
 const editUser = require("../helpers/editUser");
 const createPost = require("../helpers/createPost");
 const followUser = require("../helpers/followUser");
-const unfollowUser = require("../helpers/unfollowUser");
 const acceptFollowRequest = require("../helpers/acceptFollowRequest");
 const deletePost = require("../helpers/deletePost");
 const editPost = require("../helpers/editPost");
@@ -82,14 +81,9 @@ const resolvers = {
       return followUser(args.id, context.user);
     },
 
-    // stops following user
-    unfollowUser: (parent, args, context, info) => {
-      return unfollowUser(args.id, context);
-    },
-
     // accepts follow request from user ID
     acceptFollowRequest: (parent, args, context, info) => {
-      return acceptFollowRequest(args.user_id, context);
+      return acceptFollowRequest(args.user_id, context.user);
     },
 
     // deletes post from post ID
