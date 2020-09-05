@@ -12,8 +12,11 @@ client.on("error", (error) => {
   console.error(error);
 });
 
-client.flushall((error, success) => {
-  if (error) console.error(error);
-});
+if(process.env.CLEAR_CACHE_ON_STARTUP == "true") {
+  console.log("Cache cleared.");
+  client.flushall((error, success) => {
+    if (error) console.error(error);
+  });
+}
 
 module.exports = client;

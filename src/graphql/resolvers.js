@@ -56,7 +56,7 @@ const resolvers = {
 
     // get user feed posts
     getUserFeed: (parent, args, context, info) => {
-      return getUserFeed(args.page, args.perPage, context.user);
+      return getUserFeed(args.page, args.perPage, context.user, context.redisClient);
     }
   },
 

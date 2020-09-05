@@ -60,7 +60,7 @@ const getUserData = (id, user, redisClient) => {
       }
 
       // try to get from cache
-      redisClient.get(`userdata-${id}`, (error, result) => {
+      redisClient.get(`userdata-uid-${id}`, (error, result) => {
 
         if (error) {
           console.error(error);
@@ -80,7 +80,7 @@ const getUserData = (id, user, redisClient) => {
           if (!query_user) return reject(new Error("USER_NOT_EXISTENT"));
 
           // save the data got to cache
-          redisClient.set(`userdata-${query_user._id}`, JSON.stringify(query_user), "EX", 1200, (error, result) => {
+          redisClient.set(`userdata-uid-${query_user._id}`, JSON.stringify(query_user), "EX", process.env.USER_DATA_CACHE_DURATION, (error, result) => {
 
             if(error)
               console.error(error);

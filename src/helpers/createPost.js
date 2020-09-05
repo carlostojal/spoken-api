@@ -47,20 +47,14 @@ const createPost = (text, media_id, user) => {
 
     post.save().then((post) => { // save post
       Post.populate(post, "poster").then((post) => {
-        user.posts.push(post._id); // add post ID to user posts array
-        user.save().then((user) => {
-          console.log(`${user.username} created post.`);
-          return resolve(post);
-        }).catch((e) => {
-          console.error(e);
-          return reject(new Error("ERROR_UPDATING_USER"));
-        })
+        console.log(`${user.username} created post.`);
+        return resolve(post);
       }).catch((e) => {
         console.error(e);
         return reject(new Error("ERROR_GETTING_POST"));
       });
     }).catch((err) => {
-      console.error(e);
+      console.error(err);
       return reject(new Error("ERROR_SAVING_POST"));
     });
   });
