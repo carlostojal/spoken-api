@@ -3,6 +3,7 @@ const FollowRelation = require("../models/FollowRelation");
 const Post = require("../models/Post");
 const mediaIdToUrl = require("./mediaIdToUrl");
 const userReacted = require("./userReacted");
+const cacheIfExists = require("./cacheIfExists");
 
 /*
 *
@@ -35,7 +36,7 @@ const getUserFeed = (page, perPage, user, redisClient) => {
     if(!user)
       return reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
-    // try to get 
+    // try to get from cache
     redisClient.hmget(`feed-uid-${user._id}`, `page-${page}`, (error, result) => {
 
       if(error) {
@@ -48,6 +49,7 @@ const getUserFeed = (page, perPage, user, redisClient) => {
         return resolve(JSON.parse(result));
       }
 
+      // not in cache. get from DB
       FollowRelation.find({ user: user._id }).then((relations) => {
         // get the user following IDs
         let followingArray = [];
@@ -87,32 +89,10 @@ const getUserFeed = (page, perPage, user, redisClient) => {
 
           }
 
-          // check if some page was got recently (is still in cache)
-          redisClient.exists(`feed-uid-${user._id}`, (error, exists) => {
-
-            if(error) {
-              console.error(error);
-              return reject(new Error("ERROR_CHECKING_CACHE"));
-            }
-
-            redisClient.hmset(`feed-uid-${user._id}`, `page-${page}`, JSON.stringify(posts), (error, result) => {
-  
-              if(error) {
-                console.error(error);
-                return reject(new Error("ERROR_WRITING_CACHE"));
-              }
-
-              // did not exist in cache, so set timeout from now
-              if(!exists) {
-                redisClient.expire(`feed-uid-${user._id}`, process.env.USER_FEED_CACHE_DURATION, (error, result) => {
-                  
-                  if(error) {
-                    console.error(error);
-                    return reject(new Error("ERROR_UPDATING_CACHE"));
-                  }
-                });
-              }
-            });
+          cacheIfExists(`feed-uid-${user._id}`, `page-${page}`, JSON.stringify(posts), process.env.USER_FEED_CACHE_DURATION, redisClient).then(() => {
+            console.log("Feed set to cache.");
+          }).catch((error) => {
+            return reject(error);
           });
 
           console.log(`${user.username} got feed from DB.`);
