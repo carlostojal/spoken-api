@@ -3,7 +3,7 @@ const FollowRelation = require("../models/FollowRelation");
 const Post = require("../models/Post");
 const mediaIdToUrl = require("./mediaIdToUrl");
 const userReacted = require("./userReacted");
-const cacheIfExists = require("./cacheIfExists");
+const cache = require("./cache");
 
 /*
 *
@@ -89,7 +89,7 @@ const getUserFeed = (page, perPage, user, redisClient) => {
 
           }
 
-          cacheIfExists(`feed-uid-${user._id}`, `page-${page}`, JSON.stringify(posts), process.env.USER_FEED_CACHE_DURATION, redisClient).then(() => {
+          cache(`feed-uid-${user._id}`, `page-${page}`, JSON.stringify(posts), process.env.USER_FEED_CACHE_DURATION, true, false, redisClient).then(() => {
             console.log("Feed set to cache.");
           }).catch((error) => {
             return reject(error);

@@ -1,6 +1,7 @@
 const { AuthenticationError } = require("apollo-server");
 const User = require("../models/User");
 const mediaIdToUrl = require("./mediaIdToUrl");
+const cache = require("./cache");
 
 /*
 *
@@ -56,6 +57,7 @@ const getUserData = (id, user, redisClient) => {
     if(id) { // the user is querying an user from ID
 
       if(id == user._id) { // the requested ID is the session user ID
+        console.log("User got his own data.");
         return clearAndReturnUser(user);
       }
 
@@ -80,11 +82,10 @@ const getUserData = (id, user, redisClient) => {
           if (!query_user) return reject(new Error("USER_NOT_EXISTENT"));
 
           // save the data got to cache
-          redisClient.set(`userdata-uid-${query_user._id}`, JSON.stringify(query_user), "EX", process.env.USER_DATA_CACHE_DURATION, (error, result) => {
-
-            if(error)
-              console.error(error);
-
+          cache(`userdata-uid-${query_user._id}`, null, JSON.stringify(query_user), process.env.USER_DATA_CACHE_DURATION, true, false, redisClient).then(() => {
+            console.log("User data saved to cache.");
+          }).catch((e) => {
+            console.log(e);
           });
 
           console.log("Get user data from DB.");
@@ -94,6 +95,7 @@ const getUserData = (id, user, redisClient) => {
       });
 
     } else { // the user is querying his own data
+      console.log("User got his own data.");
       return clearAndReturnUser(user);
     }
   });
