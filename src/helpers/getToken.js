@@ -1,6 +1,8 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
+const Token = require("../models/Token");
 const createToken = require("./createToken");
+const cache = require("./cache");
 
 /*
 *
@@ -31,7 +33,7 @@ const createToken = require("./createToken");
 *   
 */
 
-const getToken = (username, password) => {
+const getToken = (username, password, redisClient) => {
   return new Promise((resolve, reject) => {
     User.findOne({
       $or: [
@@ -56,23 +58,26 @@ const getToken = (username, password) => {
         const refresh_token = createToken(user._id, "refresh");
         const access_token = createToken(user._id, "access");
 
-        // remove expired refresh tokens
-        user.refresh_tokens = user.refresh_tokens.filter((refresh_token) => refresh_token.expiry > Date.now());
+        cache("access-tokens", access_token.value, JSON.stringify(user), process.env.ACCESS_TOKEN_DURATION * 60, true, false, redisClient).then(() => {
+          console.log("Token saved in cache.");
+        }).catch((e) => {
+          console.error(e);
+          return reject(new Error("ERROR_SAVING_TO_CACHE"));
+        });
 
-        // remove expired access tokens
-        user.access_tokens = user.access_tokens.filter((access_token) => access_token.expiry > Date.now());
+        const access = new Token({...access_token});
+        const refresh = new Token({...refresh_token});
 
-        // add the new tokens
-        user.refresh_tokens.push(refresh_token);
-        user.access_tokens.push(access_token);
-
-        // update the user in the database
-        user.save().then(() => {
-          console.log("User got tokens.");
-          resolve({ access_token, refresh_token }); // return tokens to resolvers
-        }).catch((error) => {
-          console.log(error);
-          return reject(new Error("ERROR_UPDATING_USER"));
+        access.save().then((access) => {
+          refresh.save().then((refresh) => {
+            return resolve({ access_token, refresh_token });
+          }).catch((e) => {
+            console.error(e);
+            return reject(new Error("ERROR_SAVING_REFRESH_TOKEN"));
+          });
+        }).catch((e) => {
+          console.error(e);
+          return reject(new Error("ERROR_SAVING_ACCESS_TOKEN"));
         });
 
       });

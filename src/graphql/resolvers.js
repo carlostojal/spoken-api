@@ -18,7 +18,7 @@ const resolvers = {
   Query: {
     // get user tokens from username and password
     getToken: async (parent, args, context, info) => {
-      const tokens = await getToken(args.username, args.password);
+      const tokens = await getToken(args.username, args.password, context.redisClient);
       // send refresh token as httpOnly cookie
       context.res.cookie("refresh_token", tokens.refresh_token.value, {
         expires: new Date(tokens.refresh_token.expiry),

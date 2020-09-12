@@ -1,13 +1,14 @@
-const User = require("../models/User");
+const Token = require("../models/Token");
+const getFromCache = require("./getFromCache");
 
-const getUserByToken = (token) => {
+const getUserByToken = (token, redisClient) => {
   return new Promise((resolve, reject) => {
-    User.findOne({ "email_confirmed": true,"access_tokens.value": token, "access_tokens.expiry": { $gt: Date.now() } }).then((result) => {
-      if(result)
-        return resolve(result);
-      return resolve(null);
-    }).catch((err) => {
-      return reject(err);
+
+    getFromCache("access-tokens", token, redisClient).then((user) => {
+      return resolve(user[0] ? JSON.parse(user[0]) : null);
+    }).catch((e) => {
+      console.log(e);
+      return reject(new Error("ERROR_GETTING_USER"));
     });
   });
 }

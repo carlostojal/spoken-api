@@ -54,50 +54,41 @@ const getUserData = (id, user, redisClient) => {
 
     if(!user) return reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
-    if(id) { // the user is querying an user from ID
+    if(!id)
+      id = user._id;          
 
-      if(id == user._id) { // the requested ID is the session user ID
-        console.log("User got his own data.");
-        return clearAndReturnUser(user);
+    // try to get from cache
+    redisClient.get(`userdata-uid-${id}`, (error, result) => {
+
+      if (error) {
+        console.error(error);
+        return reject(new Error("ERROR_ACCESSING_CACHE"));
       }
 
-      // try to get from cache
-      redisClient.get(`userdata-uid-${id}`, (error, result) => {
+      if(result) {
+        console.log("Get user data from cache.");
+        return clearAndReturnUser(JSON.parse(result));
+      }
 
-        if (error) {
-          console.error(error);
-          return reject(new Error("ERROR_ACCESSING_CACHE"));
-        }
+      const query = User.findOne({ _id: id });
+      query.exec((err, query_user) => {
+        
+        if (err) return reject(new Error("ERROR_GETTING_USER"));
 
-        if(result) {
-          console.log("Get user data from cache.");
-          return clearAndReturnUser(JSON.parse(result));
-        }
+        if (!query_user) return reject(new Error("USER_NOT_EXISTENT"));
 
-        const query = User.findOne({ _id: id });
-        query.exec((err, query_user) => {
-          
-          if (err) return reject(new Error("ERROR_GETTING_USER"));
-
-          if (!query_user) return reject(new Error("USER_NOT_EXISTENT"));
-
-          // save the data got to cache
-          cache(`userdata-uid-${query_user._id}`, null, JSON.stringify(query_user), process.env.USER_DATA_CACHE_DURATION, true, false, redisClient).then(() => {
-            console.log("User data saved to cache.");
-          }).catch((e) => {
-            console.log(e);
-          });
-
-          console.log("Get user data from DB.");
-
-          return clearAndReturnUser(query_user);
+        // save the data got to cache
+        cache(`userdata-uid-${query_user._id}`, null, JSON.stringify(query_user), process.env.USER_DATA_CACHE_DURATION, true, false, redisClient).then(() => {
+          console.log("User data saved to cache.");
+        }).catch((e) => {
+          console.log(e);
         });
-      });
 
-    } else { // the user is querying his own data
-      console.log("User got his own data.");
-      return clearAndReturnUser(user);
-    }
+        console.log("Get user data from DB.");
+
+        return clearAndReturnUser(query_user);
+      });
+    });
   });
 }
 

@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const { AuthenticationError } = require("apollo-server");
+const User = require("../models/User");
 const sendConfirmationEmail = require("./sendConfirmationEmail");
 const cache = require("./cache");
 
@@ -54,50 +55,56 @@ const editUser = (name, surname, email, username, password, profile_pic_media_id
           return reject(new Error("ERROR_HASHING_PASSWORD"));
         }
 
-        if(user.email != email) { // the email was updated
-          user.email_confirmed = false;
-          user.confirmation_code = Math.floor(Math.random() * 1000) // generate random confirmation code in range 0-999
-        }
+        User.findById(user._id).then((user) => {
 
-        // update profile with the provided data
-        user.name = name;
-        user.surname = surname;
-        user.email = email;
-        user.username = username;
-        user.password = hash_password;
-        user.profile_pic_media_id = profile_pic_media_id;
-        user.profile_type = profile_type;
-        user.profile_privacy_type = profile_privacy_type;
-
-        // save to database
-        user.save().then(async (result) => {
-          if(!result.email_confirmed) { // should send confirmation email
+          if(user.email != email) { // the email was updated
+            user.email_confirmed = false;
+            user.confirmation_code = Math.floor(Math.random() * 1000) // generate random confirmation code in range 0-999
+          }
+  
+          // update profile with the provided data
+          user.name = name;
+          user.surname = surname;
+          user.email = email;
+          user.username = username;
+          user.password = hash_password;
+          user.profile_pic_media_id = profile_pic_media_id;
+          user.profile_type = profile_type;
+          user.profile_privacy_type = profile_privacy_type;
+  
+          // save to database
+          user.save().then(async (result) => {
+            if(!result.email_confirmed) { // should send confirmation email
+              try {
+                await sendConfirmationEmail(user);
+              } catch(err) {
+                console.error(err);
+                return reject(new Error("ERROR_SENDING_CONFIRMATION_EMAIL"));
+              }
+            }
+            // if the user profile was already in cache, update also the cache to avoid DB access in the next user data request
             try {
-              await sendConfirmationEmail(user);
+              await cache(`userdata-uid-${result._id}`, null, JSON.stringify(result), process.env.USER_DATA_CACHE_DURATION, false, true, redisClient);
             } catch(err) {
               console.error(err);
-              return reject(new Error("ERROR_SENDING_CONFIRMATION_EMAIL"));
+              return reject(err);
             }
-          }
-          // if the user profile was already in cache, update also the cache to avoid DB access in the next user data request
-          try {
-            await cache(`userdata-uid-${result._id}`, null, JSON.stringify(result), process.env.USER_DATA_CACHE_DURATION, false, true, redisClient);
-          } catch(err) {
+            console.log(`User ${user.username} updated data.`);
+            return resolve(result);
+          }).catch((err) => {
             console.error(err);
-            return reject(err);
-          }
-          console.log(`User ${user.username} updated data.`);
-          return resolve(result);
-        }).catch((err) => {
-          console.error(err);
-          let error = new Error("ERROR_SAVING_USER");
-          if(err.code == 11000) { // duplicate key error
-            if(err.keyValue.username) // duplicate username
-              error = new Error("USERNAME_ALREADY_TAKEN");
-            else if(err.keyValue.email) // duplicate email
-              error = new Error("EMAIL_ALREADY_TAKEN");
-          }
-          return reject(error);
+            let error = new Error("ERROR_SAVING_USER");
+            if(err.code == 11000) { // duplicate key error
+              if(err.keyValue.username) // duplicate username
+                error = new Error("USERNAME_ALREADY_TAKEN");
+              else if(err.keyValue.email) // duplicate email
+                error = new Error("EMAIL_ALREADY_TAKEN");
+            }
+            return reject(error);
+          });
+        }).catch((e) => {
+          console.error(e);
+          return reject(new Error("ERROR_GETTING_USER"));
         });
       });
     });

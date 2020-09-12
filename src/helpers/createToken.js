@@ -16,7 +16,7 @@ const createToken = (uid, type = "access") => {
     }
   }, process.env.TOKEN_SECRET);
 
-  return { value: token, expiry: expiry };
+  return { user: uid, value: token, createdAt: Date.now(), expiresAt: expiry, type };
 }
 
 module.exports = createToken;
