@@ -48,7 +48,7 @@ const getToken = (username, password, redisClient) => {
       if(!user.email_confirmed) 
         return reject(new Error("EMAIL_NOT_CONFIRMED"));
 
-      bcrypt.compare(password, user.password, (err, compareSuccess) => { // compare the provided password with the user one
+      bcrypt.compare(password, user.password, async (err, compareSuccess) => { // compare the provided password with the user one
         
         if (err) return reject(new Error("AUTHENTICATION_ERROR"));
 
@@ -58,28 +58,25 @@ const getToken = (username, password, redisClient) => {
         const refresh_token = createToken(user._id, "refresh");
         const access_token = createToken(user._id, "access");
 
-        cache("access-tokens", access_token.value, JSON.stringify(user), process.env.ACCESS_TOKEN_DURATION * 60, true, false, redisClient).then(() => {
-          console.log("Token saved in cache.");
-        }).catch((e) => {
-          console.error(e);
-          return reject(new Error("ERROR_SAVING_TO_CACHE"));
-        });
-
-        const access = new Token({...access_token});
-        const refresh = new Token({...refresh_token});
-
-        access.save().then((access) => {
-          refresh.save().then((refresh) => {
-            return resolve({ access_token, refresh_token });
-          }).catch((e) => {
-            console.error(e);
-            return reject(new Error("ERROR_SAVING_REFRESH_TOKEN"));
-          });
-        }).catch((e) => {
+        // save access token (is saved to Redis to better performance on authorization)
+        try {
+          await cache("access-tokens", access_token.value, JSON.stringify(user), process.env.ACCESS_TOKEN_DURATION * 60, true, false, redisClient);
+        } catch(e) {
           console.error(e);
           return reject(new Error("ERROR_SAVING_ACCESS_TOKEN"));
-        });
+        }
 
+        // create refresh token model
+        const refresh = new Token({...refresh_token});
+
+        // save refresh token to MongoDB (refresh token needs persistence due to its long duration)
+        try {
+          await refresh.save()
+          return resolve({ access_token, refresh_token });
+        } catch(e) {
+          console.error(e);
+          return reject(new Error("ERROR_SAVING_REFRESH_TOKEN"));
+        }
       });
     }).catch((error) => {
       console.log(error);

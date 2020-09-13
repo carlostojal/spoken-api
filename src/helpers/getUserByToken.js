@@ -1,4 +1,3 @@
-const Token = require("../models/Token");
 const getFromCache = require("./getFromCache");
 
 const getUserByToken = (token, redisClient) => {
