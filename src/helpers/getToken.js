@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const platform = require("platform");
 const User = require("../models/User");
 const Token = require("../models/Token");
 const createToken = require("./createToken");
@@ -33,7 +34,7 @@ const cache = require("./cache");
 *   
 */
 
-const getToken = (username, password, redisClient) => {
+const getToken = (username, password, userAgent, redisClient) => {
   return new Promise((resolve, reject) => {
     User.findOne({
       $or: [
@@ -54,6 +55,9 @@ const getToken = (username, password, redisClient) => {
 
         if(!compareSuccess) return reject(new Error("WRONG_PASSWORD"));
 
+        // get user platform
+        const platformData = platform.parse(userAgent);
+
         // create tokens with specified duration and user id
         const refresh_token = createToken(user._id, "refresh");
         const access_token = createToken(user._id, "access");
@@ -67,7 +71,7 @@ const getToken = (username, password, redisClient) => {
         }
 
         // create refresh token model
-        const refresh = new Token({...refresh_token});
+        const refresh = new Token({...refresh_token, userPlatform: JSON.stringify(platformData)});
 
         // save refresh token to MongoDB (refresh token needs persistence due to its long duration)
         try {

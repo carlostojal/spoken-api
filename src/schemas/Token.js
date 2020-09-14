@@ -6,5 +6,5 @@ module.exports = new Schema({
   value: String,
   createdAt: String,
   expiresAt: String,
-  type: String // access / refresh
+  userPlatform: String
 });
