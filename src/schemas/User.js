@@ -2,14 +2,6 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 module.exports = new Schema({
-  access_tokens: [{
-    value: String,
-    expiry: Number
-  }],
-  refresh_tokens: [{
-    value: String,
-    expiry: Number
-  }],
   name: String,
   surname: String,
   birthdate: String, // epoch time of birth day

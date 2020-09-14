@@ -64,7 +64,7 @@ const getToken = (username, password, userAgent, redisClient) => {
 
         // save access token (is saved to Redis to better performance on authorization)
         try {
-          await cache("access-tokens", access_token.value, JSON.stringify(user), process.env.ACCESS_TOKEN_DURATION * 60, true, false, redisClient);
+          await cache(`user-token-${access_token.value}`, null, JSON.stringify(user), process.env.ACCESS_TOKEN_DURATION * 60, true, false, redisClient);
         } catch(e) {
           console.error(e);
           return reject(new Error("ERROR_SAVING_ACCESS_TOKEN"));

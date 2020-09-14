@@ -1,6 +1,9 @@
 const User = require("../models/User");
 const { AuthenticationError } = require("apollo-server");
+const platform = require("platform");
 const createToken = require("../helpers/createToken");
+const cache = require("../helpers/cache");
+const Token = require("../models/Token");
 
 /*
 *
@@ -29,37 +32,54 @@ const createToken = require("../helpers/createToken");
 *   
 */
 
-const refreshToken = (refresh_token) => {
+const refreshToken = (refresh_token, userAgent, redisClient) => {
   return new Promise((resolve, reject) => {
 
-    User.findOne({ "refresh_tokens.value":  refresh_token, "refresh_tokens.expiry": { $gt: Date.now() }}).then((user) => {
-
-      if(!user)
-        return reject(new AuthenticationError("INVALID_REFRESH_TOKEN"));
+    try {
+      const query = Token.findOne({ value: refresh_token });
+      query.populate("user");
+      query.exec(async (err, token) => {
         
-      const new_refresh_token = createToken(user._id, "refresh");
+        if(!token)
+          return reject(new AuthenticationError("INVALID_REFRESH_TOKEN"));
+        
+        const new_refresh_token = createToken(token.user._id, "refresh");
+        const new_access_token = createToken(token.user._id, "access");
 
-      const new_access_token = createToken(user._id, "access");
+        const platformData = platform.parse(userAgent);
 
-      // remove old refresh token
-      user.refresh_tokens.filter((token) => token != refresh_token);
+        const newToken = new Token({...new_refresh_token, userPlatform: JSON.stringify(platformData)});
 
-      // add new tokens
-      user.refresh_tokens.push(new_refresh_token);
-      user.access_tokens.push(new_access_token);
+        // save new refresh token
+        try {
+          await newToken.save();
+        } catch(e) {
+          console.error(e);
+          return reject(new Error("ERROR_SAVING_REFRESH_TOKEN"));
+        }
 
-      user.save().then(() => {
-        console.log("User refresh token.");
+        // delete old refresh token
+        try {
+          await Token.deleteOne({ value: refresh_token });
+        } catch(e) {
+          console.error(e);
+          return reject(new Error("ERROR_REMOVING_OLD_REFRESH_TOKEN"));
+        }
+
+        // save new access token
+        try {
+          await cache(`user-token-${new_access_token.value}`, null, JSON.stringify(token.user), process.env.ACCESS_TOKEN_DURATION * 60, true, true, redisClient);
+        } catch(e) {
+          console.error(e);
+          return reject(new Error("ERROR_SAVING_ACCESS_TOKEN"));
+        }
+
         return resolve({ access_token: new_access_token, refresh_token: new_refresh_token});
-      }).catch((error) => {
-        console.log(error);
-        return reject(new Error("ERROR_UPDATING_USER"));
       });
-
-    }).catch((error) => {
-      console.log(error);
-      return reject(new Error("ERROR_GETTING_USER"));
-    });
+    } catch(e) {
+      console.error(e);
+      return reject(new Error("ERROR_GETTING_TOKEN_DATA"));
+    }
   });
 };
 

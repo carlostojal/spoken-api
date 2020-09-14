@@ -20,7 +20,7 @@ const getFromCache = (key, field, redisClient) => {
           console.error(error);
           return reject(new Error("ERROR_READING_CACHE"));
         }
-        return result(result);
+        return resolve(result);
       });
     }
   });
