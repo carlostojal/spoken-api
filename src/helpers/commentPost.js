@@ -2,6 +2,7 @@ const { AuthenticationError } = require("apollo-server");
 const Post = require("../models/Post");
 const PostComment = require("../models/PostComment");
 const FollowRelation = require("../models/FollowRelation");
+const cache = require("./cache");
 const preparePost = require("./preparePost");
 
 const commentPost = (post_id, user, text) => {

@@ -37,11 +37,17 @@ const refreshToken = (refresh_token, userAgent, redisClient) => {
 
     try {
       const query = Token.findOne({ value: refresh_token });
-      query.populate("user");
       query.exec(async (err, token) => {
+
+        if(err) {
+          console.error(err);
+          return reject(new Error("ERROR_GETTING_TOKEN"));
+        }
         
         if(!token)
           return reject(new AuthenticationError("INVALID_REFRESH_TOKEN"));
+
+        await Token.populate(token, "user");
         
         const new_refresh_token = createToken(token.user._id, "refresh");
         const new_access_token = createToken(token.user._id, "access");

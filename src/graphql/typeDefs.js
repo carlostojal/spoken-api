@@ -22,11 +22,8 @@ const typeDefs = gql`
     profile_pic_url: String,
     profile_type: String,
     profile_privacy_type: String,
-    posts: [Post],
     n_following: Int,
-    following: [FollowRelation],
-    n_followers: Int,
-    followers: [FollowRelation]
+    n_followers: Int
   }
 
   type Post {
@@ -39,17 +36,12 @@ const typeDefs = gql`
     user_reacted: Boolean
   }
 
-  type FollowRelation {
-    user: User,
-    follows: User,
-    accepted: Boolean
-  }
-
   type Comment {
     _id: ID,
     time: String,
     user: User,
-    text: String
+    text: String,
+    edited: Boolean
   }
 
   type Query {
@@ -58,6 +50,7 @@ const typeDefs = gql`
     refreshToken: String
     getUserData(id: String): User
     getUserFeed(page: Int!, perPage: Int!): [Post]
+    getPostComments(page: Int!, perPage: Int!, id: String): [Comment]
   }
 
   type Mutation {
