@@ -2,10 +2,11 @@ const { AuthenticationError } = require("apollo-server");
 const Post = require("../models/Post");
 const PostComment = require("../models/PostComment");
 const FollowRelation = require("../models/FollowRelation");
-const cache = require("./cache");
+const deleteFromCache = require("./deleteFromCache");
 const preparePost = require("./preparePost");
+const { RedisClient } = require("redis");
 
-const commentPost = (post_id, user, text) => {
+const commentPost = (post_id, user, text, redisClient) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -56,6 +57,13 @@ const commentPost = (post_id, user, text) => {
       } catch(e) {
         console.error(e);
         return reject(new Error("ERROR_PREPARING_POST"));
+      }
+
+      try {
+        await deleteFromCache(`comments-post-${post_id}`, null, redisClient);
+      } catch(e) {
+        console.error(e);
+        return reject(new Error("ERROR_RESETING_CACHE"));
       }
 
       return resolve(post);
