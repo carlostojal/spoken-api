@@ -4,12 +4,9 @@ const { Types } = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const fs = require("fs");
-const morgan = require("morgan");
-const mongoose = require("mongoose");
 const User = require("../models/User");
 const Media = require("../models/Media");
 const compressImage = require("../helpers/compressImage");
-const { response } = require("express");
 
 const app = express();
 
@@ -20,12 +17,13 @@ app.use(fileUpload({
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-// app.use(morgan("dev"));
-
 
 // email confirmation
 app.get("/confirm", (req, res) => {
   try {
+
+    if(!req.query.uid || !req.query.confirmation_code)
+      return res.send("Bad confirmation link.");
 
     User.findById(req.query.uid).then((user) => {
 
@@ -40,8 +38,9 @@ app.get("/confirm", (req, res) => {
         user.save().then(() => {
           return res.send("Email confirmed successfully. You can now close this.");
         }).catch((e) => {
-          return res.status(500).send("Error saving user. Please refresh this page.");
-        })
+          console.error(e);
+          return res.status(500).send("Error saving user. Please refresh this page or try again later.");
+        });
       } else {
         return res.send("Bad confirmation link.");
       }
@@ -105,17 +104,21 @@ app.post("/upload", async (req, res) => {
                 }
               });
             }).catch((error) => {
+              console.error(error);
               return res.status(500).send(error);
             });
           });
         }).catch((error) => {
+          console.error(error);
           return res.status(500).send(error);
         });        
       }).catch((error) => {
+        console.error(error);
         res.status(500).send(error);
       });
     }
   } catch (error) {
+    console.error(error);
     res.status(500).send(error);
   }
 });

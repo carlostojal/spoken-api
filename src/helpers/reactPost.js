@@ -1,101 +1,87 @@
 const { AuthenticationError } = require("apollo-server");
 const Post = require("../models/Post");
 const PostReaction = require("../models/PostReaction");
-const userHasViewPermission = require("./userHasViewPermission");
-const mediaIdToUrl = require("./mediaIdToUrl");
+const FollowRelation = require("../models/FollowRelation");
+const preparePost = require("./preparePost");
 
 const reactPost = (post_id, user) => {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
 
     if(!user)
       return reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
-    // find and populate post from ID
-    const query = Post.findById(post_id);
-    query.populate({
-      path: "poster", 
-      populate: {
-        path: "followers"
+    try {
+      let post;
+
+      // find post
+      try {
+        post = await Post.findById(post_id);
+      } catch(e) {
+        console.error(e);
+        return reject(new Error("ERROR_GETTING_POST"));
       }
-    });
-    query.populate({
-      path: "reactions",
-      populate: {
-        path: "user"
+
+      if(!post)
+        return reject(new Error("POST_NOT_FOUND"));
+
+      let relation;
+
+      // find follow relation
+      try {
+        relation = await FollowRelation.findOne({ user: user._id, follows: post.poster, accepted: true });
+      } catch(e) {
+        console.error(e);
+        return reject(new Error("ERROR_CHECKING_PERMISSIONS"));
       }
-    });
-    query.populate({
-      path: "comments",
-      populate: {
-        path: "user"
-      }
-    });
-    query.exec((err, post) => {
 
-      if (err) return reject(new Error("ERROR_FINDING_POST"));
-
-      if (!post) return reject(new Error("POST_NOT_FOUND"));
-
-      const user_has_permission = userHasViewPermission(user, post)
-
-      if(!user_has_permission)
+      if(!relation) // the session user doesn't follow the user who made the post
         return reject(new Error("BAD_PERMISSIONS"));
+      
+      let post_reaction;
 
-      // find if this reaction was already created
-      PostReaction.findOne({ user: user._id, post: post._id }).then(async (reaction) => {
+      // find post reaction
+      try {
+        post_reaction = await PostReaction.findOne({ user: user._id, post: post._id });
+      } catch(e) {
+        console.error(e);
+        return reject(new Error("ERROR_CHECKING_REACTION"));
+      }
 
-        // the reaction was not added, so create a new one
-        if (!reaction) {
-          const newReaction = new PostReaction({
-            time: Date.now().toString(),
-            post: post._id,
-            user: user._id
-          });
-
-          // save the reaction to the database
-          try {
-            await newReaction.save();
-            post.reactions.push(newReaction._id);
-          } catch(e) {
-            console.log(e);
-            return reject(new Error("ERROR_SAVING_REACTION"));
-          }
-        } else { // the reaction already exists, so remove it
-          // remove from post reactions array
-          for(let i = 0; i < post.reactions.length; i++) {
-            if(post.reactions[i].user.equals(user._id)) {
-              post.reactions.splice(i, 1);
-              break;
-            }
-          }
-
-          // remove from reactions document
-          try {
-            await PostReaction.findByIdAndDelete(reaction._id);
-          } catch(e) {
-            console.log(e);
-            return reject(new Error("ERROR_REMOVING_REACTION"));
-          }
-        }
-
-        // save the post with the changes made
+      // the reaction was registered, so remove this time
+      if(post_reaction) {
         try {
-          await post.save();
-          console.log("Post reaction state update.");
-          post.user_reacted = reaction ? false : true;
-          // post has media
-          if(post.media)
-            post.media_url = mediaIdToUrl(post.media);
-          return resolve(post);
+          await post_reaction.remove();
         } catch(e) {
-          console.log(e);
-          return reject(new Error("ERROR_REGISTERING_REACTION"));
+          console.error(e);
+          return reject(new Error("ERROR_REMOVING_REACTION"));
         }
-      }).catch((e) => {
-        console.log(e);
-        return reject(new Error("ERROR_CREATING_REACTION"));
-      });
-    });
+      } else { // the reaction was not registered
+        const new_reaction = new PostReaction({
+          time: Date.now().toString(),
+          post: post._id,
+          user: user._id
+        });
+        try {
+          await new_reaction.save();
+        } catch(e) {
+          console.error(e);
+          return reject(new Error("ERROR_SAVING_REACTION"));
+        }
+      }
+
+      try {
+        post = await preparePost(post, user);
+      } catch(e) {
+        console.error(e);
+        return reject(new Error("ERROR_PREPARING_POST"));
+      }
+
+      return resolve(post);
+    } catch(e) {
+      console.error(e);
+      return reject(new Error("ERROR_GETTING_POST"));
+    }
+
   });
 };
 

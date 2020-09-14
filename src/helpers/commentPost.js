@@ -1,84 +1,68 @@
 const { AuthenticationError } = require("apollo-server");
 const Post = require("../models/Post");
 const PostComment = require("../models/PostComment");
-const userHasViewPermission = require("./userHasViewPermission");
-const mediaIdToUrl = require("./mediaIdToUrl");
-const userReacted = require("./userReacted");
+const FollowRelation = require("../models/FollowRelation");
+const preparePost = require("./preparePost");
 
 const commentPost = (post_id, user, text) => {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
 
     if(!user)
       return reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
-    // find and populate post from ID
-    const query = Post.findById(post_id);
-    query.populate({
-      path: "poster", 
-      populate: {
-        path: "followers"
+    try {
+
+      let post;
+      
+      try {
+        post = await Post.findById(post_id);
+      } catch(e) {
+        console.error(e);
+        return reject(new Error("ERROR_GETTING_POST"));
       }
-    });
-    query.populate({
-      path: "reactions",
-      populate: {
-        path: "user"
+
+      if(!post)
+        return reject(new Error("POST_NOT_EXISTENT"));
+      
+      let relation;
+
+      try {
+        relation = await FollowRelation.findOne({ user: user._id, follows: post.poster, accepted: true });
+      } catch(e) {
+        console.error(e);
+        return reject(new Error("ERROR_CHECKING_PERMISSION"));
       }
-    });
-    query.populate({
-      path: "comments",
-      populate: {
-        path: "user"
-      }
-    });
-    query.exec((err, post) => {
 
-      if (err) return reject(new Error("ERROR_FINDING_POST"));
-
-      if (!post) return reject(new Error("POST_NOT_FOUND"));
-
-      const user_has_permission = userHasViewPermission(user, post)
-
-      if(!user_has_permission)
+      if(!relation)
         return reject(new Error("BAD_PERMISSIONS"));
 
-      const newComment = new PostComment({
+      const comment = new PostComment({
         time: Date.now().toString(),
         post: post._id,
         user: user._id,
         text
       });
 
-      // save the comment to the database
-      newComment.save().then(() => {
-        post.comments.push(newComment._id);
-
-        // save the post with the changes made
-        post.save().then(() => {
-          if(post.media)
-            post.media_url = mediaIdToUrl(post.media);
-          post.user_reacted = userReacted(user, post);
-          Post.populate(post, {
-            path: "comments",
-            populate: {
-              path: "user"
-            }
-          }, (err, post) => {
-
-            if (err) return reject(new Error("ERROR_REFRESHING_COMMENTS"));
-            
-            return resolve(post);
-          });
-        }).catch((e) => {
-          console.log(e);
-          return reject(new Error("ERROR_REGISTERING_COMMENT"));
-        });
-        
-      }).catch((e) => {
-        console.log(e);
+      try {
+        await comment.save();
+      } catch(e) {
+        console.error(e);
         return reject(new Error("ERROR_SAVING_COMMENT"));
-      });
-    });
+      }
+
+      try {
+        post = await preparePost(post, user);
+      } catch(e) {
+        console.error(e);
+        return reject(new Error("ERROR_PREPARING_POST"));
+      }
+
+      return resolve(post);
+
+    } catch(e) {
+      console.error(e);
+      return reject(new Error("ERROR_GETTING_POST"));
+    }
   });
 };
 

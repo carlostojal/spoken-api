@@ -88,12 +88,12 @@ const resolvers = {
 
     // deletes post from post ID
     deletePost: (parent, args, context, info) => {
-      return deletePost(args.id, context);
+      return deletePost(args.id, context.user);
     },
 
     // edits post from post ID. updates text
     editPost: (parent, args, context, info) => {
-      return editPost(args.id, args.text, context);
+      return editPost(args.id, args.text, context.user);
     },
 
     // react to post

@@ -36,8 +36,7 @@ const typeDefs = gql`
     text: String,
     media_url: String,
     edited: Boolean,
-    user_reacted: Boolean,
-    comments: [Comment]
+    user_reacted: Boolean
   }
 
   type FollowRelation {
