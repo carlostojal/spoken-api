@@ -6,7 +6,5 @@ module.exports = new Schema({
   time: String,
   text: String,
   media: { type: Schema.ObjectId, ref: 'Media'},
-  edited: Boolean,
-  reactions: [{ type: Schema.ObjectId, ref: 'PostReaction' }],
-  comments: [{ type: Schema.ObjectId, ref: 'PostComment' }]
+  edited: Boolean
 });

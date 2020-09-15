@@ -20,7 +20,7 @@ const deleteFromCache = (key, field, redisClient) => {
           console.error(error);
           return reject(new Error("ERROR_MANIPULATING_CACHE"));
         }
-        return result(result);
+        return resolve(result);
       });
     }
   });

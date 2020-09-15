@@ -102,7 +102,7 @@ const resolvers = {
 
     // react to post
     reactPost: (parent, args, context, info) => {
-      return reactPost(args.id, context.user);
+      return reactPost(args.id, context.user, context.redisClient);
     },
 
     // create comment in post
