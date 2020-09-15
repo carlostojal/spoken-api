@@ -6,5 +6,6 @@ module.exports = new Schema({
   value: String,
   createdAt: String,
   expiresAt: String,
+  userLocation: String,
   userPlatform: String
 });

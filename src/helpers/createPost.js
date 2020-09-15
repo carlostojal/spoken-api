@@ -31,7 +31,7 @@ const Post = require("../models/Post");
 *   
 */
 
-const createPost = (text, media_id, user) => {
+const createPost = (text, media_id, original_post, user) => {
   return new Promise((resolve, reject) => {
 
     if(!user)
@@ -42,6 +42,7 @@ const createPost = (text, media_id, user) => {
       time: Date.now().toString(),
       text: text,
       media: media_id || null,
+      original_post: original_post || null,
       edited: false
     });
 
