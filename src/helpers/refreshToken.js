@@ -1,4 +1,5 @@
 const { AuthenticationError } = require("apollo-server");
+const jwt = require("jsonwebtoken");
 const geoip = require("geoip-lite");
 const platform = require("platform");
 const createToken = require("../helpers/createToken");
@@ -46,6 +47,18 @@ const refreshToken = (refresh_token, remoteAddress, userAgent, redisClient) => {
         
         if(!token)
           return reject(new AuthenticationError("INVALID_REFRESH_TOKEN"));
+        
+        let decoded = null;
+
+        try {
+          decoded = jwt.verify(refresh_token, process.env.TOKEN_SECRET);
+        } catch(e) {
+          console.error(e);
+          return reject(new Error("ERROR_VERIFYING_TOKEN"));
+        }
+
+        if(!decoded)
+          return reject(new Error("INVAlID_TOKEN"));
 
         await Token.populate(token, "user");
         
