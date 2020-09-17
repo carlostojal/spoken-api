@@ -7,5 +7,6 @@ module.exports = new Schema({
   createdAt: String,
   expiresAt: String,
   userLocation: String,
-  userPlatform: String
+  userPlatform: String,
+  approved: Boolean
 });

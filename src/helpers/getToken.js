@@ -5,6 +5,7 @@ const User = require("../models/User");
 const Token = require("../models/Token");
 const createToken = require("./createToken");
 const cache = require("./cache");
+const getLoginLocationSafety = require("./getLoginLocationSafety");
 
 /*
 *
@@ -63,7 +64,23 @@ const getToken = (username, password, remoteAddress, userAgent, redisClient) => 
           geo = geoip.lookup(remoteAddress);
         } catch(e) {
           console.error(e);
+          return reject(new Error("ERROR_GETTING_LOGIN_LOCATION"));
         }
+
+        /*
+        let locationSafety = null;
+
+        if(geo) {
+          try {
+            locationSafety = await getLoginLocationSafety(geo.country, user);
+          } catch(e) {
+            console.error(e);
+            return reject(new Error("ERROR_CHECKING_LOCATION_SAFETY"));
+          }
+
+          if(locationSafety < process.env.MIN_LOGIN_LOCATION_SAFETY)
+            console.log("Login confirmation needed.");
+        }*/
 
         // get user platform
         let platformData = null;
@@ -91,7 +108,7 @@ const getToken = (username, password, remoteAddress, userAgent, redisClient) => 
 
         // save refresh token to MongoDB (refresh token needs persistence due to its long duration)
         try {
-          await refresh.save()
+          await refresh.save();
           return resolve({ access_token, refresh_token });
         } catch(e) {
           console.error(e);
