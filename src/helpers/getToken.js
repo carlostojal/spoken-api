@@ -5,7 +5,7 @@ const User = require("../models/User");
 const Token = require("../models/Token");
 const createToken = require("./createToken");
 const cache = require("./cache");
-const getLoginLocationSafety = require("./getLoginLocationSafety");
+// const getLoginLocationSafety = require("./getLoginLocationSafety");
 
 /*
 *

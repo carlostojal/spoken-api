@@ -1,5 +1,5 @@
-const User = require("../models/User");
 const { AuthenticationError } = require("apollo-server");
+const geoip = require("geoip-lite");
 const platform = require("platform");
 const createToken = require("../helpers/createToken");
 const cache = require("../helpers/cache");
@@ -32,7 +32,7 @@ const Token = require("../models/Token");
 *   
 */
 
-const refreshToken = (refresh_token, userAgent, redisClient) => {
+const refreshToken = (refresh_token, remoteAddress, userAgent, redisClient) => {
   return new Promise((resolve, reject) => {
 
     try {
@@ -52,9 +52,26 @@ const refreshToken = (refresh_token, userAgent, redisClient) => {
         const new_refresh_token = createToken(token.user._id, "refresh");
         const new_access_token = createToken(token.user._id, "access");
 
-        const platformData = platform.parse(userAgent);
+        // get user geolocation
+        let geo = null;
 
-        const newToken = new Token({...new_refresh_token, userPlatform: JSON.stringify(platformData)});
+        try {
+          geo = geoip.lookup(remoteAddress);
+        } catch(e) {
+          console.error(e);
+          return reject(new Error("ERROR_GETTING_LOGIN_LOCATION"));
+        }
+
+        // get user platform
+        let platformData = null;
+
+        try {
+          platformData = platform.parse(userAgent);
+        } catch(e) {
+          console.error(e)
+        }
+
+        const newToken = new Token({...new_refresh_token, userLocation: JSON.stringify(geo), userPlatform: JSON.stringify(platformData)});
 
         // save new refresh token
         try {
