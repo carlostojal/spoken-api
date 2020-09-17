@@ -1,4 +1,5 @@
 const getToken = require("../helpers/getToken");
+const sendConfirmationEmail = require("../helpers/sendConfirmationEmail");
 const logout = require("../helpers/logout");
 const refreshToken = require("../helpers/refreshToken");
 const getCookieByName = require("../helpers/getCookieByName");
@@ -25,6 +26,16 @@ const resolvers = {
         httpOnly: true
       });
       return tokens.access_token.value;
+    },
+
+    sendConfirmationEmail: async (parent, args, context, info) => {
+      try {
+        await sendConfirmationEmail(context.user);
+      } catch(e) {
+        console.error(e);
+        return e;
+      }
+      return context.user.email;
     },
 
     // logout

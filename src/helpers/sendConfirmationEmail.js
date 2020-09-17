@@ -1,7 +1,12 @@
+const { AuthenticationError } = require("apollo-server");
 const getEmailTransport = require("./getEmailTransport");
 
 const sendConfirmationEmail = (user) => {
   return new Promise((resolve, reject) => {
+
+    if(!user)
+      return reject(new AuthenticationError("BAD_AUTHENTICATION"));
+
     const transport = getEmailTransport();
 
     const mailOptions = {
