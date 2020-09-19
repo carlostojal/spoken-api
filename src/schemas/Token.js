@@ -8,5 +8,6 @@ module.exports = new Schema({
   expiresAt: String,
   userLocation: String,
   userPlatform: String,
-  approved: Boolean
+  approved: Boolean, // defines if the login is safe / unsafe but approved
+  approvalCode: Number // code to approve unsafe logins
 });

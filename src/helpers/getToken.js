@@ -67,10 +67,12 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, re
           return reject(new Error("ERROR_GETTING_LOGIN_LOCATION"));
         }
 
-        /*
-        let locationSafety = null;
+
+        // check login safety based on geolocation
+        let safetyApproved = false;
 
         if(geo) {
+          let locationSafety;
           try {
             locationSafety = await getLoginLocationSafety(geo.country, user);
           } catch(e) {
@@ -78,9 +80,9 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, re
             return reject(new Error("ERROR_CHECKING_LOCATION_SAFETY"));
           }
 
-          if(locationSafety < process.env.MIN_LOGIN_LOCATION_SAFETY)
-            console.log("Login confirmation needed.");
-        }*/
+          if(locationSafety >= process.env.MIN_LOGIN_LOCATION_SAFETY)
+            safetyApproved = true;
+        }
 
         // get user platform
         let platformData = null;
@@ -97,7 +99,7 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, re
         }
 
         // create tokens with specified duration and user id
-        const refresh_token = {...createToken(user._id, "refresh"), userLocation: JSON.stringify(geo), userPlatform: platformData};
+        const refresh_token = {...createToken(user._id, "refresh"), userLocation: JSON.stringify(geo), userPlatform: platformData, approved: safetyApproved, approvalCode: Math.floor((Math.random() * 8999) + 1000)};
         const access_token = createToken(user._id, "access");
 
         // save access token (is saved to Redis to better performance on authorization)

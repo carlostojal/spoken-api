@@ -61,7 +61,7 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
           birthdate: new Date(parseInt(birthdate)).getTime().toString(),
           email: email,
           email_confirmed: false,
-          confirmation_code: Math.floor(Math.random() * 1000), // generate random confirmation code in range 0-999
+          confirmation_code: Math.floor((Math.random() * 8999) + 1000), // generate random confirmation code in range 1000-9999
           username: username.toLowerCase(),
           password: hash_password,
           profile_pic_media_id: null,
@@ -74,13 +74,14 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
 
         user.save().then((result) => {
           // saved user, now send confirmation email
-          sendConfirmationEmail(user).then(() => {
-            console.log("User registered.");
-            resolve(result);
-          }).catch((err) => {
-            console.error(err);
-            reject(new Error("ERROR_SENDING_CONFIRMATION_EMAIL"));
-          });
+          try {
+            sendConfirmationEmail(user);
+          } catch(e) {
+            console.error(e);
+            return reject(new Error("ERROR_SENDING_CONFIRMATION_EMAIL"));
+          }
+          console.log("User registered.");
+          return resolve(result);
         }).catch((err) => {
           console.error(err);
           let error;

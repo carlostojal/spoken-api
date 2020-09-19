@@ -6,6 +6,7 @@ const getCookieByName = require("../helpers/getCookieByName");
 const getUserData = require("../helpers/getUserData");
 const getUserFeed = require("../helpers/getUserFeed");
 const registerUser = require("../helpers/registerUser");
+const confirmAccount = require("../helpers/confirmAccount");
 const editUser = require("../helpers/editUser");
 const createPost = require("../helpers/createPost");
 const followUser = require("../helpers/followUser");
@@ -79,6 +80,10 @@ const resolvers = {
     // registers a new user
     registerUser: (parent, args, context, info) => {
       return registerUser(args.name, args.surname, args.birthdate, args.email, args.username, args.password, args.profile_type, args.profile_privacy_type);
+    },
+
+    confirmAccount: (parent, args, context, info) => {
+      return confirmAccount(args.user_id, args.code);
     },
 
     // edit current user data
