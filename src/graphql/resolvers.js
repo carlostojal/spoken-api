@@ -52,7 +52,7 @@ const resolvers = {
       // get refresh token from cookies
       const refresh_token = getCookieByName("refresh_token", context.req.headers.cookie);
       // get new tokens from refresh token
-      const tokens = await refreshToken(refresh_token, context.req.connection.remoteAddress, context.req.headers["user-agent"], context.redisClient);
+      const tokens = await refreshToken(refresh_token, context.redisClient);
       // send new refresh token through cookies
       context.res.cookie("refresh_token", tokens.refresh_token.value, {
         expires: new Date(tokens.refresh_token.expiry),

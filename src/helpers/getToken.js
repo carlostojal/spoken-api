@@ -5,7 +5,7 @@ const User = require("../models/User");
 const Token = require("../models/Token");
 const createToken = require("./createToken");
 const cache = require("./cache");
-// const getLoginLocationSafety = require("./getLoginLocationSafety");
+const getLoginLocationSafety = require("./getLoginLocationSafety");
 
 /*
 *
@@ -71,6 +71,7 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, re
         // check login safety based on geolocation
         let safetyApproved = false;
 
+        /*
         if(geo) {
           let locationSafety;
           try {
@@ -82,7 +83,7 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, re
 
           if(locationSafety >= process.env.MIN_LOGIN_LOCATION_SAFETY)
             safetyApproved = true;
-        }
+        }*/
 
         // get user platform
         let platformData = null;
@@ -99,28 +100,18 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, re
         }
 
         // create tokens with specified duration and user id
-        const refresh_token = {...createToken(user._id, "refresh"), userLocation: JSON.stringify(geo), userPlatform: platformData, approved: safetyApproved, approvalCode: Math.floor((Math.random() * 8999) + 1000)};
-        const access_token = createToken(user._id, "access");
+        const refresh_token = createToken(user, "refresh");
+        const access_token = createToken(user, "access");
 
-        // save access token (is saved to Redis to better performance on authorization)
+        // save refresh token
         try {
-          await cache(`user-token-${access_token.value}`, null, JSON.stringify(user), process.env.ACCESS_TOKEN_DURATION * 60, true, false, redisClient);
-        } catch(e) {
-          console.error(e);
-          return reject(new Error("ERROR_SAVING_ACCESS_TOKEN"));
-        }
-
-        // create refresh token model
-        const refresh = new Token({...refresh_token});
-
-        // save refresh token to MongoDB (refresh token needs persistence due to its long duration)
-        try {
-          await refresh.save();
-          return resolve({ access_token, refresh_token });
+          await cache(`session-uid-${user._id}-${refresh_token.value}`, null, JSON.stringify({createdAt: refresh_token.createdAt, expiresAt: refresh_token.expiresAt, userLocation: geo, userPlatform: platformData, approved: safetyApproved, approvalCode: Math.floor((Math.random() * 8999) + 1000)}), process.env.REFRESH_TOKEN_DURATION * 24 * 60 * 60, true, true, redisClient);
         } catch(e) {
           console.error(e);
           return reject(new Error("ERROR_SAVING_REFRESH_TOKEN"));
         }
+
+        return resolve({ access_token, refresh_token });
       });
     }).catch((error) => {
       console.log(error);

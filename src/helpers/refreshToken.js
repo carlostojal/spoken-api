@@ -3,8 +3,10 @@ const jwt = require("jsonwebtoken");
 const geoip = require("geoip-lite");
 const platform = require("platform");
 const createToken = require("../helpers/createToken");
+const getFromCache = require("../helpers/getFromCache");
 const cache = require("../helpers/cache");
-const Token = require("../models/Token");
+const deleteFromCache = require("../helpers/deleteFromCache");
+const getUserByToken = require("../helpers/getUserByToken");
 
 /*
 *
@@ -33,94 +35,56 @@ const Token = require("../models/Token");
 *   
 */
 
-const refreshToken = (refresh_token, userPlatform, remoteAddress, userAgent, redisClient) => {
-  return new Promise((resolve, reject) => {
+const refreshToken = (refresh_token, redisClient) => {
+  return new Promise(async (resolve, reject) => {
 
+    // get user by decoding token
+    let user = null;
     try {
-      const query = Token.findOne({ value: refresh_token });
-      query.exec(async (err, token) => {
-
-        if(err) {
-          console.error(err);
-          return reject(new Error("ERROR_GETTING_TOKEN"));
-        }
-        
-        if(!token)
-          return reject(new AuthenticationError("INVALID_REFRESH_TOKEN"));
-        
-        let decoded = null;
-
-        try {
-          decoded = jwt.verify(refresh_token, process.env.TOKEN_SECRET);
-        } catch(e) {
-          console.error(e);
-          return reject(new Error("ERROR_VERIFYING_TOKEN"));
-        }
-
-        if(!decoded)
-          return reject(new Error("INVAlID_TOKEN"));
-
-        await Token.populate(token, "user");
-        
-        const new_refresh_token = createToken(token.user._id, "refresh");
-        const new_access_token = createToken(token.user._id, "access");
-
-        // get user geolocation
-        let geo = null;
-
-        try {
-          geo = geoip.lookup(remoteAddress);
-        } catch(e) {
-          console.error(e);
-          return reject(new Error("ERROR_GETTING_LOGIN_LOCATION"));
-        }
-
-        // get user platform
-        let platformData = null;
-
-        if(userPlatform) {
-          platformData = userPlatform;
-        } else {
-          try {
-            platformData = platform.parse(userAgent);
-            platformData = platformData.description;
-          } catch(e) {
-            console.error(e)
-          }
-        }
-
-        const newToken = new Token({...new_refresh_token, userLocation: JSON.stringify(geo), userPlatform: platformData});
-
-        // save new refresh token
-        try {
-          await newToken.save();
-        } catch(e) {
-          console.error(e);
-          return reject(new Error("ERROR_SAVING_REFRESH_TOKEN"));
-        }
-
-        // delete old refresh token
-        try {
-          await Token.deleteOne({ value: refresh_token });
-        } catch(e) {
-          console.error(e);
-          return reject(new Error("ERROR_REMOVING_OLD_REFRESH_TOKEN"));
-        }
-
-        // save new access token
-        try {
-          await cache(`user-token-${new_access_token.value}`, null, JSON.stringify(token.user), process.env.ACCESS_TOKEN_DURATION * 60, true, true, redisClient);
-        } catch(e) {
-          console.error(e);
-          return reject(new Error("ERROR_SAVING_ACCESS_TOKEN"));
-        }
-
-        return resolve({ access_token: new_access_token, refresh_token: new_refresh_token});
-      });
+      user = await getUserByToken(refresh_token, redisClient);
     } catch(e) {
       console.error(e);
-      return reject(new Error("ERROR_GETTING_TOKEN_DATA"));
     }
+
+    if(!user)
+      return reject(new Error("INVALID_TOKEN"));
+
+    // get session data from token
+    let session = null;
+    try {
+      session = await getFromCache(`session-uid-${user._id}-${refresh_token}`, null, redisClient);
+      session = JSON.parse(session);
+    } catch(e) {
+      console.error(e);
+      return reject(new Error("ERROR_GETTING_SESSION"));
+    }
+
+    if(!session)
+      return reject(new Error("INVALID_TOKEN"));
+
+    session.expiresAt = Date.now() + process.env.REFRESH_TOKEN_DURATION * 24 * 60 * 60;
+
+    // delete old session
+    try {
+      await deleteFromCache(`session-uid-${user._id}-${refresh_token}`, null, redisClient);
+    } catch(e) {
+      console.error(e);
+      return reject(new Error("ERROR_DELETING_OLD_SESSION"));
+    }
+
+    const new_refresh_token = createToken(user, "refresh");
+    const new_access_token = createToken(user, "access");
+
+    // create new session
+    try {
+      await cache(`session-uid-${user._id}-${new_refresh_token.value}`, null, JSON.stringify(session), process.env.REFRESH_TOKEN_DURATION * 24 * 60 * 60, true, true, redisClient);
+    } catch(e) {
+      console.error(e);
+      return reject(new Error("ERROR_SAVING_SESSION"));
+    }
+
+    // resolve with tokens
+    return resolve({ access_token: new_access_token, refresh_token: new_refresh_token });
   });
 };
 
