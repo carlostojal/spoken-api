@@ -33,7 +33,7 @@ const Token = require("../models/Token");
 *   
 */
 
-const refreshToken = (refresh_token, remoteAddress, userAgent, redisClient) => {
+const refreshToken = (refresh_token, userPlatform, remoteAddress, userAgent, redisClient) => {
   return new Promise((resolve, reject) => {
 
     try {
@@ -78,13 +78,18 @@ const refreshToken = (refresh_token, remoteAddress, userAgent, redisClient) => {
         // get user platform
         let platformData = null;
 
-        try {
-          platformData = platform.parse(userAgent);
-        } catch(e) {
-          console.error(e)
+        if(userPlatform) {
+          platformData = userPlatform;
+        } else {
+          try {
+            platformData = platform.parse(userAgent);
+            platformData = platformData.description;
+          } catch(e) {
+            console.error(e)
+          }
         }
 
-        const newToken = new Token({...new_refresh_token, userLocation: JSON.stringify(geo), userPlatform: JSON.stringify(platformData)});
+        const newToken = new Token({...new_refresh_token, userLocation: JSON.stringify(geo), userPlatform: platformData});
 
         // save new refresh token
         try {
