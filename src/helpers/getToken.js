@@ -36,7 +36,7 @@ const cache = require("./cache");
 *   
 */
 
-const getToken = (username, password, remoteAddress, userAgent, redisClient) => {
+const getToken = (username, password, userPlatform, remoteAddress, userAgent, redisClient) => {
   return new Promise((resolve, reject) => {
     User.findOne({
       $or: [
@@ -85,14 +85,19 @@ const getToken = (username, password, remoteAddress, userAgent, redisClient) => 
         // get user platform
         let platformData = null;
 
-        try {
-          platformData = platform.parse(userAgent);
-        } catch(e) {
-          console.error(e);
+        if(userPlatform) {
+          platformData = userPlatform;
+        } else {
+          try {
+            platformData = platform.parse(userAgent);
+            platformData = platformData.description;
+          } catch(e) {
+            console.error(e);
+          }
         }
 
         // create tokens with specified duration and user id
-        const refresh_token = {...createToken(user._id, "refresh"), userLocation: JSON.stringify(geo), userPlatform: JSON.stringify(platformData)};
+        const refresh_token = {...createToken(user._id, "refresh"), userLocation: JSON.stringify(geo), userPlatform: platformData};
         const access_token = createToken(user._id, "access");
 
         // save access token (is saved to Redis to better performance on authorization)
