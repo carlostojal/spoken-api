@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
+const checkBirthdate = require("../helpers/checkBirthdate");
 const sendConfirmationEmail = require("./sendConfirmationEmail");
 
 /*
@@ -35,6 +36,10 @@ const sendConfirmationEmail = require("./sendConfirmationEmail");
 
 const registerUser = (name, surname, birthdate, email, username, password, profile_type, profile_privacy_type) => {
   return new Promise((resolve, reject) => {
+
+    if(!checkBirthdate(birthdate))
+      return reject(new Error("INVALID_BIRTHDATE"));
+
     bcrypt.genSalt(parseInt(process.env.HASH_SALT_ROUNDS), (err, salt) => {
       if (err) {
         console.error(err);
