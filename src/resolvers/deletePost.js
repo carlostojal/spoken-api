@@ -1,7 +1,6 @@
 const { AuthenticationError } = require("apollo-server");
 const mongoose = require("mongoose");
 const Post = require("../models/Post");
-const User = require("../models/User");
 
 const deletePost = (id, user) => {
   return new Promise((resolve, reject) => {

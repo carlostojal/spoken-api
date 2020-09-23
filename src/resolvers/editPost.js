@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const Post = require("../models/Post");
-const User = require("../models/User");
 
 const editPost = (id, text, user) => {
   return new Promise((resolve, reject) => {

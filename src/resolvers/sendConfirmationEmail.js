@@ -1,5 +1,5 @@
 const { AuthenticationError } = require("apollo-server");
-const getEmailTransport = require("./getEmailTransport");
+const getEmailTransport = require("../helpers/getEmailTransport");
 
 const sendConfirmationEmail = (user) => {
   return new Promise((resolve, reject) => {

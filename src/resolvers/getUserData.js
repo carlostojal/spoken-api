@@ -1,7 +1,7 @@
 const { AuthenticationError } = require("apollo-server");
 const User = require("../models/User");
-const mediaIdToUrl = require("./mediaIdToUrl");
-const cache = require("./cache");
+const mediaIdToUrl = require("../helpers/media/mediaIdToUrl");
+const cache = require("../helpers/cache/cache");
 
 /*
 *

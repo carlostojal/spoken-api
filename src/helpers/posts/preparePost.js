@@ -1,5 +1,5 @@
-const PostReaction = require("../models/PostReaction");
-const mediaIdToUrl = require("./mediaIdToUrl");
+const PostReaction = require("../../models/PostReaction");
+const mediaIdToUrl = require("../media/mediaIdToUrl");
 
 const preparePost = (post, user) => {
   return new Promise(async (resolve, reject) => {

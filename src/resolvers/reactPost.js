@@ -1,8 +1,8 @@
 const { AuthenticationError } = require("apollo-server");
 const Post = require("../models/Post");
 const PostReaction = require("../models/PostReaction");
-const preparePost = require("./preparePost");
-const userHasPostPermission = require("./userHasPostPermission");
+const preparePost = require("../helpers/posts/preparePost");
+const userHasPostPermission = require("../helpers/posts/userHasPostPermission");
 
 const reactPost = (post_id, user, redisClient) => {
   return new Promise(async (resolve, reject) => {

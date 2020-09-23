@@ -1,12 +1,8 @@
-const { AuthenticationError } = require("apollo-server");
-const jwt = require("jsonwebtoken");
-const geoip = require("geoip-lite");
-const platform = require("platform");
-const createToken = require("../helpers/createToken");
-const getFromCache = require("../helpers/getFromCache");
-const cache = require("../helpers/cache");
-const deleteFromCache = require("../helpers/deleteFromCache");
-const getUserByToken = require("../helpers/getUserByToken");
+const createToken = require("../helpers/session/createToken");
+const getFromCache = require("../helpers/cache/getFromCache");
+const cache = require("../helpers/cache/cache");
+const deleteFromCache = require("../helpers/cache/deleteFromCache");
+const getUserByToken = require("../helpers/session/getUserByToken");
 
 /*
 *

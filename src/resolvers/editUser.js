@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const { AuthenticationError } = require("apollo-server");
 const User = require("../models/User");
 const sendConfirmationEmail = require("./sendConfirmationEmail");
-const cache = require("./cache");
+const cache = require("../helpers/cache/cache");
 
 /*
 *

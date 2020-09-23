@@ -2,10 +2,8 @@ const bcrypt = require("bcrypt");
 const geoip = require("geoip-lite");
 const platform = require("platform");
 const User = require("../models/User");
-const Token = require("../models/Token");
-const createToken = require("./createToken");
-const cache = require("./cache");
-const getLoginLocationSafety = require("./getLoginLocationSafety");
+const createToken = require("../helpers/session/createToken");
+const cache = require("../helpers/cache/cache");
 
 /*
 *
@@ -68,23 +66,6 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, re
         }
 
 
-        // check login safety based on geolocation
-        let safetyApproved = false;
-
-        /*
-        if(geo) {
-          let locationSafety;
-          try {
-            locationSafety = await getLoginLocationSafety(geo.country, user);
-          } catch(e) {
-            console.error(e);
-            return reject(new Error("ERROR_CHECKING_LOCATION_SAFETY"));
-          }
-
-          if(locationSafety >= process.env.MIN_LOGIN_LOCATION_SAFETY)
-            safetyApproved = true;
-        }*/
-
         // get user platform
         let platformData = null;
 
@@ -105,7 +86,7 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, re
 
         // save refresh token
         try {
-          await cache(`session-uid-${user._id}-${refresh_token.value}`, null, JSON.stringify({createdAt: refresh_token.createdAt, expiresAt: refresh_token.expiresAt, userLocation: geo, userPlatform: platformData, approved: safetyApproved, approvalCode: Math.floor((Math.random() * 8999) + 1000)}), process.env.REFRESH_TOKEN_DURATION * 24 * 60 * 60, true, true, redisClient);
+          await cache(`session-uid-${user._id}-${refresh_token.value}`, null, JSON.stringify({createdAt: refresh_token.createdAt, expiresAt: refresh_token.expiresAt, userLocation: geo, userPlatform: platformData}), process.env.REFRESH_TOKEN_DURATION * 24 * 60 * 60, true, true, redisClient);
         } catch(e) {
           console.error(e);
           return reject(new Error("ERROR_SAVING_REFRESH_TOKEN"));

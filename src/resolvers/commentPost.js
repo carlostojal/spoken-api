@@ -1,9 +1,9 @@
 const { AuthenticationError } = require("apollo-server");
 const PostComment = require("../models/PostComment");
 const Post = require("../models/Post");
-const deleteFromCache = require("./deleteFromCache");
-const preparePost = require("./preparePost");
-const userHasPostPermission = require("./userHasPostPermission");
+const deleteFromCache = require("../helpers/cache/deleteFromCache");
+const preparePost = require("../helpers/posts/preparePost");
+const userHasPostPermission = require("../helpers/posts/userHasPostPermission");
 
 const commentPost = (post_id, user, text, redisClient) => {
   return new Promise(async (resolve, reject) => {

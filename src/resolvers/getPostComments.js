@@ -1,8 +1,8 @@
 const Post = require("../models/Post");
 const PostComment = require("../models/PostComment");
 const FollowRelation = require("../models/FollowRelation");
-const getFromCache = require("./getFromCache");
-const cache = require("./cache");
+const getFromCache = require("../helpers/cache/getFromCache");
+const cache = require("../helpers/cache/cache");
 
 const getPostComments = (page, perPage, post_id, user, redisClient) => {
   return new Promise(async (resolve, reject) => {

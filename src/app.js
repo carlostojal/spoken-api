@@ -1,11 +1,11 @@
 const { ApolloServer } = require("apollo-server");
 require("dotenv").config({ path: ".env" });
 require("./config/mongoose");
-require("./config/express");
+require("./express"); // express server
 const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers");
 const redisClient = require("./config/redis");
-const getUserByToken = require("./helpers/getUserByToken");
+const getUserByToken = require("./helpers/session/getUserByToken");
 
 // apollo server startup
 const server = new ApolloServer({

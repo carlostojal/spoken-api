@@ -4,9 +4,9 @@ const { Types } = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const fs = require("fs");
-const User = require("../models/User");
-const Media = require("../models/Media");
-const compressImage = require("../helpers/compressImage");
+const User = require("./models/User");
+const Media = require("./models/Media");
+const compressImage = require("./helpers/media/compressImage");
 
 const app = express();
 

@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
-const getFromCache = require("./getFromCache");
-const cache = require("./cache");
+const User = require("../../models/User");
+const getFromCache = require("../cache/getFromCache");
+const cache = require("../cache/cache");
 
 const getUserByToken = (token, redisClient) => {
   return new Promise(async (resolve, reject) => {

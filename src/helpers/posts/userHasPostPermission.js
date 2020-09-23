@@ -1,8 +1,8 @@
 const { Types } = require("mongoose");
-const Post = require("../models/Post");
-const FollowRelation = require("../models/FollowRelation");
-const listCache = require("./listCache");
-const getListFromCache = require("./getListFromCache");
+const Post = require("../../models/Post");
+const FollowRelation = require("../../models/FollowRelation");
+const listCache = require("../cache/listCache");
+const getListFromCache = require("../cache/getListFromCache");
 
 const userHasPostPermission = (post_id, user_id, redisClient) => {
   return new Promise(async (resolve, reject) => {
