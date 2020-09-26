@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 const createToken = require("../helpers/session/createToken");
 const getFromCache = require("../helpers/cache/getFromCache");
 const cache = require("../helpers/cache/cache");
@@ -31,24 +32,26 @@ const getUserByToken = require("../helpers/session/getUserByToken");
 *   
 */
 
-const refreshToken = (refresh_token, redisClient) => {
+const refreshToken = (refresh_token, mysqlClient, redisClient) => {
   return new Promise(async (resolve, reject) => {
 
     // get user by decoding token
-    let user = null;
+    let decoded = null;
     try {
-      user = await getUserByToken(refresh_token, redisClient);
+      decoded = jwt.verify(refresh_token, process.env.TOKEN_SECRET);
     } catch(e) {
       console.error(e);
     }
 
-    if(!user)
+    if(!decoded || !decoded.user)
       return reject(new Error("INVALID_TOKEN"));
+
+    const user = decoded.user;
 
     // get session data from token
     let session = null;
     try {
-      session = await getFromCache(`session-uid-${user._id}-${refresh_token}`, null, redisClient);
+      session = await getFromCache(`session-uid-${user.id}-${refresh_token}`, null, redisClient);
       session = JSON.parse(session);
     } catch(e) {
       console.error(e);
@@ -58,11 +61,9 @@ const refreshToken = (refresh_token, redisClient) => {
     if(!session)
       return reject(new Error("INVALID_TOKEN"));
 
-    session.expiresAt = Date.now() + process.env.REFRESH_TOKEN_DURATION * 24 * 60 * 60;
-
     // delete old session
     try {
-      await deleteFromCache(`session-uid-${user._id}-${refresh_token}`, null, redisClient);
+      await deleteFromCache(`session-uid-${user.id}-${refresh_token}`, null, redisClient);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_DELETING_OLD_SESSION"));
@@ -71,9 +72,11 @@ const refreshToken = (refresh_token, redisClient) => {
     const new_refresh_token = createToken(user, "refresh");
     const new_access_token = createToken(user, "access");
 
+    session.expiresAt = new_refresh_token.expiresAt;
+
     // create new session
     try {
-      await cache(`session-uid-${user._id}-${new_refresh_token.value}`, null, JSON.stringify(session), process.env.REFRESH_TOKEN_DURATION * 24 * 60 * 60, true, true, redisClient);
+      await cache(`session-uid-${user.id}-${new_refresh_token.value}`, null, JSON.stringify(session), new_refresh_token.expiresAt, true, true, redisClient);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_SAVING_SESSION"));
