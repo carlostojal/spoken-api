@@ -12,7 +12,7 @@ const createToken = (user, type = "access") => {
   const token = jwt.sign({
     exp: expiry,
     user: {
-      _id: user._id,
+      id: user.id,
       name: user.name,
       surname: user.surname,
       username: user.username

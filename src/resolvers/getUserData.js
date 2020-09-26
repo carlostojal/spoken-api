@@ -1,5 +1,6 @@
 const { AuthenticationError } = require("apollo-server");
 const User = require("../models/User");
+const getUserById = require("../helpers/mysql/users/getUserById");
 const mediaIdToUrl = require("../helpers/media/mediaIdToUrl");
 const cache = require("../helpers/cache/cache");
 
@@ -29,7 +30,7 @@ const cache = require("../helpers/cache/cache");
 *   
 */
 
-const getUserData = (id, user, redisClient) => {
+const getUserData = (id, user, mysqlClient, redisClient) => {
   return new Promise((resolve, reject) => {
 
     // function to remove private user data and return
@@ -45,7 +46,7 @@ const getUserData = (id, user, redisClient) => {
       user.n_followers = user.followers.length;*/
 
       // remove email for privacy reasons
-      if(id && user._id.toString() != id)
+      if(id && user.id != id)
         resUser.email = null;
 
       return resolve(resUser);
@@ -55,39 +56,35 @@ const getUserData = (id, user, redisClient) => {
     if(!user) return reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
     if(!id)
-      id = user._id;          
+      id = user.id;          
 
     // try to get from cache
-    redisClient.get(`userdata-uid-${id}`, (error, result) => {
+    redisClient.get(`userdata-uid-${id}`, async (error, result) => {
 
       if (error) {
         console.error(error);
         return reject(new Error("ERROR_ACCESSING_CACHE"));
       }
 
-      if(result) {
-        console.log("Get user data from cache.");
+      if(result)
         return clearAndReturnUser(JSON.parse(result));
+
+      let query_user = null;
+
+      try {
+        query_user = await getUserById(id, mysqlClient);
+      } catch(e) {
+        console.error(e);
+        return reject(new Error("ERROR_GETTING_USER"));
       }
+      
+      if(!query_user) return reject(new Error("USER_NOT_FOUND"));
 
-      const query = User.findOne({ _id: id });
-      query.exec((err, query_user) => {
-        
-        if (err) return reject(new Error("ERROR_GETTING_USER"));
+      // save the data got to cache
+      cache(`userdata-uid-${query_user.id}`, null, JSON.stringify(query_user), process.env.USER_DATA_CACHE_DURATION, true, false, redisClient);
 
-        if (!query_user) return reject(new Error("USER_NOT_EXISTENT"));
+      return clearAndReturnUser(query_user);
 
-        // save the data got to cache
-        cache(`userdata-uid-${query_user._id}`, null, JSON.stringify(query_user), process.env.USER_DATA_CACHE_DURATION, true, false, redisClient).then(() => {
-          console.log("User data saved to cache.");
-        }).catch((e) => {
-          console.log(e);
-        });
-
-        console.log("Get user data from DB.");
-
-        return clearAndReturnUser(query_user);
-      });
     });
   });
 }

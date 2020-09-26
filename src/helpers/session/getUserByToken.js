@@ -1,9 +1,10 @@
 const jwt = require("jsonwebtoken");
 const User = require("../../models/User");
+const getUserById = require("../mysql/users/getUserById");
 const getFromCache = require("../cache/getFromCache");
 const cache = require("../cache/cache");
 
-const getUserByToken = (token, redisClient) => {
+const getUserByToken = (token, mysqlClient, redisClient) => {
   return new Promise(async (resolve, reject) => {
 
     // verify and decode user token
@@ -33,7 +34,7 @@ const getUserByToken = (token, redisClient) => {
     
     // the user was not in cache, so get from database
     try {
-      user = await User.findById(decoded.user._id);
+      user = await getUserById(decoded.user.id, mysqlClient);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_USER"));
@@ -41,7 +42,7 @@ const getUserByToken = (token, redisClient) => {
 
     // save the user in cache
     try {
-      await cache(`userdata-uid-${decoded.user._id}`, null, JSON.stringify(user), process.env.USER_DATA_CACHE_DURATION, true, true, redisClient);
+      await cache(`userdata-uid-${user.id}`, null, JSON.stringify(user), process.env.USER_DATA_CACHE_DURATION, false, false, redisClient);
     } catch(e) {
       console.error(e);
     }

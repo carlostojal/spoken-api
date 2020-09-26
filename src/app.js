@@ -26,7 +26,7 @@ const server = new ApolloServer({
 
     // get user from token
     if(token)
-      user = await getUserByToken(token, redisClient);
+      user = await getUserByToken(token, mysqlClient, redisClient);
 
     return { req, res, user, redisClient, mysqlClient };
   }
