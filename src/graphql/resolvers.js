@@ -83,7 +83,7 @@ const resolvers = {
     },
 
     confirmAccount: (parent, args, context, info) => {
-      return confirmAccount(args.user_id, args.code);
+      return confirmAccount(args.user_id, args.code, context.mysqlClient);
     },
 
     // edit current user data

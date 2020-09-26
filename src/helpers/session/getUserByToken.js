@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-const User = require("../../models/User");
 const getUserById = require("../mysql/users/getUserById");
 const getFromCache = require("../cache/getFromCache");
 const cache = require("../cache/cache");
@@ -22,7 +21,7 @@ const getUserByToken = (token, mysqlClient, redisClient) => {
     // get user from cache
     let user;
     try {
-      user = await getFromCache(`userdata-uid-${decoded.user._id}`, null, redisClient);
+      user = await getFromCache(`userdata-uid-${decoded.user.id}`, null, redisClient);
       user = JSON.parse(user);
     } catch(e) {
       console.error(e);
