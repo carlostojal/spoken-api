@@ -13,7 +13,7 @@ const typeDefs = gql`
   }
 
   type User {
-    _id: ID,
+    id: ID,
     name: String,
     surname: String,
     birthdate: String,
@@ -27,7 +27,7 @@ const typeDefs = gql`
   }
 
   type Post {
-    _id: ID,
+    id: ID,
     poster: User,
     time: String,
     text: String,
@@ -37,7 +37,7 @@ const typeDefs = gql`
   }
 
   type Comment {
-    _id: ID,
+    id: ID,
     time: String,
     user: User,
     text: String,
@@ -55,12 +55,12 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    registerUser(name: String!, surname: String!, birthdate: String!, email: String!, username: String!, password: String!, profile_pic_media_id: String, profile_type: ProfileType!, profile_privacy_type: ProfilePrivacyType!): User
-    confirmAccount(user_id: String!, code: Int!): User
-    editUser(name: String!, surname: String!, email: String!, username: String!, password: String!, profile_pic_media_id: String, profile_type: ProfileType!, profile_privacy_type: ProfilePrivacyType!): User
-    createPost(text: String!, media_id: String): Post
+    registerUser(name: String!, surname: String!, birthdate: String!, email: String!, username: String!, password: String!, profile_pic_mediaid: String, profile_type: ProfileType!, profile_privacy_type: ProfilePrivacyType!): User
+    confirmAccount(userid: String!, code: Int!): User
+    editUser(name: String!, surname: String!, email: String!, username: String!, password: String!, profile_pic_mediaid: String, profile_type: ProfileType!, profile_privacy_type: ProfilePrivacyType!): User
+    createPost(text: String!, mediaid: String): Post
     followUser(id: String!): User
-    acceptFollowRequest(user_id: String!): User
+    acceptFollowRequest(userid: String!): User
     deletePost(id: String!): Post
     editPost(id: String!, text: String!): Post
     reactPost(id: String!): Post

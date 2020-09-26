@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
-const User = require("../models/User");
+const insertUser = require("../helpers/mysql/users/insertUser");
 const checkBirthdate = require("../helpers/checkBirthdate");
+const generateId = require("../helpers/generateId");
 const sendConfirmationEmail = require("./sendConfirmationEmail");
 
 /*
@@ -34,7 +35,7 @@ const sendConfirmationEmail = require("./sendConfirmationEmail");
 *   
 */
 
-const registerUser = (name, surname, birthdate, email, username, password, profile_type, profile_privacy_type) => {
+const registerUser = (name, surname, birthdate, email, username, password, profile_type, profile_privacy_type, mysqlClient) => {
   return new Promise((resolve, reject) => {
 
     if(!checkBirthdate(birthdate))
@@ -46,60 +47,46 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
         return reject(new Error("ERROR_HASHING_PASSWORD"));
       }
 
-      bcrypt.hash(password, salt, (err, hash_password) => {
+      bcrypt.hash(password, salt, async (err, hash_password) => {
+
         if (err) {
           console.error(err);
           return reject(new Error("ERROR_HASHING_PASSWORD"));
         }
 
-        const user = new User({
-          access_token: {
-            value: null,
-            expiry: null
-          },
-          refresh_token: {
-            value: null,
-            expiry: null
-          },
-          name: name,
-          surname: surname,
-          birthdate: new Date(parseInt(birthdate)).getTime().toString(),
-          email: email,
-          email_confirmed: false,
-          confirmation_code: Math.floor((Math.random() * 8999) + 1000), // generate random confirmation code in range 1000-9999
+        const user = {
+          id: generateId(),
+          name,
+          surname,
+          birthdate: new Date(parseInt(birthdate)).getTime(),
+          email,
+          confirmation_code: Math.floor((Math.random() * 8999) + 1000),
           username: username.toLowerCase(),
           password: hash_password,
-          profile_pic_media_id: null,
-          profile_type: profile_type,
-          profile_privacy_type: profile_privacy_type,
-          posts: [],
-          following:  [],
-          followers: []
-        });
+          profile_type,
+          profile_privacy_type
+        };
 
-        user.save().then((result) => {
-          // saved user, now send confirmation email
-          try {
-            sendConfirmationEmail(user);
-          } catch(e) {
-            console.error(e);
-            return reject(new Error("ERROR_SENDING_CONFIRMATION_EMAIL"));
+        try {
+          await insertUser(user, mysqlClient);
+          success = true;
+        } catch(e) {
+          console.log(e);
+          if(e.errno == 1062) { // duplicate key
+            return reject(new Error("DUPLICATE_USERNAME_OR_EMAIL"));
           }
-          console.log("User registered.");
-          return resolve(result);
-        }).catch((err) => {
-          console.error(err);
-          let error;
-          if(err.code == 11000) { // duplicate key error
-            if(err.keyValue.username) // duplicate username
-              error = new Error("USERNAME_ALREADY_TAKEN");
-            else if(err.keyValue.email) // duplicate email
-              error = new Error("EMAIL_ALREADY_TAKEN");
-          } else {
-            error = new Error("ERROR_SAVING_USER");
-          }
-          reject(error);
-        });
+          return reject(new Error("ERROR_REGISTERING_USER"));
+        }
+
+        try {
+          sendConfirmationEmail(user);
+        } catch(e) {
+          console.error(e);
+          return reject(new Error("ERROR_SENDING_CONFIRMATION_EMAIL"));
+        }
+        console.log("User registered.");
+        
+        return resolve(user);
 
       });
     });
