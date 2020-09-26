@@ -45,8 +45,6 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, my
 
       result = JSON.parse(JSON.stringify(result));
 
-      console.log(result);
-
       if(!result || result.length == 0)
         return reject(new Error("USER_NOT_FOUND"));
       
@@ -95,7 +93,7 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, my
 
         // save refresh token
         try {
-          await cache(`session-uid-${user._id}-${refresh_token.value}`, null, JSON.stringify({createdAt: refresh_token.createdAt, expiresAt: refresh_token.expiresAt, userLocation: geo, userPlatform: platformData}), process.env.REFRESH_TOKEN_DURATION * 24 * 60 * 60, true, true, redisClient);
+          await cache(`session-uid-${user.id}-${refresh_token.value}`, null, JSON.stringify({createdAt: refresh_token.createdAt, expiresAt: refresh_token.expiresAt, userLocation: geo, userPlatform: platformData}), process.env.REFRESH_TOKEN_DURATION * 24 * 60 * 60, true, true, redisClient);
         } catch(e) {
           console.error(e);
           return reject(new Error("ERROR_SAVING_REFRESH_TOKEN"));
