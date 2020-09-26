@@ -34,24 +34,33 @@ const cache = require("../helpers/cache/cache");
 *   
 */
 
-const getToken = (username, password, userPlatform, remoteAddress, userAgent, redisClient) => {
+const getToken = (username, password, userPlatform, remoteAddress, userAgent, mysqlClient, redisClient) => {
   return new Promise((resolve, reject) => {
-    User.findOne({
-      $or: [
-        {username: username},
-        {email: username}
-      ]
-    }).then((user) => {
+    mysqlClient.query(`SELECT * FROM Users WHERE username LIKE '${username}' OR email LIKE '${username}'`, (err, result) => {
 
-      if(!user)
-        return reject(new Error("USER_NOT_EXISTENT"));
+      if(err) {
+        console.error(err);
+        return reject(new Error("ERROR_GETTING_USER"));
+      }
+
+      result = JSON.parse(JSON.stringify(result));
+
+      console.log(result);
+
+      if(!result || result.length == 0)
+        return reject(new Error("USER_NOT_FOUND"));
+      
+      const user = result[0];
 
       if(!user.email_confirmed) 
         return reject(new Error("EMAIL_NOT_CONFIRMED"));
 
       bcrypt.compare(password, user.password, async (err, compareSuccess) => { // compare the provided password with the user one
-        
-        if (err) return reject(new Error("AUTHENTICATION_ERROR"));
+      
+        if (err) {
+          console.error(err);
+          return reject(new Error("AUTHENTICATION_ERROR"));
+        }
 
         if(!compareSuccess) return reject(new Error("WRONG_PASSWORD"));
 
@@ -94,9 +103,6 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, re
 
         return resolve({ access_token, refresh_token });
       });
-    }).catch((error) => {
-      console.log(error);
-      return reject(new Error("ERROR_GETTING_USER"));
     });
   });
 }

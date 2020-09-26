@@ -2,6 +2,7 @@ const { ApolloServer } = require("apollo-server");
 require("dotenv").config({ path: ".env" });
 require("./config/mongoose");
 require("./express"); // express server
+const mysqlClient = require("./config/mysql");
 const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers");
 const redisClient = require("./config/redis");
@@ -27,7 +28,7 @@ const server = new ApolloServer({
     if(token)
       user = await getUserByToken(token, redisClient);
 
-    return { req, res, user, redisClient };
+    return { req, res, user, redisClient, mysqlClient };
   }
 });
 
