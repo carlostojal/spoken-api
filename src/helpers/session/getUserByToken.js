@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const getUserById = require("../mysql/users/getUserById");
+const getUserById = require("../controllers/users/getUserById");
 const getFromCache = require("../cache/getFromCache");
 const cache = require("../cache/cache");
 

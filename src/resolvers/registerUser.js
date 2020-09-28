@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const insertUser = require("../helpers/mysql/users/insertUser");
+const insertUser = require("../helpers/controllers/users/insertUser");
 const checkBirthdate = require("../helpers/checkBirthdate");
 const generateId = require("../helpers/generateId");
 const sendConfirmationEmail = require("./sendConfirmationEmail");
@@ -64,7 +64,7 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
           username: username.toLowerCase(),
           password: hash_password,
           profile_type,
-          profile_privacy_type
+          profile_privacy_type: profile_privacy_type == "business" ? "public" : profile_privacy_type // business profiles are always public
         };
 
         try {

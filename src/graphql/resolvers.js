@@ -98,12 +98,12 @@ const resolvers = {
 
     // starts following user
     followUser: (parent, args, context, info) => {
-      return followUser(args.id, context.user);
+      return followUser(args.id, context.user, context.mysqlClient);
     },
 
     // accepts follow request from user ID
     acceptFollowRequest: (parent, args, context, info) => {
-      return acceptFollowRequest(args.user_id, context.user);
+      return acceptFollowRequest(args.user_id, context.user, context.mysqlClient);
     },
 
     // deletes post from post ID

@@ -1,4 +1,4 @@
-const getUserById = require("../helpers/mysql/users/getUserById");
+const getUserById = require("../helpers/controllers/users/getUserById");
 
 const confirmAccount = (user_id, code, mysqlClient) => {
   return new Promise(async (resolve, reject) => {

@@ -1,6 +1,6 @@
 const { AuthenticationError } = require("apollo-server");
 const User = require("../models/User");
-const getUserById = require("../helpers/mysql/users/getUserById");
+const getUserById = require("../helpers/controllers/users/getUserById");
 const mediaIdToUrl = require("../helpers/media/mediaIdToUrl");
 const cache = require("../helpers/cache/cache");
 

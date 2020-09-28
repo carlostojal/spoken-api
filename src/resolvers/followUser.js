@@ -1,6 +1,7 @@
 const { AuthenticationError } = require("apollo-server");
-const User = require("../models/User");
-const FollowRelation = require("../models/FollowRelation");
+const getUserById = require("../helpers/controllers/users/getUserById");
+const insertRelation = require("../helpers/controllers/relations/insertRelation");
+const removeRelation = require("../helpers/controllers/relations/removeRelation");
 
 /*
 *
@@ -28,8 +29,8 @@ const FollowRelation = require("../models/FollowRelation");
 *   
 */
 
-const followUser = (id, user) => {
-  return new Promise((resolve, reject) => {
+const followUser = (id, user, mysqlClient) => {
+  return new Promise(async (resolve, reject) => {
 
     if(!user)
       reject(new AuthenticationError("BAD_AUTHENTICATION"));
@@ -37,46 +38,47 @@ const followUser = (id, user) => {
     if(!id)
       reject(new Error("NO_USER_ID_PROVIDED"));
 
-    if(id == user._id)
+    if(id == user.id)
       reject(new Error("USER_FOLLOWING_HIMSELF"));
 
-    // find user from provided ID
-    User.findById(id).then((user1) => {
+    let user1 = null;
+    try {
+      user1 = await getUserById(id, mysqlClient);
+    } catch(e) {
+      console.error(e);
+      return reject(new Error("ERROR_GETTING_USER"));
+    }
 
-      if(!user1)
-        reject(new Error("USER_DOESNT_EXIST"));
+    if(!user1)
+      return reject(new Error("USER_NOT_FOUND"));
 
-      const accepted = user1.profile_privacy_type == "public";
-        
-      // create follow relation
-      const followRelation = new FollowRelation({
-        user: user._id,
-        follows: id,
-        accepted
-      });
+    const accepted = user1.profile_privacy_type == "public";
 
-      followRelation.save().then(() => {
-        console.log(`${user.username} followed ${user1.username}.`);
-        return resolve(user1);
-      }).catch((error) => {
-        // the relation already exists, so remove
-        if(error.code == 11000) {
-          FollowRelation.deleteOne({ user: user._id, follows: user1._id }).then(() => {
-            console.log(`${user.username} unfollowed ${user1.username}.`);
-            return resolve(user1);
-          }).catch((error) => {
-            console.error(error);
-            return reject(new Error("ERROR_REMOVING_RELATION"));
-          });
-        } else {
-          console.error(error);
-          return reject(new Error("ERROR_CREATING_RELATION"));
+    const followRelation = {
+      user: user.id,
+      follows: user1.id,
+      create_time: Date.now(),
+      accept_time: accepted ? Date.now() : null,
+      accepted
+    };
+
+    try {
+      await insertRelation(followRelation, mysqlClient);
+    } catch(e) {
+      console.error(e);
+      if(e.errno == 1062) { // duplicate key (relation already exists)
+        // will remove the relation
+        try {
+          await removeRelation(user.id, user1.id, mysqlClient);
+        } catch(e) {
+          console.error(e);
+          return reject(new Error("ERROR_REMOVING_RELATION"));
         }
-      });
-    }).catch((error) => {
-      console.error(error);
-      return reject(new Error("ERROR_FINDING_USER"));
-    });
+      }
+      return reject(new Error("ERROR_CREATING_RELATION"));
+    }
+
+    return resolve(user1);
   });
 };
 

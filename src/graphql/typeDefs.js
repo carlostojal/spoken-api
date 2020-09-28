@@ -60,7 +60,7 @@ const typeDefs = gql`
     editUser(name: String!, surname: String!, email: String!, username: String!, password: String!, profile_pic_mediaid: String, profile_type: ProfileType!, profile_privacy_type: ProfilePrivacyType!): User
     createPost(text: String!, mediaid: String): Post
     followUser(id: String!): User
-    acceptFollowRequest(userid: String!): User
+    acceptFollowRequest(user_id: String!): User
     deletePost(id: String!): Post
     editPost(id: String!, text: String!): Post
     reactPost(id: String!): Post
