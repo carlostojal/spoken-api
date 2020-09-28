@@ -6,7 +6,7 @@ const getUserById = (id, mysqlClient) => {
 
       if(err) {
         console.error(err);
-        return reject(new Error("ERROR_GETTING_USER"));
+        return reject(err);
       }
 
       result = JSON.parse(JSON.stringify(result));

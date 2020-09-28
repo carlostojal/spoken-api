@@ -1,5 +1,10 @@
 const { AuthenticationError } = require("apollo-server");
-const Post = require("../models/Post");
+const generateId = require("../helpers/generateId");
+const insertPost = require("../helpers/controllers/posts/insertPost");
+const getPostById = require("../helpers/controllers/posts/getPostById");
+const associateMediaWithPost = require("../helpers/controllers/posts/associateMediaWithPost");
+const cache = require("../helpers/cache/cache");
+const formatPost = require("../helpers/formatPost");
 
 /*
 *
@@ -31,33 +36,62 @@ const Post = require("../models/Post");
 *   
 */
 
-const createPost = (text, media_id, original_post, user) => {
-  return new Promise((resolve, reject) => {
+const createPost = (text, media_id, user, redisClient, mysqlClient) => {
+  return new Promise(async (resolve, reject) => {
 
     if(!user)
-      reject(new AuthenticationError("BAD_AUTHENTICATION"));
+      return reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
-    const post = new Post({ // create post
-      poster: user._id,
-      time: Date.now().toString(),
-      text: text,
-      media: media_id || null,
-      original_post: original_post || null,
-      edited: false
-    });
+    const post = {
+      id: generateId(),
+      user_id: user.id,
+      time: Date.now(),
+      text: text
+    };
 
-    post.save().then((post) => { // save post
-      Post.populate(post, "poster").then((post) => {
-        console.log(`${user.username} created post.`);
-        return resolve(post);
-      }).catch((e) => {
+    // insert simple post
+    try {
+      await insertPost(post, mysqlClient);
+    } catch(e) {
+      console.error(e);
+      return reject(new Error("ERROR_REGISTERING_POST"));
+    }
+
+    // associate the media ID with the post
+    if(media_id) {
+      try {
+        await associateMediaWithPost(post.id, media_id, mysqlClient);
+      } catch(e) {
         console.error(e);
-        return reject(new Error("ERROR_GETTING_POST"));
-      });
-    }).catch((err) => {
-      console.error(err);
-      return reject(new Error("ERROR_SAVING_POST"));
-    });
+        return reject(new Error("ERROR_ASSOCIATING_MEDIA"));
+      }
+    }
+
+    // get the post from the database
+    let post1 = null;
+    try {
+      post1 = await getPostById(post.id, mysqlClient);
+    } catch(e) {
+      console.error(e);
+      return reject(new Error("ERROR_GETTING_POST"));
+    }
+
+    // format post to be like in the expected form from GraphQL typedefs
+    try {
+      post1 = formatPost(post1);
+    } catch(e) {
+      console.error(e);
+      return reject(new Error("ERROR_FORMATING_POST"));
+    }
+
+    // save in cache
+    try {
+      await cache(`post-${post.id}`, null, JSON.stringify(post1), process.env.POST_CACHE_DURATION, true, true, redisClient);
+    } catch(e) {
+      console.error(e);
+    }
+
+    return resolve(post1);
   });
 }
 
