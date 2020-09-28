@@ -5,6 +5,7 @@ const getPostById = require("../helpers/controllers/posts/getPostById");
 const associateMediaWithPost = require("../helpers/controllers/posts/associateMediaWithPost");
 const cache = require("../helpers/cache/cache");
 const formatPost = require("../helpers/formatPost");
+const checkPostToxicity = require("../helpers/checkPostToxicity");
 
 /*
 *
@@ -83,6 +84,9 @@ const createPost = (text, media_id, user, redisClient, mysqlClient) => {
       console.error(e);
       return reject(new Error("ERROR_FORMATING_POST"));
     }
+
+    // check if the post text is toxic (the user will not wait for this action)
+    checkPostToxicity(post, mysqlClient);
 
     // save in cache
     try {
