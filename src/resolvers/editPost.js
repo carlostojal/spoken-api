@@ -4,7 +4,7 @@ const editPostById = require("../helpers/controllers/posts/editPostById");
 const checkPostToxicity = require("../helpers/checkPostToxicity");
 const formatPost = require("../helpers/formatPost");
 
-const editPost = (id, text, user, mysqlClient) => {
+const editPost = (id, text, user, redisClient, mysqlClient) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -12,7 +12,7 @@ const editPost = (id, text, user, mysqlClient) => {
 
     let post = null;
     try {
-      post = await getPostById(id, mysqlClient);
+      post = await getPostById(id, redisClient, mysqlClient);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_POST"));

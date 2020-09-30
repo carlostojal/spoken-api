@@ -113,7 +113,7 @@ const resolvers = {
 
     // edits post from post ID. updates text
     editPost: (parent, args, context, info) => {
-      return editPost(args.id, args.text, context.user, context.mysqlClient);
+      return editPost(args.id, args.text, context.user, context.redisClient, context.mysqlClient);
     },
 
     // react to post
