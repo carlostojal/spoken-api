@@ -108,7 +108,7 @@ const resolvers = {
 
     // deletes post from post ID
     deletePost: (parent, args, context, info) => {
-      return deletePost(args.id, context.user);
+      return deletePost(args.id, context.user, context.mysqlClient);
     },
 
     // edits post from post ID. updates text
