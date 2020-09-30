@@ -1,4 +1,4 @@
-require("@tensorflow/tfjs");
+require("@tensorflow/tfjs-node");
 const toxicity = require("@tensorflow-models/toxicity");
 const removePostById = require("./controllers/posts/removePostById");
 
