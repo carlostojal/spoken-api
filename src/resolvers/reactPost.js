@@ -42,9 +42,6 @@ const reactPost = (post_id, user, redisClient, mysqlClient) => {
 
     if(!hasPermission)
       return reject(new Error("BAD_PERMISSIONS"));
-
-    if(!hasPermission)
-      return reject(new Error("BAD_PERMISSIONS"));
     
     // check if the current user reacted the post
     let user_reacted = false;
