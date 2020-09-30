@@ -118,7 +118,7 @@ const resolvers = {
 
     // react to post
     reactPost: (parent, args, context, info) => {
-      return reactPost(args.id, context.user, context.redisClient);
+      return reactPost(args.id, context.user, context.redisClient, context.mysqlClient);
     },
 
     // create comment in post

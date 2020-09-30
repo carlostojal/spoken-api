@@ -1,19 +1,21 @@
 const { AuthenticationError } = require("apollo-server");
-const Post = require("../models/Post");
-const PostReaction = require("../models/PostReaction");
-const preparePost = require("../helpers/posts/preparePost");
-const userHasPostPermission = require("../helpers/posts/userHasPostPermission");
+const getPostById = require("../helpers/controllers/posts/getPostById");
+const userFollowsPoster = require("../helpers/controllers/posts/userFollowsPoster");
+const userReacted = require("../helpers/controllers/reactions/userReacted");
+const removeReaction = require("../helpers/controllers/reactions/removeReaction");
+const insertReaction = require("../helpers/controllers/reactions/insertReaction");
+const generateId = require("../helpers/generateId");
+const formatPost = require("../helpers/formatPost");
 
-const reactPost = (post_id, user, redisClient) => {
+const reactPost = (post_id, user, redisClient, mysqlClient) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
       return reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
     let post = null;
-
     try {
-      post = await Post.findById(post_id);
+      post = await getPostById(post_id, redisClient, mysqlClient);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_POST"));
@@ -22,10 +24,17 @@ const reactPost = (post_id, user, redisClient) => {
     if(!post)
       return reject(new Error("POST_NOT_FOUND"));
 
-    let hasPermission = false;
-
     try {
-      hasPermission = await userHasPostPermission(post_id, user._id, redisClient);
+      post = formatPost(post);
+    } catch(e) {
+      console.error(e);
+      return reject(new Error("ERROR_FORMATING_POST"));
+    }
+
+    // check if the user follows the user who made the post
+    let hasPermission = false;
+    try {
+      hasPermission = await userFollowsPoster(user, post, mysqlClient);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_CHECKING_PERMISSION"));
@@ -33,44 +42,40 @@ const reactPost = (post_id, user, redisClient) => {
 
     if(!hasPermission)
       return reject(new Error("BAD_PERMISSIONS"));
-    
-    let post_reaction;
 
-    // find post reaction
+    if(!hasPermission)
+      return reject(new Error("BAD_PERMISSIONS"));
+    
+    // check if the current user reacted the post
+    let user_reacted = false;
     try {
-      post_reaction = await PostReaction.findOne({ user: user._id, post: post_id });
+      user_reacted = await userReacted(user, post, mysqlClient);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_CHECKING_REACTION"));
     }
 
-    // the reaction was registered, so remove this time
-    if(post_reaction) {
+    // the reaction was registered, so remove
+    if(user_reacted) {
       try {
-        await post_reaction.remove();
+        await removeReaction(user, post, mysqlClient);
       } catch(e) {
         console.error(e);
         return reject(new Error("ERROR_REMOVING_REACTION"));
       }
-    } else { // the reaction was not registered
-      const new_reaction = new PostReaction({
-        time: Date.now().toString(),
-        post: post_id,
-        user: user._id
-      });
+    } else { // the reaction was not registered, so register
+      const reaction = {
+        id: generateId(),
+        user_id: user.id,
+        post_id: post.id,
+        time: Date.now()
+      }
       try {
-        await new_reaction.save();
+        await insertReaction(reaction, mysqlClient);
       } catch(e) {
         console.error(e);
         return reject(new Error("ERROR_SAVING_REACTION"));
       }
-    }
-
-    try {
-      post = await preparePost(post, user);
-    } catch(e) {
-      console.error(e);
-      return reject(new Error("ERROR_PREPARING_POST"));
     }
 
     return resolve(post);
