@@ -1,42 +1,46 @@
-const mongoose = require("mongoose");
-const Post = require("../models/Post");
+const { AuthenticationError } = require("apollo-server");
+const getPostById = require("../helpers/controllers/posts/getPostById");
+const editPostById = require("../helpers/controllers/posts/editPostById");
+const checkPostToxicity = require("../helpers/checkPostToxicity");
+const formatPost = require("../helpers/formatPost");
 
-const editPost = (id, text, user) => {
-  return new Promise((resolve, reject) => {
+const editPost = (id, text, user, mysqlClient) => {
+  return new Promise(async (resolve, reject) => {
 
+    if(!user)
+      return reject(new AuthenticationError("BAD_AUTHENTICATION"));
+
+    let post = null;
     try {
-      const query = Post.findById(id);
-      query.populate("poster");
-      query.exec((err, post) => {
-
-        if(err) {
-          console.error(err);
-          return reject(new Error("ERROR_GETTING_POST"));
-        }
-
-        // the post is not from the session user
-        if(!mongoose.Types.ObjectId(user._id).equals(post.poster._id))
-          return reject(new Error("BAD_PERMISSIONS"));
-        
-        // if the text was not changed don't edit anything (avoids unneccessary DB calls)
-        if(post.text == text) 
-          return resolve(post);
-        
-        post.text = text;
-        post.edited = true;
-        post.save().then(() => {
-          console.log("Post edited.");
-          return resolve(post);
-        }).catch((err) => {
-          console.error(err);
-          return reject(new Error("ERROR_SAVING_CHANGES"));
-        });
-      
-      });
+      post = await getPostById(id, mysqlClient);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_POST"));
     }
+
+    if(!post) // the post doesn't exist
+      return reject(new Error("POST_NOT_FOUND"));
+
+    try {
+      post = formatPost(post);
+    } catch(e) {
+      console.error(e);
+      return reject(new Error("ERROR_FORMATING_POST"));
+    }
+
+    if(post.poster.id != user.id) // the current user is not the post creator
+      return reject(new Error("BAD_PERMISSIONS"));
+
+    try {
+      await editPostById(id, text, mysqlClient);
+    } catch(e) {
+      console.error(e);
+      return reject(new Error("ERROR_UPDATING_POST"));
+    }
+
+    checkPostToxicity(post, mysqlClient);
+
+    return resolve(post);
   });
 };
 
