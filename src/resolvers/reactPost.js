@@ -1,6 +1,6 @@
 const { AuthenticationError } = require("apollo-server");
 const getPostById = require("../helpers/controllers/posts/getPostById");
-const userFollowsPoster = require("../helpers/controllers/posts/userFollowsPoster");
+const userFollowsUser = require("../helpers/controllers/users/userFollowsUser");
 const userReacted = require("../helpers/controllers/reactions/userReacted");
 const removeReaction = require("../helpers/controllers/reactions/removeReaction");
 const insertReaction = require("../helpers/controllers/reactions/insertReaction");
@@ -34,7 +34,7 @@ const reactPost = (post_id, user, redisClient, mysqlClient) => {
     // check if the user follows the user who made the post
     let hasPermission = false;
     try {
-      hasPermission = await userFollowsPoster(user, post, mysqlClient);
+      hasPermission = await userFollowsUser(user.id, post.poster.id, mysqlClient);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_CHECKING_PERMISSION"));

@@ -51,7 +51,7 @@ const typeDefs = gql`
     refreshToken: String
     getUserData(id: String): User
     getUserFeed(page: Int!, perPage: Int!): [Post]
-    getPostComments(page: Int!, perPage: Int!, id: String): [Comment]
+    getPostComments(page: Int!, perPage: Int!, id: String!): [Comment]
   }
 
   type Mutation {

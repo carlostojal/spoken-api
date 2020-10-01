@@ -72,7 +72,7 @@ const resolvers = {
     },
 
     getPostComments: (parent, args, context, info) => {
-      return getPostComments(args.page, args.perPage, args.id, context.user, context.redisClient);
+      return getPostComments(args.page, args.perPage, args.id, context.user, context.redisClient, context.mysqlClient);
     }
   },
 
