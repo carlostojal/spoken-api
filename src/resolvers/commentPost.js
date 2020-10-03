@@ -1,11 +1,11 @@
 const { AuthenticationError } = require("apollo-server");
-const PostComment = require("../models/PostComment");
-const Post = require("../models/Post");
-const deleteFromCache = require("../helpers/cache/deleteFromCache");
+const generateId = require("../helpers/generateId");
+const getPostById = require("../helpers/controllers/posts/getPostById");
+const userFollowsUser = require("../helpers/controllers/users/userFollowsUser");
+const insertComment = require("../helpers/controllers/posts/insertComment");
 const preparePost = require("../helpers/posts/preparePost");
-const userHasPostPermission = require("../helpers/posts/userHasPostPermission");
 
-const commentPost = (post_id, user, text, redisClient) => {
+const commentPost = (post_id, user, text, redisClient, mysqlClient) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -14,53 +14,40 @@ const commentPost = (post_id, user, text, redisClient) => {
     let post = null;
 
     try {
-      post = await Post.findById(post_id);
+      post = await getPostById(post_id, redisClient, mysqlClient);
     } catch(e) {
-      console.error(e);
       return reject(new Error("ERROR_GETTING_POST"));
     }
 
-    if(!post)
-      return reject(new Error("POST_NOT_FOUND"));
+    let has_permission = false;
 
-    let hasPermission = false;
-    
     try {
-      hasPermission = await userHasPostPermission(post_id, user._id, redisClient);
+      has_permission = await userFollowsUser(user.id, post.poster_id, mysqlClient);
     } catch(e) {
-      console.error(e);
       return reject(new Error("ERROR_CHECKING_PERMISSION"));
     }
 
-    if(!hasPermission)
+    if(!has_permission)
       return reject(new Error("BAD_PERMISSIONS"));
 
-    const comment = new PostComment({
-      time: Date.now().toString(),
-      post: post_id,
-      user: user._id,
+    const comment = {
+      id: generateId(),
+      user_id: user.id,
+      post_id: post.id,
+      time: Date.now(),
       text
-    });
+    };
 
     try {
-      await comment.save();
+      await insertComment(comment, mysqlClient);
     } catch(e) {
-      console.error(e);
-      return reject(new Error("ERROR_SAVING_COMMENT"));
+      return reject(new Error("ERROR_REGISTERING_COMMENT"));
     }
 
     try {
-      post = await preparePost(post, user);
+      post = preparePost(post);
     } catch(e) {
-      console.error(e);
       return reject(new Error("ERROR_PREPARING_POST"));
-    }
-
-    try {
-      await deleteFromCache(`comments-post-${post_id}`, null, redisClient);
-    } catch(e) {
-      console.error(e);
-      return reject(new Error("ERROR_RESETING_CACHE"));
     }
 
     return resolve(post);

@@ -23,7 +23,7 @@ const resolvers = {
       const tokens = await getToken(args.username, args.password, args.userPlatform, context.req.connection.remoteAddress, context.req.headers["user-agent"], context.mysqlClient, context.redisClient);
       // send refresh token as httpOnly cookie
       context.res.cookie("refresh_token", tokens.refresh_token.value, {
-        expires: new Date(tokens.refresh_token.expiry),
+        maxAge: process.env.REFRESH_TOKEN_DURATION * 24 * 3600 * 1000,
         httpOnly: true
       });
       return tokens.access_token.value;
@@ -55,7 +55,7 @@ const resolvers = {
       const tokens = await refreshToken(refresh_token, context.mysqlClient, context.redisClient);
       // send new refresh token through cookies
       context.res.cookie("refresh_token", tokens.refresh_token.value, {
-        expires: new Date(tokens.refresh_token.expiry),
+        expires: process.env.REFRESH_TOKEN_DURATION * 24 * 3600 * 1000,
         httpOnly: true
       });
       return tokens.access_token.value;
@@ -123,7 +123,7 @@ const resolvers = {
 
     // create comment in post
     commentPost: (parent, args, context, info) => {
-      return commentPost(args.id, context.user, args.text, context.redisClient);
+      return commentPost(args.id, context.user, args.text, context.redisClient, context.mysqlClient);
     }
   }
 }
