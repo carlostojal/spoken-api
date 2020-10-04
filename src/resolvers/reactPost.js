@@ -15,7 +15,7 @@ const reactPost = (post_id, user, redisClient, mysqlClient) => {
 
     let post = null;
     try {
-      post = await getPostById(post_id, redisClient, mysqlClient);
+      post = await getPostById(post_id, mysqlClient);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_POST"));

@@ -21,11 +21,13 @@ const getPostComments = (page, perPage, post_id, user, redisClient, mysqlClient)
       return reject(new Error("POST_NOT_FOUND"));
 
     // check if the user follows who made the post
-    let has_permission = false;
-    try {
-      has_permission = await userFollowsUser(user.id, post.poster_id, mysqlClient);
-    } catch(e) {
-      return reject(new Error("ERROR_CHECKING_PERMISSIONS"));
+    let has_permission = user.id == post.poster_id;
+    if(!has_permission) {
+      try {
+        has_permission = await userFollowsUser(user.id, post.poster_id, mysqlClient);
+      } catch(e) {
+        return reject(new Error("ERROR_CHECKING_PERMISSIONS"));
+      }
     }
 
     if(!has_permission)

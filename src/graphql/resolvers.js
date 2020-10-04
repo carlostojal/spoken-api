@@ -13,6 +13,7 @@ const acceptFollowRequest = require("../resolvers/acceptFollowRequest");
 const editPost = require("../resolvers/editPost");
 const reactPost = require("../resolvers/reactPost");
 const commentPost = require("../resolvers/commentPost");
+const sharePost = require("../resolvers/sharePost");
 const deletePost = require("../resolvers/deletePost");
 const getCookieByName = require("../helpers/getCookieByName");
 
@@ -55,7 +56,7 @@ const resolvers = {
       const tokens = await refreshToken(refresh_token, context.mysqlClient, context.redisClient);
       // send new refresh token through cookies
       context.res.cookie("refresh_token", tokens.refresh_token.value, {
-        expires: process.env.REFRESH_TOKEN_DURATION * 24 * 3600 * 1000,
+        maxAge: process.env.REFRESH_TOKEN_DURATION * 24 * 3600 * 1000,
         httpOnly: true
       });
       return tokens.access_token.value;
@@ -124,6 +125,11 @@ const resolvers = {
     // create comment in post
     commentPost: (parent, args, context, info) => {
       return commentPost(args.id, context.user, args.text, context.redisClient, context.mysqlClient);
+    },
+
+    // shares a existing post
+    sharePost: (parent, args, context, info) => {
+      return sharePost(args.id, args.text, context.user, context.mysqlClient);
     }
   }
 }

@@ -71,7 +71,7 @@ const createPost = (text, media_id, user, redisClient, mysqlClient) => {
     // get the post from the database
     let post1 = null;
     try {
-      post1 = await getPostById(post.id, redisClient, mysqlClient);
+      post1 = await getPostById(post.id, mysqlClient);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_POST"));

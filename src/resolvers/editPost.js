@@ -12,7 +12,7 @@ const editPost = (id, text, user, redisClient, mysqlClient) => {
 
     let post = null;
     try {
-      post = await getPostById(id, redisClient, mysqlClient);
+      post = await getPostById(id, mysqlClient);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_POST"));

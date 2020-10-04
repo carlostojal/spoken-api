@@ -3,7 +3,8 @@ const generateId = require("../helpers/generateId");
 const getPostById = require("../helpers/controllers/posts/getPostById");
 const userFollowsUser = require("../helpers/controllers/users/userFollowsUser");
 const insertComment = require("../helpers/controllers/posts/insertComment");
-const preparePost = require("../helpers/posts/preparePost");
+const formatPost = require("../helpers/formatPost");
+const checkCommentToxicity = require("../helpers/checkCommentToxicity");
 
 const commentPost = (post_id, user, text, redisClient, mysqlClient) => {
   return new Promise(async (resolve, reject) => {
@@ -14,7 +15,7 @@ const commentPost = (post_id, user, text, redisClient, mysqlClient) => {
     let post = null;
 
     try {
-      post = await getPostById(post_id, redisClient, mysqlClient);
+      post = await getPostById(post_id, mysqlClient);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_POST"));
     }
@@ -45,9 +46,15 @@ const commentPost = (post_id, user, text, redisClient, mysqlClient) => {
     }
 
     try {
-      post = preparePost(post);
+      post = formatPost(post);
     } catch(e) {
-      return reject(new Error("ERROR_PREPARING_POST"));
+      return reject(new Error("ERROR_FORMATING_POST"));
+    }
+
+    try {
+      checkCommentToxicity(comment, mysqlClient);
+    } catch(e) {
+
     }
 
     return resolve(post);
