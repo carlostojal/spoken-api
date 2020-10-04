@@ -2,12 +2,12 @@ const { AuthenticationError } = require("apollo-server");
 const generateId = require("../helpers/generateId");
 const getPostById = require("../helpers/controllers/posts/getPostById");
 const userFollowsUser = require("../helpers/controllers/users/userFollowsUser");
-const insertPost = require("../helpers/controllers/posts/insertPost");
+const sharePost1 = require("../helpers/controllers/posts/sharePost");
 const associateOriginalPost = require("../helpers/controllers/posts/associateOriginalPost");
 const formatPost = require("../helpers/formatPost");
 const checkPostToxicity = require("../helpers/checkPostToxicity");
 
-const sharePost = (post_id, text, user, mysqlClient) => {
+const sharePost = (post_id, user, mysqlClient) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -45,12 +45,12 @@ const sharePost = (post_id, text, user, mysqlClient) => {
       id: generateId(),
       user_id: user.id,
       time: Date.now(),
-      text: text
+      original_post_id: post_id
     }
 
     // register a new post by this user, that will later reference the shared post
     try {
-      await insertPost(share_post, mysqlClient);
+      await sharePost1(share_post, mysqlClient);
     } catch(e) {
       return reject(new Error("ERROR_REGISTERING_POST"));
     }

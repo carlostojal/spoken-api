@@ -129,7 +129,7 @@ const resolvers = {
 
     // shares a existing post
     sharePost: (parent, args, context, info) => {
-      return sharePost(args.id, args.text, context.user, context.mysqlClient);
+      return sharePost(args.id, context.user, context.mysqlClient);
     }
   }
 }
