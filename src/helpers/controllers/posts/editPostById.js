@@ -1,7 +1,7 @@
 
 const editPostById = (id, text, mysqlClient) => {
   return new Promise((resolve, reject) => {
-    mysqlClient.query(`UPDATE Posts SET text = '${text}', edited = '1' WHERE id = '${id}'`, (err, result) => {
+    mysqlClient.query(`UPDATE Posts SET text = ?, edited = ? WHERE id = ?`, [text, 1, id], (err, result) => {
 
       if(err) {
         console.error(err);
