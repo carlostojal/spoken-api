@@ -2,9 +2,9 @@ const { AuthenticationError } = require("apollo-server");
 const generateId = require("../helpers/generateId");
 const getPostById = require("../helpers/controllers/posts/getPostById");
 const userFollowsUser = require("../helpers/controllers/users/userFollowsUser");
-const insertComment = require("../helpers/controllers/posts/insertComment");
 const formatPost = require("../helpers/formatPost");
 const checkCommentToxicity = require("../helpers/checkCommentToxicity");
+const insertPost = require("../helpers/controllers/posts/insertPost");
 
 const commentPost = (post_id, user, text, redisClient, mysqlClient) => {
   return new Promise(async (resolve, reject) => {
@@ -34,13 +34,13 @@ const commentPost = (post_id, user, text, redisClient, mysqlClient) => {
     const comment = {
       id: generateId(),
       user_id: user.id,
-      post_id: post.id,
+      original_post_id: post.id,
       time: Date.now(),
       text
     };
 
     try {
-      await insertComment(comment, mysqlClient);
+      await insertPost(comment, mysqlClient);
     } catch(e) {
       return reject(new Error("ERROR_REGISTERING_COMMENT"));
     }

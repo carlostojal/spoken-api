@@ -2,8 +2,7 @@ const { AuthenticationError } = require("apollo-server");
 const generateId = require("../helpers/generateId");
 const getPostById = require("../helpers/controllers/posts/getPostById");
 const userFollowsUser = require("../helpers/controllers/users/userFollowsUser");
-const sharePost1 = require("../helpers/controllers/posts/sharePost");
-const associateOriginalPost = require("../helpers/controllers/posts/associateOriginalPost");
+const insertPost = require("../helpers/controllers/posts/insertPost");
 const formatPost = require("../helpers/formatPost");
 const checkPostToxicity = require("../helpers/checkPostToxicity");
 
@@ -50,16 +49,9 @@ const sharePost = (post_id, user, mysqlClient) => {
 
     // register a new post by this user, that will later reference the shared post
     try {
-      await sharePost1(share_post, mysqlClient);
+      await insertPost(share_post, mysqlClient);
     } catch(e) {
       return reject(new Error("ERROR_REGISTERING_POST"));
-    }
-
-    // reference the original post
-    try {
-      await associateOriginalPost(share_post.id, post_id, mysqlClient);
-    } catch(e) {
-      return reject(new Error("ERROR_REFERENCING_ORIGINAL_POST"));
     }
 
     // get post populated from DB

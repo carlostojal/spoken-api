@@ -2,7 +2,6 @@ const { AuthenticationError } = require("apollo-server");
 const generateId = require("../helpers/generateId");
 const insertPost = require("../helpers/controllers/posts/insertPost");
 const getPostById = require("../helpers/controllers/posts/getPostById");
-const associateMediaWithPost = require("../helpers/controllers/posts/associateMediaWithPost");
 const cache = require("../helpers/cache/cache");
 const formatPost = require("../helpers/formatPost");
 const checkPostToxicity = require("../helpers/checkPostToxicity");
@@ -47,7 +46,8 @@ const createPost = (text, media_id, user, redisClient, mysqlClient) => {
       id: generateId(),
       user_id: user.id,
       time: Date.now(),
-      text: text
+      text,
+      media_id
     };
 
     // insert simple post
@@ -56,16 +56,6 @@ const createPost = (text, media_id, user, redisClient, mysqlClient) => {
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_REGISTERING_POST"));
-    }
-
-    // associate the media ID with the post
-    if(media_id) {
-      try {
-        await associateMediaWithPost(post.id, media_id, mysqlClient);
-      } catch(e) {
-        console.error(e);
-        return reject(new Error("ERROR_ASSOCIATING_MEDIA"));
-      }
     }
 
     // get the post from the database
