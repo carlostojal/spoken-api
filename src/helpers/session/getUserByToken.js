@@ -11,7 +11,7 @@ const getUserByToken = (token, mysqlClient, redisClient) => {
     try {
       decoded = jwt.verify(token, process.env.TOKEN_SECRET);
     } catch(e) {
-      console.error(e);
+      
     }
 
     // token is not valid, so the decoded data is null
@@ -24,7 +24,7 @@ const getUserByToken = (token, mysqlClient, redisClient) => {
       user = await getFromCache(`userdata-uid-${decoded.user.id}`, null, redisClient);
       user = JSON.parse(user);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_GETTING_USER"));
     }
 
@@ -35,7 +35,7 @@ const getUserByToken = (token, mysqlClient, redisClient) => {
     try {
       user = await getUserById(decoded.user.id, mysqlClient);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_GETTING_USER"));
     }
 
@@ -43,7 +43,7 @@ const getUserByToken = (token, mysqlClient, redisClient) => {
     try {
       await cache(`userdata-uid-${user.id}`, null, JSON.stringify(user), process.env.USER_DATA_CACHE_DURATION, false, false, redisClient);
     } catch(e) {
-      console.error(e);
+      
     }
 
     return resolve(user);

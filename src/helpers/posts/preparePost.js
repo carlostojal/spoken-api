@@ -12,7 +12,7 @@ const preparePost = (post, user) => {
     try {
       reaction = await PostReaction.findOne({ post: post._id, user: user._id });
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_CHECKING_REACTION"));
     }
 

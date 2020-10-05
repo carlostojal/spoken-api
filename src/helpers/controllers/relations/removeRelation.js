@@ -4,7 +4,7 @@ const removeRelation = (user, follows, mysqlClient) => {
     mysqlClient.query(`DELETE FROM FollowRelations WHERE user = ? AND follows = ?`, [user, follows], (err, result) => {
       
       if(err) {
-        console.error(err);
+        
         return reject(err);
       }
 

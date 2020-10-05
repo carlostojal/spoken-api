@@ -8,7 +8,7 @@ const confirmAccount = (user_id, code, mysqlClient) => {
         mysqlClient.query(`UPDATE Users SET email_confirmed = 1 WHERE id = '${user.id}'`, (err, result) => {
 
           if(err) {
-            console.error(err);
+            
             return reject(new Error("ERROR_UPDATING_USER"));
           }
 
@@ -21,7 +21,7 @@ const confirmAccount = (user_id, code, mysqlClient) => {
     try {
       user = await getUserById(user_id, mysqlClient);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_GETTING_USER"));
     }
 
@@ -32,7 +32,7 @@ const confirmAccount = (user_id, code, mysqlClient) => {
         try {
           await update(user);
         } catch(e) {
-          console.error(e);
+          
           return reject(new Error("ERROR_UPDATING_USER"));
         }
       } else {

@@ -13,7 +13,7 @@ const deletePost = (id, user, mysqlClient) => {
     try {
       post = await getPostById(id, mysqlClient);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_GETTING_POST"));
     }
 
@@ -27,16 +27,14 @@ const deletePost = (id, user, mysqlClient) => {
     try {
       await removePostById(id, mysqlClient);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_REMOVING_POST"));
     }
-
-    console.log("Post deleted.");
 
     try {
       post = formatPost(post);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_FORMATING_POST"));
     }
 

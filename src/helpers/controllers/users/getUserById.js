@@ -5,7 +5,7 @@ const getUserById = (id, mysqlClient) => {
     mysqlClient.query(`SELECT * FROM Users WHERE id LIKE ?`, [id], (err, result) => {
 
       if(err) {
-        console.error(err);
+        
         return reject(err);
       }
 

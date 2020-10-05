@@ -10,7 +10,7 @@ const cache = (key, field, value, ttl, always_cache, overwrite_ttl, redisClient)
     redisClient.exists(key, (error, exists) => {
 
       if(error) {
-        console.error(error);
+        
         return reject(new Error("ERROR_READING_CACHE"));
       }
 
@@ -20,7 +20,7 @@ const cache = (key, field, value, ttl, always_cache, overwrite_ttl, redisClient)
           redisClient.hmset(key, field, value, (error, result) => {
 
             if(error) {
-              console.error(error);
+              
               return reject(new Error("ERROR_WRITING_CACHE"));
             }
 
@@ -28,7 +28,7 @@ const cache = (key, field, value, ttl, always_cache, overwrite_ttl, redisClient)
               redisClient.expire(key, ttl, (error, result) => {
 
                 if(error) {
-                  console.error(error);
+                  
                   return reject(new Error("ERROR_SETTING_CACHE_TTL"));
                 }
 
@@ -47,7 +47,7 @@ const cache = (key, field, value, ttl, always_cache, overwrite_ttl, redisClient)
           redisClient.set(key, value, (error, result) => {
 
             if(error) {
-              console.error(error);
+              
               return reject(new Error("ERROR_WRITING_CACHE"));
             }
 
@@ -55,7 +55,7 @@ const cache = (key, field, value, ttl, always_cache, overwrite_ttl, redisClient)
               redisClient.expire(key, ttl, (error, result) => {
 
                 if(error) {
-                  console.error(error);
+                  
                   return reject(new Error("ERROR_SETTING_CACHE_TTL"));
                 }
 

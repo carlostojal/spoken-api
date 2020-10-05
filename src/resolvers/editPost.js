@@ -14,7 +14,7 @@ const editPost = (id, text, user, redisClient, mysqlClient) => {
     try {
       post = await getPostById(id, mysqlClient);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_GETTING_POST"));
     }
 
@@ -24,7 +24,7 @@ const editPost = (id, text, user, redisClient, mysqlClient) => {
     try {
       post = formatPost(post);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_FORMATING_POST"));
     }
 
@@ -34,7 +34,7 @@ const editPost = (id, text, user, redisClient, mysqlClient) => {
     try {
       await editPostById(id, text, mysqlClient);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_UPDATING_POST"));
     }
 

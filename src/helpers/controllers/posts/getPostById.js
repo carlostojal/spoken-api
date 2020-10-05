@@ -12,7 +12,7 @@ const getPostById = (id, mysqlClient) => {
       WHERE CurrentPost.id LIKE ?`, [id], async (err, result) => {
 
       if(err) {
-        console.error(err);
+        
         return reject(err);
       }
 

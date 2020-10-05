@@ -4,7 +4,7 @@ const removePostById = (id, mysqlClient) => {
     mysqlClient.query(`DELETE FROM Posts WHERE id = ?`, [id], (err, result) => {
 
       if(err) {
-        console.error(err);
+        
         return reject(err);
       }
 

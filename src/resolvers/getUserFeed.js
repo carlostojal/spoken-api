@@ -50,11 +50,9 @@ const getUserFeed = (page, perPage, user, redisClient, mysqlClient) => {
       for(let i = 0; i < posts.length; i++)
         posts[i] = formatPost(posts[i]);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_FORMATING_POSTS"));
     }
-
-    console.log(posts);
 
     return resolve(posts);
   });

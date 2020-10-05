@@ -7,7 +7,7 @@ const getFromCache = (key, field, redisClient) => {
       redisClient.hmget(key, field, (error, result) => {
 
         if(error) {
-          console.error(error);
+          
           return reject(new Error("ERROR_READING_CACHE"));
         }
 
@@ -17,7 +17,7 @@ const getFromCache = (key, field, redisClient) => {
       redisClient.get(key, (error, result) => {
         
         if(error) {
-          console.error(error);
+          
           return reject(new Error("ERROR_READING_CACHE"));
         }
         return resolve(result);

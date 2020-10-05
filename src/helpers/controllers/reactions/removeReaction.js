@@ -4,7 +4,7 @@ const removeReaction = (user, post, mysqlClient) => {
     mysqlClient.query(`DELETE FROM PostReactions WHERE user_id = ? AND post_id = ?`, [user.id, post.id], (err, result) => {
 
       if(err) {
-        console.error(err);
+        
         return reject(err);
       }
 

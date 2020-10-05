@@ -44,14 +44,14 @@ const editUser = (name, surname, email, username, password, profile_pic_media_id
     bcrypt.genSalt(parseInt(process.env.HASH_SALT_ROUNDS), (err, salt) => {
 
       if (err) {
-        console.error(err);
+        
         return reject(new Error("ERROR_HASHING_PASSWORD"));
       }
 
       bcrypt.hash(password, salt, (err, hash_password) => {
 
         if (err) {
-          console.error(err);
+          
           return reject(new Error("ERROR_HASHING_PASSWORD"));
         }
 
@@ -78,7 +78,7 @@ const editUser = (name, surname, email, username, password, profile_pic_media_id
               try {
                 await sendConfirmationEmail(user);
               } catch(err) {
-                console.error(err);
+                
                 return reject(new Error("ERROR_SENDING_CONFIRMATION_EMAIL"));
               }
             }
@@ -86,13 +86,12 @@ const editUser = (name, surname, email, username, password, profile_pic_media_id
             try {
               await cache(`userdata-uid-${result._id}`, null, JSON.stringify(result), process.env.USER_DATA_CACHE_DURATION, false, true, redisClient);
             } catch(err) {
-              console.error(err);
+              
               return reject(err);
             }
-            console.log(`User ${user.username} updated data.`);
             return resolve(result);
           }).catch((err) => {
-            console.error(err);
+            
             let error = new Error("ERROR_SAVING_USER");
             if(err.code == 11000) { // duplicate key error
               if(err.keyValue.username) // duplicate username
@@ -103,7 +102,7 @@ const editUser = (name, surname, email, username, password, profile_pic_media_id
             return reject(error);
           });
         }).catch((e) => {
-          console.error(e);
+          
           return reject(new Error("ERROR_GETTING_USER"));
         });
       });

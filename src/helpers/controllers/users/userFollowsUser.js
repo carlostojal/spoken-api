@@ -4,7 +4,7 @@ const userFollowsUser = (user_id, user1_id, mysqlClient) => {
     mysqlClient.query(`SELECT * FROM FollowRelations WHERE user = ? AND follows = ? AND accepted = ?`, [user_id, user1_id, 1], (err, result) => {
 
       if(err) {
-        console.error(err);
+        
         return reject(err);
       }
 

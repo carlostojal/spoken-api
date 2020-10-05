@@ -9,7 +9,7 @@ const listCache = (key, value, ttl, overwrite_ttl, redisClient) => {
     redisClient.exists(key, (error, exists) => {
 
       if(error) {
-        console.error(error);
+        
         return reject(new Error("ERROR_READING_CACHE"));
       }
 
@@ -17,7 +17,7 @@ const listCache = (key, value, ttl, overwrite_ttl, redisClient) => {
         redisClient.lpush(key, value, (error, result) => {
 
           if(error) {
-            console.error(error);
+            
             return reject(new Error("ERROR_WRITING_CACHE"));
           }
 
@@ -25,7 +25,7 @@ const listCache = (key, value, ttl, overwrite_ttl, redisClient) => {
             redisClient.expire(key, ttl, (error, result) => {
 
               if(error) {
-                console.error(error);
+                
                 return reject(new Error("ERROR_SETTING_CACHE_TTL"));
               }
 

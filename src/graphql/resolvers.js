@@ -34,7 +34,7 @@ const resolvers = {
       try {
         await sendConfirmationEmail(context.user);
       } catch(e) {
-        console.error(e);
+        
         return e;
       }
       return context.user.email;

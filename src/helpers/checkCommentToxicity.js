@@ -12,14 +12,11 @@ const checkCommentToxicity = (comment, mysqlClient) => {
     }
 
     if(toxicity_result.is_toxic) {
-      console.log(`Comment will be removed for ${toxicity_result.cause}.`);
       try {
         await removeCommentById(comment.id, mysqlClient);
       } catch(e) {
         return reject(new Error("ERROR_REMOVING_COMMENT"));
       }
-    } else {
-      console.log("Toxicity checks passed.");
     }
 
     return resolve(null);

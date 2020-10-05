@@ -8,19 +8,16 @@ const checkPostToxicity = (post, mysqlClient) => {
     try {
       toxicity_result = await checkTextToxicity(post.text);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_CHECKING_TOXICITY"));
     }
 
     if(toxicity_result.is_toxic) {
-      console.log(`Post will be removed for ${toxicity_result.cause}.`);
       try {
         await removePostById(post.id, mysqlClient);
       } catch(e) {
         return reject(new Error("ERROR_REMOVING_POST"));
       }
-    } else {
-      console.log("Toxicity checks passed.");
     }
 
     return resolve(null);

@@ -4,7 +4,7 @@ const removeCommentById = (id, mysqlClient) => {
     mysqlClient.query(`DELETE FROM PostComments WHERE id = ?`, [id], (err, result) => {
 
       if(err) {
-        console.error(err);
+        
         return reject(err);
       }
 

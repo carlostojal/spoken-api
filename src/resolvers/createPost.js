@@ -54,7 +54,7 @@ const createPost = (text, media_id, user, redisClient, mysqlClient) => {
     try {
       await insertPost(post, mysqlClient);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_REGISTERING_POST"));
     }
 
@@ -63,7 +63,7 @@ const createPost = (text, media_id, user, redisClient, mysqlClient) => {
     try {
       post1 = await getPostById(post.id, mysqlClient);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_GETTING_POST"));
     }
 
@@ -71,7 +71,7 @@ const createPost = (text, media_id, user, redisClient, mysqlClient) => {
     try {
       post1 = formatPost(post1);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_FORMATING_POST"));
     }
 
@@ -82,7 +82,7 @@ const createPost = (text, media_id, user, redisClient, mysqlClient) => {
     try {
       await cache(`post-${post.id}`, null, JSON.stringify(post1), process.env.POST_CACHE_DURATION, true, true, redisClient);
     } catch(e) {
-      console.error(e);
+      
     }
 
     return resolve(post1);

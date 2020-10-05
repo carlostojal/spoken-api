@@ -39,7 +39,7 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, my
     mysqlClient.query(`SELECT * FROM Users WHERE username LIKE '${username}' OR email LIKE '${username}'`, (err, result) => {
 
       if(err) {
-        console.error(err);
+        
         return reject(new Error("ERROR_GETTING_USER"));
       }
 
@@ -56,7 +56,7 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, my
       bcrypt.compare(password, user.password, async (err, compareSuccess) => { // compare the provided password with the user one
       
         if (err) {
-          console.error(err);
+          
           return reject(new Error("AUTHENTICATION_ERROR"));
         }
 
@@ -68,7 +68,7 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, my
         try {
           geo = geoip.lookup(remoteAddress);
         } catch(e) {
-          console.error(e);
+          
           return reject(new Error("ERROR_GETTING_LOGIN_LOCATION"));
         }
 
@@ -83,7 +83,7 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, my
             platformData = platform.parse(userAgent);
             platformData = platformData.description;
           } catch(e) {
-            console.error(e);
+            
           }
         }
 
@@ -95,7 +95,7 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, my
         try {
           await cache(`session-uid-${user.id}-${refresh_token.value}`, null, JSON.stringify({createdAt: refresh_token.createdAt, expiresAt: refresh_token.expiresAt, userLocation: geo, userPlatform: platformData}), process.env.REFRESH_TOKEN_DURATION * 24 * 60 * 60, true, true, redisClient);
         } catch(e) {
-          console.error(e);
+          
           return reject(new Error("ERROR_SAVING_REFRESH_TOKEN"));
         }
 

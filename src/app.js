@@ -29,7 +29,7 @@ const server = new ApolloServer({
       try {
         user = await getUserByToken(token, mysqlClient, redisClient);
       } catch(e) {
-        console.error(e);
+        
       }
     }
 

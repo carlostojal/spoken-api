@@ -41,7 +41,6 @@ const logout = (refresh_token, access_token, user) => {
     user.save().then((user) => {
       return resolve(user);
     }).catch((error) => {
-      console.log(error);
       return reject(new Error("ERROR_SAVING_USER"));
     });
   });

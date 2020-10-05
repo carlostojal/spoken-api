@@ -40,7 +40,7 @@ const refreshToken = (refresh_token, mysqlClient, redisClient) => {
     try {
       decoded = jwt.verify(refresh_token, process.env.TOKEN_SECRET);
     } catch(e) {
-      console.error(e);
+      
     }
 
     if(!decoded || !decoded.user)
@@ -54,7 +54,7 @@ const refreshToken = (refresh_token, mysqlClient, redisClient) => {
       session = await getFromCache(`session-uid-${user.id}-${refresh_token}`, null, redisClient);
       session = JSON.parse(session);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_GETTING_SESSION"));
     }
 
@@ -65,7 +65,7 @@ const refreshToken = (refresh_token, mysqlClient, redisClient) => {
     try {
       await deleteFromCache(`session-uid-${user.id}-${refresh_token}`, null, redisClient);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_DELETING_OLD_SESSION"));
     }
 
@@ -78,7 +78,7 @@ const refreshToken = (refresh_token, mysqlClient, redisClient) => {
     try {
       await cache(`session-uid-${user.id}-${new_refresh_token.value}`, null, JSON.stringify(session), new_refresh_token.expiresAt, true, true, redisClient);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_SAVING_SESSION"));
     }
 

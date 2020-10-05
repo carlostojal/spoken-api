@@ -18,7 +18,7 @@ const getFeed = (page, perPage, user_id, mysqlClient) => {
     LIMIT ? OFFSET ?`, [user_id, user_id, perPage, (page - 1) * perPage], async (err, result) => {
 
       if(err) {
-        console.error(err);
+        
         return reject(err);
       }
 

@@ -14,7 +14,7 @@ const userHasPostPermission = (post_id, user_id, redisClient) => {
       let cacheList = await getListFromCache(`post-authorized-users-${post_id}`, redisClient);
       isInList = cacheList.includes(user_id);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_READING_CACHE"));
     }
 
@@ -23,7 +23,7 @@ const userHasPostPermission = (post_id, user_id, redisClient) => {
     try {
       post = await Post.findById(post_id);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_GETTING_POST"));
     }
 
@@ -37,7 +37,7 @@ const userHasPostPermission = (post_id, user_id, redisClient) => {
     try {
       relation = await FollowRelation.findOne({ user: user_id, follows: post.poster, accepted: true });
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_CHECKING_RELATION"));
     }
 
@@ -49,7 +49,7 @@ const userHasPostPermission = (post_id, user_id, redisClient) => {
     try {
       listCache(`post-authorized-users-${post_id}`, user_id, process.env.POST_AUTHORIZED_USER_CACHE_DURATION, false, redisClient);
     } catch(e) {
-      console.error(e);
+      
     }
     
     return resolve(true);

@@ -5,7 +5,7 @@ const getListFromCache = (key, redisClient) => {
     redisClient.lrange(key, 0, -1, (error, result) => {
       
       if(error) {
-        console.error(error);
+        
         return reject(new Error("ERROR_READING_CACHE"));
       }
       

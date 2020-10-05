@@ -17,7 +17,7 @@ const reactPost = (post_id, user, redisClient, mysqlClient) => {
     try {
       post = await getPostById(post_id, mysqlClient);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_GETTING_POST"));
     }
 
@@ -27,7 +27,7 @@ const reactPost = (post_id, user, redisClient, mysqlClient) => {
     try {
       post = formatPost(post);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_FORMATING_POST"));
     }
 
@@ -36,7 +36,7 @@ const reactPost = (post_id, user, redisClient, mysqlClient) => {
     try {
       hasPermission = await userFollowsUser(user.id, post.poster.id, mysqlClient);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_CHECKING_PERMISSION"));
     }
 
@@ -48,7 +48,7 @@ const reactPost = (post_id, user, redisClient, mysqlClient) => {
     try {
       user_reacted = await userReacted(user, post, mysqlClient);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_CHECKING_REACTION"));
     }
 
@@ -57,7 +57,7 @@ const reactPost = (post_id, user, redisClient, mysqlClient) => {
       try {
         await removeReaction(user, post, mysqlClient);
       } catch(e) {
-        console.error(e);
+        
         return reject(new Error("ERROR_REMOVING_REACTION"));
       }
     } else { // the reaction was not registered, so register
@@ -70,7 +70,7 @@ const reactPost = (post_id, user, redisClient, mysqlClient) => {
       try {
         await insertReaction(reaction, mysqlClient);
       } catch(e) {
-        console.error(e);
+        
         return reject(new Error("ERROR_SAVING_REACTION"));
       }
     }

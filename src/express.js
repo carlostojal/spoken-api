@@ -38,18 +38,16 @@ app.get("/confirm", (req, res) => {
         user.save().then(() => {
           return res.send("Email confirmed successfully. You can now close this.");
         }).catch((e) => {
-          console.error(e);
+          
           return res.status(500).send("Error saving user. Please refresh this page or try again later.");
         });
       } else {
         return res.send("Bad confirmation link.");
       }
     }).catch((e) => {
-      console.log(e);
       return res.status(500).send("Error loading confirmation link. Please refresh this page.");
     });
   } catch(e) {
-    console.log(e);
     res.status(500).send("Unexpected error. Please refresh this page.");
   }
 });
@@ -95,7 +93,6 @@ app.post("/upload", async (req, res) => {
             });
 
             media.save().then((media) => {
-              console.log("Media uploaded.");
               res.send({
                 status: true,
                 message: "File uploaded.",
@@ -104,21 +101,21 @@ app.post("/upload", async (req, res) => {
                 }
               });
             }).catch((error) => {
-              console.error(error);
+              
               return res.status(500).send(error);
             });
           });
         }).catch((error) => {
-          console.error(error);
+          
           return res.status(500).send(error);
         });        
       }).catch((error) => {
-        console.error(error);
+        
         res.status(500).send(error);
       });
     }
   } catch (error) {
-    console.error(error);
+    
     res.status(500).send(error);
   }
 });

@@ -4,7 +4,7 @@ const acceptRelation = (user, follows, mysqlClient) => {
     mysqlClient.query(`UPDATE FollowRelations SET accepted = ? WHERE user = ? AND follows = ?`, [1, user, follows], (err, result) => {
 
       if(err) {
-        console.error(err);
+        
         return reject(err);
       }
 

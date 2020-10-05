@@ -7,7 +7,7 @@ const deleteFromCache = (key, field, redisClient) => {
       redisClient.hdel(key, field, (error, result) => {
 
         if(error) {
-          console.error(error);
+          
           return reject(new Error("ERROR_MANIPULATING_CACHE"));
         }
 
@@ -17,7 +17,7 @@ const deleteFromCache = (key, field, redisClient) => {
       redisClient.del(key, (error, result) => {
         
         if(error) {
-          console.error(error);
+          
           return reject(new Error("ERROR_MANIPULATING_CACHE"));
         }
         return resolve(result);

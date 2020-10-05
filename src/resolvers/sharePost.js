@@ -17,7 +17,7 @@ const sharePost = (post_id, user, mysqlClient) => {
     try {
       post = await getPostById(post_id, mysqlClient);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_GETTING_POST"));
     }
 

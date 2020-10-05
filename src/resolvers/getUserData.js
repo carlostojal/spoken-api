@@ -62,7 +62,7 @@ const getUserData = (id, user, mysqlClient, redisClient) => {
     redisClient.get(`userdata-uid-${id}`, async (error, result) => {
 
       if (error) {
-        console.error(error);
+        
         return reject(new Error("ERROR_ACCESSING_CACHE"));
       }
 
@@ -74,7 +74,7 @@ const getUserData = (id, user, mysqlClient, redisClient) => {
       try {
         query_user = await getUserById(id, mysqlClient);
       } catch(e) {
-        console.error(e);
+        
         return reject(new Error("ERROR_GETTING_USER"));
       }
       

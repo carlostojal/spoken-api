@@ -36,7 +36,7 @@ const acceptFollowRequest = (user_id, user, mysqlClient) => {
     try {
       user1 = await getUserById(user_id, mysqlClient);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_GETTING_USER"));
     }
 
@@ -46,7 +46,7 @@ const acceptFollowRequest = (user_id, user, mysqlClient) => {
     try {
       await acceptRelation(user_id, user.id, mysqlClient);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_ACCEPTING_RELATION"));
     }
 

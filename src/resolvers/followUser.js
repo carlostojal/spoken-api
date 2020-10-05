@@ -45,7 +45,7 @@ const followUser = (id, user, mysqlClient) => {
     try {
       user1 = await getUserById(id, mysqlClient);
     } catch(e) {
-      console.error(e);
+      
       return reject(new Error("ERROR_GETTING_USER"));
     }
 
@@ -65,13 +65,13 @@ const followUser = (id, user, mysqlClient) => {
     try {
       await insertRelation(followRelation, mysqlClient);
     } catch(e) {
-      console.error(e);
+      
       if(e.errno == 1062) { // duplicate key (relation already exists)
         // will remove the relation
         try {
           await removeRelation(user.id, user1.id, mysqlClient);
         } catch(e) {
-          console.error(e);
+          
           return reject(new Error("ERROR_REMOVING_RELATION"));
         }
       }
