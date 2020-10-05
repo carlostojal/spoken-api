@@ -33,7 +33,8 @@ const typeDefs = gql`
     text: String,
     media_url: String,
     edited: Boolean,
-    user_reacted: Boolean
+    user_reacted: Boolean,
+    original_post: Post
   }
 
   type Comment {
