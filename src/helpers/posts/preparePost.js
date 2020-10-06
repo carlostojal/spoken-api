@@ -1,7 +1,7 @@
-const PostReaction = require("../../models/PostReaction");
 const mediaIdToUrl = require("../media/mediaIdToUrl");
 
 const preparePost = (post, user) => {
+  /*
   return new Promise(async (resolve, reject) => {
 
     if(post.media)
@@ -20,7 +20,7 @@ const preparePost = (post, user) => {
 
     return resolve(post);
 
-  });
+  });*/
 };
 
 module.exports = preparePost;

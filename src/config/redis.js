@@ -15,7 +15,9 @@ client.on("error", (error) => {
 if(process.env.CLEAR_CACHE_ON_STARTUP == "true") {
   console.log("Cache cleared.");
   client.flushall((error, success) => {
-    if (error) 
+    if(error) {
+      console.error(error);
+    }
   });
 }
 

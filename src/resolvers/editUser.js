@@ -1,6 +1,5 @@
 const bcrypt = require("bcrypt");
 const { AuthenticationError } = require("apollo-server");
-const User = require("../models/User");
 const sendConfirmationEmail = require("./sendConfirmationEmail");
 const cache = require("../helpers/cache/cache");
 
@@ -37,6 +36,7 @@ const cache = require("../helpers/cache/cache");
 
 const editUser = (name, surname, email, username, password, profile_pic_media_id, profile_type, profile_privacy_type, user, redisClient) => {
   return new Promise((resolve, reject) => {
+    /*
 
     if(!user)
       return reject(new AuthenticationError("BAD_AUTHENTICATION"));
@@ -106,7 +106,7 @@ const editUser = (name, surname, email, username, password, profile_pic_media_id
           return reject(new Error("ERROR_GETTING_USER"));
         });
       });
-    });
+    });*/
   });
 };
 

@@ -8,7 +8,7 @@ const checkPostToxicity = (post, mysqlClient) => {
     try {
       toxicity_result = await checkTextToxicity(post.text);
     } catch(e) {
-      
+      console.error(e);
       return reject(new Error("ERROR_CHECKING_TOXICITY"));
     }
 

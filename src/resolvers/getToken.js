@@ -1,7 +1,6 @@
 const bcrypt = require("bcrypt");
 const geoip = require("geoip-lite");
 const platform = require("platform");
-const User = require("../models/User");
 const createToken = require("../helpers/session/createToken");
 const cache = require("../helpers/cache/cache");
 

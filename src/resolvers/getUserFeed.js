@@ -1,9 +1,4 @@
 const { AuthenticationError } = require("apollo-server");
-const FollowRelation = require("../models/FollowRelation");
-const Post = require("../models/Post");
-const mediaIdToUrl = require("../helpers/media/mediaIdToUrl");
-const userReacted = require("../helpers/posts/userReacted");
-const getFromCache = require("../helpers/cache/getFromCache");
 const getFeed = require("../helpers/controllers/posts/getFeed");
 const cache = require("../helpers/cache/cache");
 const formatPost = require("../helpers/formatPost");
