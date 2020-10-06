@@ -8,10 +8,10 @@ const compressImage = (input, dest_path) => {
       destination: dest_path,
       plugins: [
           imageminMozjpeg({
-            quality: process.env.JPEG_COMPRESSION_QUALITY
+            quality: parseInt(process.env.JPEG_COMPRESSION_QUALITY)
           }),
           imageminPngquant({
-            quality: [process.env.PNG_MIN_COMPRESSION_QUALITY, process.env.PNG_MAX_COMPRESSION_QUALITY]
+            quality: [parseFloat(process.env.PNG_MIN_COMPRESSION_QUALITY), parseFloat(process.env.PNG_MAX_COMPRESSION_QUALITY)]
           })
       ]
     }).then((files) => {

@@ -10,7 +10,10 @@ const deleteFile = require("./helpers/media/deleteFile");
 const insertMedia = require("./helpers/controllers/media/insertMedia");
 const generateId = require("./helpers/generateId");
 const getMediaById = require("./helpers/controllers/media/getMediaById");
-
+const tf = require("@tensorflow/tfjs-node");
+const nsfwjs = require("nsfwjs");
+const getImageData = require("get-image-data");
+const checkNsfw = require("./helpers/media/checkNsfw");
 const app = express();
 
 app.use(fileUpload({
@@ -69,6 +72,7 @@ app.post("/upload", async (req, res) => {
   try {
     image = await compressImage(path, dest_path);
   } catch(e) {
+    console.error(e);
     return res.status(500).send("ERROR_COMPRESSING_IMAGE");
   }
 
@@ -96,6 +100,8 @@ app.post("/upload", async (req, res) => {
   } catch(e) {
     return res.status(500).send("ERROR_REGISTERING_MEDIA");
   }
+
+  checkNsfw(media.path, mysqlClient);
 
   return res.status(200).send("FILE_UPLOADED");
 });
