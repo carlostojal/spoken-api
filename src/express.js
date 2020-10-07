@@ -10,9 +10,6 @@ const deleteFile = require("./helpers/media/deleteFile");
 const insertMedia = require("./helpers/controllers/media/insertMedia");
 const generateId = require("./helpers/generateId");
 const getMediaById = require("./helpers/controllers/media/getMediaById");
-const tf = require("@tensorflow/tfjs-node");
-const nsfwjs = require("nsfwjs");
-const getImageData = require("get-image-data");
 const checkNsfw = require("./helpers/media/checkNsfw");
 const app = express();
 
@@ -55,13 +52,16 @@ app.post("/upload", async (req, res) => {
   // get media from request args
   const media_file = req.files.media;
 
+  const generated_id = generateId();
+
   // get file format
   const split_file_name = media_file.name.split(".");
-  if(!allowed_formats.includes(split_file_name[split_file_name.length - 1]))
+  const format = split_file_name[split_file_name.length - 1];
+  if(!allowed_formats.includes(format))
     return res.status(500).send("FORMAT_NOT_ALLOWED");
 
   // path to store the media
-  const path = `uploads/temp/${media_file.name}`;
+  const path = `uploads/temp/${generated_id}.${format}`;
   const dest_path = "uploads";
 
   // move the media file to the temp path
@@ -84,7 +84,7 @@ app.post("/upload", async (req, res) => {
   }
 
   const media = {
-    id: generateId(),
+    id: generated_id,
     user_id: user.id,
     path: image.destinationPath,
     time: Date.now(),
@@ -101,7 +101,7 @@ app.post("/upload", async (req, res) => {
     return res.status(500).send("ERROR_REGISTERING_MEDIA");
   }
 
-  checkNsfw(media.path, mysqlClient);
+  checkNsfw(media, mysqlClient);
 
   return res.status(200).send("FILE_UPLOADED");
 });

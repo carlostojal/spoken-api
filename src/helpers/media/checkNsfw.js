@@ -1,9 +1,9 @@
 const tf = require("@tensorflow/tfjs-node");
 const nsfwjs = require("nsfwjs");
-const getImageData = require("get-image-data/native");
 const fs = require("fs");
+const updateMediaSafety = require("../controllers/media/updateMediaSafety");
 
-const checkNsfw = (path, mysqlClient) => {
+const checkNsfw = (media, mysqlClient) => {
   return new Promise(async (resolve, reject) => {
 
     let model = null;
@@ -15,7 +15,7 @@ const checkNsfw = (path, mysqlClient) => {
 
     let image = null;
     try {
-      image = fs.readFileSync(path);
+      image = fs.readFileSync(media.path);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_READING_FILE"));
@@ -28,8 +28,29 @@ const checkNsfw = (path, mysqlClient) => {
       return reject(new Error("ERROR_GETTING_PREDICTIONS"));
     }
 
-    console.log(predictions);
-    return resolve(predictions);
+    // classes not valid to NSFW classification
+    const invalid_classes = ["Neutral", "Sexy"];
+
+    let max = {
+      class: null,
+      prob: 0
+    };
+    
+    predictions.map((prediction) => {
+      if(!invalid_classes.includes(prediction.className)) {
+        if(prediction.probability > max.prob) {
+          max.class = prediction.className;
+          max.prob = prediction.probability;
+        }
+      }
+    });
+
+    const is_nsfw = max.prob > parseFloat(process.env.MIN_NSFW_PROBABILITY);
+    
+    await updateMediaSafety(media.id, is_nsfw ? 1: 0, is_nsfw ? max.class : null, mysqlClient);
+
+    // console.log(predictions);
+    return resolve(null);
   });
 };
 
