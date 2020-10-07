@@ -10,6 +10,7 @@ const deleteFile = require("./helpers/media/deleteFile");
 const insertMedia = require("./helpers/controllers/media/insertMedia");
 const generateId = require("./helpers/generateId");
 const getMediaById = require("./helpers/controllers/media/getMediaById");
+const userFollowsUser = require("./helpers/controllers/users/userFollowsUser");
 const checkNsfw = require("./helpers/media/checkNsfw");
 const app = express();
 
@@ -140,7 +141,9 @@ app.get("/media/:id/:token?", async (req, res) => {
     if(!user)
       return res.status(401).send("BAD_TOKEN");
 
-    if(user.id != media.uploader_id)
+    const user_allowed = await userFollowsUser(user.id, media.uploader_id);
+
+    if(user.id != media.uploader_id && !user_allowed)
       return res.status(401).send("CONTENT_VIEW_NOT_ALLOWED");
   }
 
