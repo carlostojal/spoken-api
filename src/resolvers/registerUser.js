@@ -3,6 +3,7 @@ const insertUser = require("../helpers/controllers/users/insertUser");
 const checkBirthdate = require("../helpers/checkBirthdate");
 const generateId = require("../helpers/generateId");
 const sendConfirmationEmail = require("./sendConfirmationEmail");
+const checkPasswordStrength = require("check-password-strength");
 
 /*
 *
@@ -40,6 +41,11 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
 
     if(!checkBirthdate(birthdate))
       return reject(new Error("INVALID_BIRTHDATE"));
+
+    const passwordStrength = checkPasswordStrength(password).id;
+
+    if(passwordStrength == 0 || passwordStrength == 1)
+      return reject(new Error("WEAK_PASSWORD"));
 
     bcrypt.genSalt(parseInt(process.env.HASH_SALT_ROUNDS), (err, salt) => {
       if (err) {
