@@ -19,7 +19,7 @@ const typeDefs = gql`
     birthdate: String,
     email: String,
     username: String,
-    profile_pic_url: String,
+    profile_pic: Media,
     profile_type: String,
     profile_privacy_type: String,
     n_following: Int,
@@ -31,7 +31,7 @@ const typeDefs = gql`
     poster: User,
     time: String,
     text: String,
-    media_url: String,
+    media: Media
     edited: Boolean,
     user_reacted: Boolean,
     original_post: Post
@@ -45,6 +45,13 @@ const typeDefs = gql`
     edited: Boolean
   }
 
+  type Media {
+    id: ID,
+    url: String,
+    is_nsfw: Boolean,
+    nsfw_cause: String
+  }
+
   type Query {
     getToken(username: String!, password: String!, userPlatform: String): String
     sendConfirmationEmail: String
@@ -52,7 +59,7 @@ const typeDefs = gql`
     refreshToken: String
     getUserData(id: String): User
     getUserFeed(page: Int!, perPage: Int!): [Post]
-    getPostComments(page: Int!, perPage: Int!, id: String!): [Comment]
+    getPostComments(page: Int!, perPage: Int!, id: String!): [Post]
   }
 
   type Mutation {

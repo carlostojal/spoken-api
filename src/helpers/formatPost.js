@@ -10,7 +10,12 @@ const formatPost = (post) => {
         name: post.original_poster_name,
         surname: post.original_poster_surname,
         username: post.original_poster_username,
-        profile_pic_url: post.original_poster_profile_pic_media_id ? `${process.env.EXPRESS_ADDRESS}:${process.env.EXPRESS_PORT}/media/${post.original_poster_profile_pic_media_id}` : null
+        profile_pic: {
+          id: post.poster_profile_pic_media_id,
+          url: post.poster_profile_pic_media_id ? `${process.env.EXPRESS_ADDRESS}:${process.env.EXPRESS_PORT}/media/${post.original_poster_profile_pic_media_id}` : null,
+          is_nsfw: post.poster_is_nsfw,
+          nsfw_cause: post.poster_nsfw_cause
+        }
       },
       time: post.original_post_time,
       text: post.original_post_text
@@ -20,10 +25,21 @@ const formatPost = (post) => {
       name: post.poster_name,
       surname: post.poster_surname,
       username: post.poster_username,
-      profile_pic_url: post.profile_pic_media_id ? `${process.env.EXPRESS_ADDRESS}:${process.env.EXPRESS_PORT}/media/${post.profile_pic_media_id}` : null
+      profile_pic: {
+        id: post.original_poster_profile_pic_media_id,
+        url: post.original_poster_profile_pic_media_id ? `${process.env.EXPRESS_ADDRESS}:${process.env.EXPRESS_PORT}/media/${post.original_poster_profile_pic_media_id}` : null,
+        is_nsfw: post.original_poster_is_nsfw,
+        nsfw_cause: post.original_poster_nsfw_cause
+      }
     },
     time: post.time,
     text: post.text,
+    media: {
+      id: post.media_id,
+      url: post.media_id ? `${process.env.EXPRESS_ADDRESS}:${process.env.EXPRESS_PORT}/media/${post.media_id}` : null,
+      is_nsfw: post.media_is_nsfw,
+      nsfw_cause: post.media_nsfw_cause
+    },
     media_url: post.media_id ? `${process.env.EXPRESS_ADDRESS}:${process.env.EXPRESS_PORT}/media/${post.media_id}` : null,
     edited: post.edited == 1
   }
