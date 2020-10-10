@@ -1,4 +1,4 @@
-const tf = require("@tensorflow/tfjs-node");
+const tf = require("@tensorflow/tfjs");
 const nsfwjs = require("nsfwjs");
 const fs = require("fs");
 const updateMediaSafety = require("../controllers/media/updateMediaSafety");
