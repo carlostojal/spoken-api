@@ -1,7 +1,7 @@
 const { AuthenticationError } = require("apollo-server");
 const getPostById = require("../helpers/controllers/posts/getPostById");
 const userFollowsUser = require("../helpers/controllers/users/userFollowsUser");
-const formatComment = require("../helpers/formatComment");
+const formatPost = require("../helpers/formatPost");
 
 const getPostComments = (page, perPage, post_id, user, redisClient, mysqlClient) => {
   return new Promise(async (resolve, reject) => {
@@ -42,7 +42,7 @@ const getPostComments = (page, perPage, post_id, user, redisClient, mysqlClient)
     }
 
     comments.map((comment) => {
-      comment = formatComment(comment);
+      comment = formatPost(comment);
     });
 
     return resolve(comments);

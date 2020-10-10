@@ -1,6 +1,7 @@
 
 const getCommentsByPostId = (post_id, page, perPage, mysqlClient) => {
   return new Promise((resolve, reject) => {
+
     mysqlClient.query(`SELECT CurrentPost.id, CurrentPost.time, CurrentPost.text, CurrentPost.media_id, CurrentPost.edited,
     CurrentPostUser.id AS poster_id, CurrentPostUser.name AS poster_name, CurrentPostUser.surname AS poster_surname, CurrentPostUser.username AS poster_username, CurrentPostUser.profile_pic_media_id,
     CurrentPostUserMedia.id AS poster_profile_pic_media_id, CurrentPostUserMedia.is_nsfw AS poster_is_nsfw, CurrentPostUserMedia.nsfw_cause AS poster_nsfw_cause,
@@ -16,7 +17,6 @@ const getCommentsByPostId = (post_id, page, perPage, mysqlClient) => {
     LEFT JOIN Media PostMedia ON CurrentPost.media_id = PostMedia.id
     LEFT JOIN Media CurrentPostUserMedia ON CurrentPostUser.profile_pic_media_id = CurrentPostUserMedia.id
     LEFT JOIN Media OriginalPostUserMedia ON OriginalPostUser.profile_pic_media_id = OriginalPostUserMedia.id
-    INNER JOIN FollowRelations CurrentPostRelation ON CurrentPostRelation.user = ? AND CurrentPostRelation.follows = CurrentPostUser.id AND CurrentPostRelation.accepted = 1
     ORDER BY CurrentPost.time DESC
     LIMIT ? OFFSET ?
     WHERE original_post_id = ? LIMIT ? OFFSET ? ORDER BY CurrentPost.time DESC`, [post_id, perPage, (page - 1) * perPage], async (err, result) => {

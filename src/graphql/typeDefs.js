@@ -66,7 +66,7 @@ const typeDefs = gql`
     getFollowRequests: [FollowRelation]
     getFollowers: [FollowRelation]
     getFollowing: [FollowRelation]
-    getPostReactions(id: String): [User]
+    getPostReactions(page: Int!, perPage: Int!, id: String): [User]
     getPostComments(page: Int!, perPage: Int!, id: String!): [Post]
   }
 
