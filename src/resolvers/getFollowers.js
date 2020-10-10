@@ -8,24 +8,28 @@ const getFollowRequests = (user, mysqlClient) => {
     if(!user)
       reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
-    let requests = null;
+    let result = null;
     try {
-      requests = await getFollowedRelations(user.id, false, mysqlClient);
+      result = await getFollowedRelations(user.id, true, mysqlClient);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_RELATIONS"));
     }
 
-    if(!requests)
+    if(!result)
       return resolve(null);
+
+    let followers = [];
       
     try {
-      for(let i = 0; i < requests.length; i++)
-        requests[i] = formatRelation(requests[i]);
+      for(let i = 0; i < result.length; i++) {
+        if(result[i].user_id != user.id)
+          followers[i] = formatRelation(result[i]);
+      }
     } catch(e) {
       return reject(new Error("ERROR_FORMATING_RELATIONS"));
     }
 
-    return resolve(requests);
+    return resolve(followers);
   });
 };
 
