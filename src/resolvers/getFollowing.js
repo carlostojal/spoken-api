@@ -1,8 +1,8 @@
 const { AuthenticationError } = require("apollo-server");
-const getFollowedRelations = require("../helpers/controllers/relations/getFollowedRelations");
+const getFollowRelations = require("../helpers/controllers/relations/getFollowRelations");
 const formatRelation = require("../helpers/formatRelation");
 
-const getFollowers = (user, mysqlClient) => {
+const getFollowing = (user, mysqlClient) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -10,7 +10,7 @@ const getFollowers = (user, mysqlClient) => {
 
     let result = null;
     try {
-      result = await getFollowedRelations(user.id, true, mysqlClient);
+      result = await getFollowRelations(user.id, true, mysqlClient);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_RELATIONS"));
     }
@@ -18,19 +18,19 @@ const getFollowers = (user, mysqlClient) => {
     if(!result)
       return resolve(null);
 
-    let followers = [];
+    let following = [];
       
     try {
       for(let i = 0; i < result.length; i++) {
-        if(result[i].user_id != user.id)
-          followers[i] = formatRelation(result[i]);
+        if(result[i].follows_id != user.id)
+          following[i] = formatRelation(result[i]);
       }
     } catch(e) {
       return reject(new Error("ERROR_FORMATING_RELATIONS"));
     }
 
-    return resolve(followers);
+    return resolve(following);
   });
 };
 
-module.exports = getFollowers;
+module.exports = getFollowing;
