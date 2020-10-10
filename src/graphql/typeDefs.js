@@ -19,14 +19,9 @@ const typeDefs = gql`
     birthdate: String,
     email: String,
     username: String,
-    profile_pic_url: String,
+    profile_pic: Media,
     profile_type: String,
-    profile_privacy_type: String,
-    posts: [Post],
-    n_following: Int,
-    following: [FollowRelation],
-    n_followers: Int,
-    followers: [FollowRelation]
+    profile_privacy_type: String
   }
 
   type Post {
@@ -34,44 +29,59 @@ const typeDefs = gql`
     poster: User,
     time: String,
     text: String,
-    media_url: String,
+    media: Media
     edited: Boolean,
-    user_reacted: Boolean,
-    comments: [Comment]
+    original_post: Post
+  }
+
+  type Comment {
+    id: ID,
+    time: String,
+    user: User,
+    text: String,
+    edited: Boolean
+  }
+
+  type Media {
+    id: ID,
+    url: String,
+    is_nsfw: Boolean,
+    nsfw_cause: String
   }
 
   type FollowRelation {
     user: User,
     follows: User,
-    accepted: Boolean
-  }
-
-  type Comment {
-    id: String,
-    time: String,
-    user: User,
-    text: String
+    accepted: Boolean,
+    create_time: String
   }
 
   type Query {
-    getToken(username: String!, password: String!): String
+    getToken(username: String!, password: String!, userPlatform: String): String
+    sendConfirmationEmail: String
     logout: User
     refreshToken: String
     getUserData(id: String): User
     getUserFeed(page: Int!, perPage: Int!): [Post]
+    getFollowRequests: [FollowRelation]
+    getFollowers: [FollowRelation]
+    getFollowing: [FollowRelation]
+    getPostReactions(page: Int!, perPage: Int!, id: String): [User]
+    getPostComments(page: Int!, perPage: Int!, id: String!): [Post]
   }
 
   type Mutation {
-    registerUser(name: String!, surname: String!, birthdate: String!, email: String!, username: String!, password: String!, profile_pic_media_id: String, profile_type: ProfileType!, profile_privacy_type: ProfilePrivacyType!): User
-    editUser(name: String!, surname: String!, email: String!, username: String!, password: String!, profile_pic_media_id: String, profile_privacy_type: ProfilePrivacyType!): User
+    registerUser(name: String!, surname: String!, birthdate: String!, email: String!, username: String!, password: String!, profile_pic_mediaid: String, profile_type: ProfileType!, profile_privacy_type: ProfilePrivacyType!): User
+    confirmAccount(user_id: String!, code: Int!): User
+    editUser(name: String!, surname: String!, email: String!, username: String!, password: String!, profile_pic_mediaid: String, profile_type: ProfileType!, profile_privacy_type: ProfilePrivacyType!): User
     createPost(text: String!, media_id: String): Post
     followUser(id: String!): User
-    unfollowUser(id: String!): User
     acceptFollowRequest(user_id: String!): User
     deletePost(id: String!): Post
     editPost(id: String!, text: String!): Post
     reactPost(id: String!): Post
     commentPost(id: String!, text: String!): Post
+    sharePost(id: String!): Post
   }
 `;
 

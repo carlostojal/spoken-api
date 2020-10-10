@@ -1,10 +1,11 @@
 const { ApolloServer } = require("apollo-server");
 require("dotenv").config({ path: ".env" });
-require("./config/mongoose");
-require("./config/express");
+require("./express"); // express server
+const mysqlClient = require("./config/mysql");
 const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers");
-const getUserByToken = require("./helpers/getUserByToken");
+const redisClient = require("./config/redis");
+const getUserByToken = require("./helpers/session/getUserByToken");
 
 // apollo server startup
 const server = new ApolloServer({
@@ -23,10 +24,15 @@ const server = new ApolloServer({
     let user = null;
 
     // get user from token
-    if(token)
-      user = await getUserByToken(token);
+    if(token) {
+      try {
+        user = await getUserByToken(token, mysqlClient, redisClient);
+      } catch(e) {
+        
+      }
+    }
 
-    return { req, res, user };
+    return { req, res, user, redisClient, mysqlClient };
   }
 });
 
