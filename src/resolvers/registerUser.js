@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const insertUser = require("../helpers/controllers/users/insertUser");
+const insertRelation = require("../helpers/controllers/relations/insertRelation");
 const checkBirthdate = require("../helpers/checkBirthdate");
 const generateId = require("../helpers/generateId");
 const sendConfirmationEmail = require("./sendConfirmationEmail");
@@ -83,10 +84,22 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
           return reject(new Error("ERROR_REGISTERING_USER"));
         }
 
+        const relation = {
+          user: user.id,
+          follows: user.id,
+          create_time: Date.now(),
+          accepted: true
+        };
+
+        try {
+          await insertRelation(relation);
+        } catch(e) {
+          return reject(new Error("ERROR_REGISTERING"));
+        }
+
         try {
           sendConfirmationEmail(user);
         } catch(e) {
-          
           return reject(new Error("ERROR_SENDING_CONFIRMATION_EMAIL"));
         }
         
