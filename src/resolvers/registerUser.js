@@ -92,8 +92,9 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
         };
 
         try {
-          await insertRelation(relation);
+          await insertRelation(relation, mysqlClient);
         } catch(e) {
+          console.error(e);
           return reject(new Error("ERROR_REGISTERING"));
         }
 
