@@ -35,16 +35,6 @@ CREATE TABLE `FollowRelations` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `FollowRelations`
---
-
-LOCK TABLES `FollowRelations` WRITE;
-/*!40000 ALTER TABLE `FollowRelations` DISABLE KEYS */;
-INSERT INTO `FollowRelations` VALUES ('40lE1LL39q1Iv7Q','qdjb1qz4gWghtEP',1601299774417,1);
-/*!40000 ALTER TABLE `FollowRelations` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `Media`
 --
 
@@ -56,20 +46,15 @@ CREATE TABLE `Media` (
   `user_id` varchar(15) NOT NULL,
   `path` varchar(100) NOT NULL,
   `time` bigint NOT NULL,
+  `keywords` json DEFAULT NULL,
+  `is_nsfw` tinyint(1) DEFAULT NULL,
+  `nsfw_cause` varchar(100) DEFAULT NULL,
+  `review_status` varchar(15) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `Media_FK` (`user_id`),
   CONSTRAINT `Media_FK` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `Media`
---
-
-LOCK TABLES `Media` WRITE;
-/*!40000 ALTER TABLE `Media` DISABLE KEYS */;
-/*!40000 ALTER TABLE `Media` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `PostComments`
@@ -93,15 +78,6 @@ CREATE TABLE `PostComments` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `PostComments`
---
-
-LOCK TABLES `PostComments` WRITE;
-/*!40000 ALTER TABLE `PostComments` DISABLE KEYS */;
-/*!40000 ALTER TABLE `PostComments` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `PostReactions`
 --
 
@@ -122,15 +98,6 @@ CREATE TABLE `PostReactions` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `PostReactions`
---
-
-LOCK TABLES `PostReactions` WRITE;
-/*!40000 ALTER TABLE `PostReactions` DISABLE KEYS */;
-/*!40000 ALTER TABLE `PostReactions` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `PostTopics`
 --
 
@@ -148,15 +115,6 @@ CREATE TABLE `PostTopics` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `PostTopics`
---
-
-LOCK TABLES `PostTopics` WRITE;
-/*!40000 ALTER TABLE `PostTopics` DISABLE KEYS */;
-/*!40000 ALTER TABLE `PostTopics` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `Posts`
 --
 
@@ -167,10 +125,13 @@ CREATE TABLE `Posts` (
   `id` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `user_id` varchar(15) NOT NULL,
   `time` bigint NOT NULL,
-  `text` text NOT NULL,
+  `text` text CHARACTER SET utf8 COLLATE utf8_general_ci,
   `media_id` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `original_post_id` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `edited` tinyint(1) NOT NULL,
+  `is_toxic` tinyint(1) DEFAULT NULL,
+  `toxic_cause` varchar(20) DEFAULT NULL,
+  `review_status` varchar(15) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `Posts_FK` (`media_id`),
   KEY `Posts_FK_1` (`user_id`),
@@ -180,16 +141,6 @@ CREATE TABLE `Posts` (
   CONSTRAINT `Posts_FK_2` FOREIGN KEY (`original_post_id`) REFERENCES `Posts` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `Posts`
---
-
-LOCK TABLES `Posts` WRITE;
-/*!40000 ALTER TABLE `Posts` DISABLE KEYS */;
-INSERT INTO `Posts` VALUES ('Tw0AbdIcCNWtGRw','40lE1LL39q1Iv7Q',1601492237604,'Test',NULL,NULL,0);
-/*!40000 ALTER TABLE `Posts` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `Topics`
@@ -204,15 +155,6 @@ CREATE TABLE `Topics` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `Topics`
---
-
-LOCK TABLES `Topics` WRITE;
-/*!40000 ALTER TABLE `Topics` DISABLE KEYS */;
-/*!40000 ALTER TABLE `Topics` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `UserTopics`
@@ -230,15 +172,6 @@ CREATE TABLE `UserTopics` (
   CONSTRAINT `UserTopics_FK_1` FOREIGN KEY (`topic_id`) REFERENCES `Topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `UserTopics`
---
-
-LOCK TABLES `UserTopics` WRITE;
-/*!40000 ALTER TABLE `UserTopics` DISABLE KEYS */;
-/*!40000 ALTER TABLE `UserTopics` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `Users`
@@ -267,16 +200,6 @@ CREATE TABLE `Users` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `Users`
---
-
-LOCK TABLES `Users` WRITE;
-/*!40000 ALTER TABLE `Users` DISABLE KEYS */;
-INSERT INTO `Users` VALUES ('40lE1LL39q1Iv7Q','Carlos','Tojal',1070064000000,'carlos.tojal@hotmail.com',1,2726,'carlostojal','$2b$10$WYxzOBFS4FF1uP5bRCizwuPYIDoIbsNRYgENr6yVk6pk00xOj.2/G',NULL,'personal','private'),('qdjb1qz4gWghtEP','Carlos','Tojal',1070064000000,'carlos.tojal1@hotmail.com',1,3815,'carlostojal1','$2b$10$jUY/0.PU6qWWL/BxqNKCHOn7v2aMHywPeI/AopccmbQnxj7plbpEy',NULL,'personal','private');
-/*!40000 ALTER TABLE `Users` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Dumping routines for database 'spokennetwork'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -289,4 +212,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-10-03 15:04:25
+-- Dump completed on 2020-10-10 14:34:52
