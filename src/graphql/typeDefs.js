@@ -21,9 +21,7 @@ const typeDefs = gql`
     username: String,
     profile_pic: Media,
     profile_type: String,
-    profile_privacy_type: String,
-    n_following: Int,
-    n_followers: Int
+    profile_privacy_type: String
   }
 
   type Post {
@@ -33,7 +31,6 @@ const typeDefs = gql`
     text: String,
     media: Media
     edited: Boolean,
-    user_reacted: Boolean,
     original_post: Post
   }
 
@@ -52,6 +49,13 @@ const typeDefs = gql`
     nsfw_cause: String
   }
 
+  type FollowRelation {
+    user: User,
+    follows: User,
+    accepted: Boolean,
+    create_time: String
+  }
+
   type Query {
     getToken(username: String!, password: String!, userPlatform: String): String
     sendConfirmationEmail: String
@@ -59,6 +63,10 @@ const typeDefs = gql`
     refreshToken: String
     getUserData(id: String): User
     getUserFeed(page: Int!, perPage: Int!): [Post]
+    getFollowRequests: [FollowRelation]
+    getFollowers: [FollowRelation]
+    getFollowing: [FollowRelation]
+    getPostReactions(id: String): [User]
     getPostComments(page: Int!, perPage: Int!, id: String!): [Post]
   }
 

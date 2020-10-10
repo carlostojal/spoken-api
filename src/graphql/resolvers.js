@@ -4,6 +4,7 @@ const logout = require("../resolvers/logout");
 const refreshToken = require("../resolvers/refreshToken");
 const getUserData = require("../resolvers/getUserData");
 const getUserFeed = require("../resolvers/getUserFeed");
+const getFollowRequests = require("../resolvers/getFollowRequests");
 const registerUser = require("../resolvers/registerUser");
 const confirmAccount = require("../resolvers/confirmAccount");
 const editUser = require("../resolvers/editUser");
@@ -70,6 +71,22 @@ const resolvers = {
     // get user feed posts
     getUserFeed: (parent, args, context, info) => {
       return getUserFeed(args.page, args.perPage, context.user, context.redisClient, context.mysqlClient);
+    },
+
+    getFollowRequests: (parent, args, context, info) => {
+      return getFollowRequests(context.user, context.mysqlClient);
+    },
+
+    getFollowers: (parent, args, context, info) => {
+      return null;
+    },
+
+    getFollowing: (parent, args, context, info) => {
+      return null;
+    },
+
+    getPostReactions: (parent, args, context, info) => {
+      return null;
     },
 
     getPostComments: (parent, args, context, info) => {
