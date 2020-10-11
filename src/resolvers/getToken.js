@@ -49,9 +49,6 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, my
       
       const user = result[0];
 
-      if(!user.email_confirmed) 
-        return reject(new Error("EMAIL_NOT_CONFIRMED"));
-
       bcrypt.compare(password, user.password, async (err, compareSuccess) => { // compare the provided password with the user one
       
         if (err) {
@@ -60,6 +57,9 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, my
         }
 
         if(!compareSuccess) return reject(new Error("WRONG_PASSWORD"));
+
+        if(!user.email_confirmed) 
+          return reject(new Error("EMAIL_NOT_CONFIRMED"));
 
         // get user geolocation
         let geo = null;
