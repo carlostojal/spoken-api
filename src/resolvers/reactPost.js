@@ -70,7 +70,7 @@ const reactPost = (post_id, user, redisClient, mysqlClient) => {
       try {
         await insertReaction(reaction, mysqlClient);
       } catch(e) {
-        
+        console.error(e);
         return reject(new Error("ERROR_SAVING_REACTION"));
       }
     }
