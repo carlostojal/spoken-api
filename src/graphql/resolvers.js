@@ -36,12 +36,11 @@ const resolvers = {
 
     sendConfirmationEmail: async (parent, args, context, info) => {
       try {
-        await sendConfirmationEmail(context.user);
+        await sendConfirmationEmail(args.username, args.password, context.mysqlClient, context.redisClient);
       } catch(e) {
-        
         return e;
       }
-      return context.user.email;
+      return null;
     },
 
     // logout

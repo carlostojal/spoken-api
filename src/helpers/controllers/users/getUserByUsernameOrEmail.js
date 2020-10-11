@@ -1,8 +1,8 @@
 
-const getUserByUsername = (username, mysqlClient) => {
+const getUserByUsernameOrEmail = (username, mysqlClient) => {
   return new Promise((resolve, reject) => {
 
-    mysqlClient.query(`SELECT * FROM Users WHERE username LIKE ?`, [username], (err, result) => {
+    mysqlClient.query(`SELECT * FROM Users WHERE username LIKE ? OR email LIKE ?`, [username, username], (err, result) => {
 
       if(err) {
         
@@ -18,4 +18,4 @@ const getUserByUsername = (username, mysqlClient) => {
   });
 };
 
-module.exports = getUserByUsername;
+module.exports = getUserByUsernameOrEmail;

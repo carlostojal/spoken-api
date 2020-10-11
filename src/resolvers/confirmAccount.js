@@ -1,4 +1,4 @@
-const getUserByUsername = require("../helpers/controllers/users/getUserByUsername");
+const getUserByUsernameOrEmail = require("../helpers/controllers/users/getUserByUsernameOrEmail");
 
 const confirmAccount = (username, code, mysqlClient) => {
   return new Promise(async (resolve, reject) => {
@@ -18,7 +18,7 @@ const confirmAccount = (username, code, mysqlClient) => {
 
     let user = null;
     try {
-      user = await getUserByUsername(username, mysqlClient);
+      user = await getUserByUsernameOrEmail(username, mysqlClient);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_USER"));
     }
