@@ -1,6 +1,6 @@
-const getUserById = require("../helpers/controllers/users/getUserById");
+const getUserByUsername = require("../helpers/controllers/users/getUserByUsername");
 
-const confirmAccount = (user_id, code, mysqlClient) => {
+const confirmAccount = (username, code, mysqlClient) => {
   return new Promise(async (resolve, reject) => {
 
     const update = (user) => {
@@ -8,7 +8,6 @@ const confirmAccount = (user_id, code, mysqlClient) => {
         mysqlClient.query(`UPDATE Users SET email_confirmed = 1 WHERE id = '${user.id}'`, (err, result) => {
 
           if(err) {
-            
             return reject(new Error("ERROR_UPDATING_USER"));
           }
 
@@ -19,9 +18,8 @@ const confirmAccount = (user_id, code, mysqlClient) => {
 
     let user = null;
     try {
-      user = await getUserById(user_id, mysqlClient);
+      user = await getUserByUsername(username, mysqlClient);
     } catch(e) {
-      
       return reject(new Error("ERROR_GETTING_USER"));
     }
 
