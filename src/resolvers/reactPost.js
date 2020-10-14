@@ -74,6 +74,8 @@ const reactPost = (post_id, user, redisClient, mysqlClient) => {
       }
     }
 
+    post.user_reacted = !user_reacted;
+
     return resolve(post);
   });
 };

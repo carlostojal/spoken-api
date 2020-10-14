@@ -41,6 +41,7 @@ const formatPost = (post) => {
       nsfw_cause: post.media_nsfw_cause
     },
     media_url: post.media_id ? `${process.env.EXPRESS_ADDRESS}:${process.env.EXPRESS_PORT}/media/${post.media_id}` : null,
+    user_reacted: post.user_reacted,
     edited: post.edited == 1
   }
 };
