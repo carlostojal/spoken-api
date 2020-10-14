@@ -38,7 +38,6 @@ const getUserFeed = (page, perPage, user, redisClient, mysqlClient) => {
     try {
       posts = await getFeed(page, perPage, user.id, mysqlClient);
     } catch(e) {
-      console.error(e);
       return reject(new Error("ERROR_GETTING_FEED"));
     }
 

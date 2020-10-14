@@ -8,7 +8,7 @@ const getPostById = (id, mysqlClient) => {
     OriginalPost.id AS original_post_id, OriginalPost.time AS original_post_time, OriginalPost.text AS original_post_text,
     OriginalPostUser.id AS original_poster_id, OriginalPostUser.name AS original_poster_name, OriginalPostUser.surname AS original_poster_surname, OriginalPostUser.username AS original_poster_username,
     OriginalPostUserMedia.id AS original_poster_profile_pic_media_id, OriginalPostUserMedia.is_nsfw AS original_poster_is_nsfw, OriginalPostUserMedia.nsfw_cause AS original_poster_nsfw_cause,
-    PostMedia.is_nsfw AS media_is_nsfw, PostMedia.nsfw_cause AS media_nsfw_cause,
+    PostMedia.is_nsfw AS media_is_nsfw, PostMedia.nsfw_cause AS media_nsfw_cause
     FROM Posts CurrentPost 
     INNER JOIN Users CurrentPostUser ON CurrentPost.user_id = CurrentPostUser.id
     LEFT JOIN Posts OriginalPost1 ON CurrentPost.original_post_id = OriginalPost1.id
