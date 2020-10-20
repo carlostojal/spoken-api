@@ -51,7 +51,7 @@ const refreshToken = (refresh_token, mysqlClient, redisClient) => {
     // get session data from token
     let session = null;
     try {
-      session = await getFromCache(`session-uid-${user.id}-${refresh_token}`, null, redisClient);
+      session = await getFromCache(`session:${user.id}:${refresh_token}`, null, redisClient);
       session = JSON.parse(session);
     } catch(e) {
       
@@ -63,7 +63,7 @@ const refreshToken = (refresh_token, mysqlClient, redisClient) => {
 
     // delete old session
     try {
-      await deleteFromCache(`session-uid-${user.id}-${refresh_token}`, null, redisClient);
+      await deleteFromCache(`session:${user.id}:${refresh_token}`, null, redisClient);
     } catch(e) {
       
       return reject(new Error("ERROR_DELETING_OLD_SESSION"));
@@ -76,7 +76,7 @@ const refreshToken = (refresh_token, mysqlClient, redisClient) => {
 
     // create new session
     try {
-      await cache(`session-uid-${user.id}-${new_refresh_token.value}`, null, JSON.stringify(session), new_refresh_token.expiresAt, true, true, redisClient);
+      await cache(`session:${user.id}:${new_refresh_token.value}`, null, JSON.stringify(session), new_refresh_token.expiresAt, true, true, redisClient);
     } catch(e) {
       
       return reject(new Error("ERROR_SAVING_SESSION"));

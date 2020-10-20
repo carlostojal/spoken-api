@@ -56,10 +56,8 @@ const getUserData = (id, user, mysqlClient, redisClient) => {
 
     try {
       returnUser = await getUserFromCache(id, redisClient);
-      if(!returnUser) {
+      if(!returnUser)
         returnUser = await getUserById(id, mysqlClient, redisClient);
-        console.log("GET FROM DATABASE");
-      }
     } catch(e) {
       return reject(new Error("ERROR_GETTING_USER"));
     }

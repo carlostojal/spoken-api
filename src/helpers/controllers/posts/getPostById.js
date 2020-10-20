@@ -1,5 +1,6 @@
+const savePostToCache = require("./savePostToCache");
 
-const getPostById = (id, mysqlClient) => {
+const getPostById = (id, mysqlClient, redisClient) => {
   return new Promise((resolve, reject) => {
 
     mysqlClient.query(`SELECT CurrentPost.id, CurrentPost.time, CurrentPost.text, CurrentPost.media_id, CurrentPost.edited,
@@ -26,6 +27,8 @@ const getPostById = (id, mysqlClient) => {
 
       result = JSON.parse(JSON.stringify(result));
       const post = result.length == 1 ? result[0] : null;
+
+      savePostToCache(post, redisClient);
 
       return resolve(post);
     });
