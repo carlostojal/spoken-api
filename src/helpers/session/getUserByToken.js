@@ -9,7 +9,7 @@ const getUserByToken = (token, mysqlClient, redisClient) => {
     // verify and decode user token
     let decoded = null;
     try {
-      decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+      decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     } catch(e) {
       
     }
@@ -33,7 +33,7 @@ const getUserByToken = (token, mysqlClient, redisClient) => {
     
     // the user was not in cache, so get from database
     try {
-      user = await getUserById(decoded.user.id, mysqlClient);
+      user = await getUserById(decoded.user.id, mysqlClient, redisClient);
     } catch(e) {
       
       return reject(new Error("ERROR_GETTING_USER"));

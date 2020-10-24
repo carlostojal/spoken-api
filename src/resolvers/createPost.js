@@ -2,7 +2,6 @@ const { AuthenticationError } = require("apollo-server");
 const generateId = require("../helpers/generateId");
 const insertPost = require("../helpers/controllers/posts/insertPost");
 const getPostById = require("../helpers/controllers/posts/getPostById");
-const cache = require("../helpers/cache/cache");
 const formatPost = require("../helpers/formatPost");
 const checkPostToxicity = require("../helpers/checkPostToxicity");
 
@@ -70,19 +69,11 @@ const createPost = (text, media_id, user, redisClient, mysqlClient) => {
     try {
       post1 = formatPost(post1);
     } catch(e) {
-      
       return reject(new Error("ERROR_FORMATING_POST"));
     }
 
     // check if the post text is toxic (the user will not wait for this action)
     checkPostToxicity(post, mysqlClient);
-
-    // save in cache
-    try {
-      await cache(`post-${post.id}`, null, JSON.stringify(post1), process.env.POST_CACHE_DURATION, true, true, redisClient);
-    } catch(e) {
-      
-    }
 
     return resolve(post1);
   });

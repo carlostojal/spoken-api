@@ -1,6 +1,8 @@
 const { AuthenticationError } = require("apollo-server");
 const getFeed = require("../helpers/controllers/posts/getFeed");
-const cache = require("../helpers/cache/cache");
+const getFeedFromCache = require("../helpers/controllers/posts/getFeedFromCache");
+const getPostById = require("../helpers/controllers/posts/getPostById");
+const getPostFromCache = require("../helpers/controllers/posts/getPostFromCache");
 const formatPost = require("../helpers/formatPost");
 
 /*
@@ -28,7 +30,7 @@ const formatPost = require("../helpers/formatPost");
 *   
 */
 
-const getUserFeed = (page, perPage, user, redisClient, mysqlClient) => {
+const getUserFeed = (page, perPage, user, mysqlClient, redisClient) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -36,7 +38,17 @@ const getUserFeed = (page, perPage, user, redisClient, mysqlClient) => {
 
     let posts;
     try {
-      posts = await getFeed(page, perPage, user.id, mysqlClient);
+      posts = await getFeedFromCache(page, user.id, redisClient);
+      if(posts && posts.length > 0) {
+        for(let i = 0; i < posts.length; i++) {
+          let post_id = posts[i];
+          posts[i] = await getPostFromCache(post_id, redisClient);
+          if(!posts[i])
+            posts[i] = await getPostById(post_id, mysqlClient, redisClient);
+        }
+      } else {
+        posts = await getFeed(page, perPage, user.id, mysqlClient, redisClient);
+      }
     } catch(e) {
       return reject(new Error("ERROR_GETTING_FEED"));
     }

@@ -38,7 +38,7 @@ const refreshToken = (refresh_token, mysqlClient, redisClient) => {
     // get user by decoding token
     let decoded = null;
     try {
-      decoded = jwt.verify(refresh_token, process.env.TOKEN_SECRET);
+      decoded = jwt.verify(refresh_token, process.env.REFRESH_TOKEN_SECRET);
     } catch(e) {
       
     }

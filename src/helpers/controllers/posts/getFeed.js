@@ -1,5 +1,8 @@
+const { RedisClient } = require("redis");
+const addPostToCachePage = require("./addPostToCachePage");
+const savePostToCache = require("./savePostToCache");
 
-const getFeed = (page, perPage, user_id, mysqlClient) => {
+const getFeed = (page, perPage, user_id, mysqlClient, redisClient) => {
   return new Promise((resolve, reject) => {
 
     mysqlClient.query(`SELECT CurrentPost.id, CurrentPost.time, CurrentPost.text, CurrentPost.media_id, CurrentPost.edited, (SELECT COUNT(*) FROM PostReactions WHERE post_id = CurrentPost.id AND user_id = ?) AS user_reacted,
@@ -29,6 +32,11 @@ const getFeed = (page, perPage, user_id, mysqlClient) => {
       }
 
       result = JSON.parse(JSON.stringify(result));
+
+      result.map(async (post) => {
+        await addPostToCachePage(post.id, user_id, page, redisClient);
+        await savePostToCache(post, redisClient);
+      });
 
       return resolve(result);
     });

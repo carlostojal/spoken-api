@@ -72,7 +72,7 @@ const resolvers = {
 
     // get user feed posts
     getUserFeed: (parent, args, context, info) => {
-      return getUserFeed(args.page, args.perPage, context.user, context.redisClient, context.mysqlClient);
+      return getUserFeed(args.page, args.perPage, context.user, context.mysqlClient, context.redisClient);
     },
 
     getFollowRequests: (parent, args, context, info) => {
