@@ -9,6 +9,7 @@ const getFollowers = require("../resolvers/getFollowers");
 const getFollowing = require("../resolvers/getFollowing");
 const getPostReactions = require("../resolvers/getPostReactions");
 const userSearch = require("../resolvers/userSearch");
+const getSessions = require("../resolvers/getSessions");
 const registerUser = require("../resolvers/registerUser");
 const confirmAccount = require("../resolvers/confirmAccount");
 const editUser = require("../resolvers/editUser");
@@ -98,6 +99,10 @@ const resolvers = {
 
     userSearch: (parent, args, context, info) => {
       return userSearch(args.query, context.user, context.mysqlClient, context.redisClient);
+    },
+
+    getSessions: (parent, args, context, info) => {
+      return getSessions(context.user, context.redisClient);
     }
 
   },
