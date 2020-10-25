@@ -69,6 +69,7 @@ const typeDefs = gql`
     getFollowing: [FollowRelation]
     getPostReactions(page: Int!, perPage: Int!, id: String): [User]
     getPostComments(page: Int!, perPage: Int!, id: String!): [Post]
+    userSearch(query: String!): [User]
   }
 
   type Mutation {

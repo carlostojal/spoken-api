@@ -8,6 +8,7 @@ const getFollowRequests = require("../resolvers/getFollowRequests");
 const getFollowers = require("../resolvers/getFollowers");
 const getFollowing = require("../resolvers/getFollowing");
 const getPostReactions = require("../resolvers/getPostReactions");
+const userSearch = require("../resolvers/userSearch");
 const registerUser = require("../resolvers/registerUser");
 const confirmAccount = require("../resolvers/confirmAccount");
 const editUser = require("../resolvers/editUser");
@@ -93,7 +94,12 @@ const resolvers = {
 
     getPostComments: (parent, args, context, info) => {
       return getPostComments(args.page, args.perPage, args.id, context.user, context.redisClient, context.mysqlClient);
+    },
+
+    userSearch: (parent, args, context, info) => {
+      return userSearch(args.query, context.user, context.mysqlClient, context.redisClient);
     }
+
   },
 
   Mutation: {
