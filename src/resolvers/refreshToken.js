@@ -72,7 +72,7 @@ const refreshToken = (refresh_token, mysqlClient, redisClient) => {
     const new_refresh_token = createToken(user, "refresh");
     const new_access_token = createToken(user, "access");
 
-    session.expiresAt = new_refresh_token.expiresAt;
+    session.expiresAt = new_refresh_token.expiresAt * 1000;
 
     // create new session
     try {
