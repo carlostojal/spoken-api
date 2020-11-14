@@ -1,2 +1,2 @@
 
-# spokennetwork-api
+# spoken-api

@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/carlostojal/spokennetwork-api.git"
+    "url": "git+https://github.com/carlostojal/spoken-api.git"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/carlostojal/spokennetwork-api/issues"
+    "url": "https://github.com/carlostojal/spoken-api/issues"
   },
-  "homepage": "https://github.com/carlostojal/spokennetwork-api#readme",
+  "homepage": "https://github.com/carlostojal/spoken-api#readme",
   "dependencies": {
     "@tensorflow/tfjs": "^2.6.0",
     "apollo-server": "^2.15.1",
