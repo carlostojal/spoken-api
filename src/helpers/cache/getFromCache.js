@@ -1,7 +1,15 @@
 
-const getFromCache = (key, field, redisClient) => {
+const getFromCache = (key, field) => {
 
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
+
+    let redisClient;
+    try {
+      redisClient = await require("../../config/redis");
+    } catch(e) {
+      return reject(new Error("CONNECTION_ERROR"));
+    }
+
     // hash
     if(field) {
       redisClient.hmget(key, field, (error, result) => {

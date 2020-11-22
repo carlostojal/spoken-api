@@ -2,14 +2,21 @@ const bcrypt = require("bcrypt");
 const getUserByUsernameOrEmail = require("../helpers/controllers/users/getUserByUsernameOrEmail");
 const getEmailTransport = require("../helpers/getEmailTransport");
 
-const sendConfirmationEmail = (username, password, mysqlClient, redisClient) => {
+const sendConfirmationEmail = (username, password) => {
   return new Promise(async (resolve, reject) => {
 
     let user = null;
     try {
-      user = await getUserByUsernameOrEmail(username, mysqlClient);
+      user = await getUserByUsernameOrEmail(username);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_USER"));
+    }
+
+    let redisClient;
+    try {
+      redisClient = await require("../config/redis");
+    } catch(e) {
+      return reject("CONNECTION_ERROR");
     }
 
     redisClient.exists(`confirmation_email:${user.id}`, (error, exists) => {
@@ -46,7 +53,7 @@ const sendConfirmationEmail = (username, password, mysqlClient, redisClient) => 
 
         redisClient.set(`confirmation_email:${user.id}`, 1, "EX", process.env.CONFIRMATION_EMAIL_TIMEOUT);
       });
-    });   
+    });
   });
 }
 

@@ -1,6 +1,13 @@
 
-const getUserByUsernameOrEmail = (username, mysqlClient) => {
-  return new Promise((resolve, reject) => {
+const getUserByUsernameOrEmail = (username) => {
+  return new Promise(async (resolve, reject) => {
+
+    let mysqlClient;
+    try {
+      mysqlClient = await require("../../../config/mysql");
+    } catch(e) {
+      return reject(e);
+    }
 
     mysqlClient.query(`SELECT * FROM Users WHERE username LIKE ? OR email LIKE ?`, [username, username], (err, result) => {
 
@@ -12,9 +19,10 @@ const getUserByUsernameOrEmail = (username, mysqlClient) => {
       result = JSON.parse(JSON.stringify(result));
       const user = result.length == 1 ? result[0] : null;
 
+      mysqlClient.end();
+
       return resolve(user);
     });
-
   });
 };
 

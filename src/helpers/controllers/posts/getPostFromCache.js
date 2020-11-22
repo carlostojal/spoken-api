@@ -1,6 +1,14 @@
 
-const getPostFromCache = (post_id, redisClient) => {
-  return new Promise((resolve, reject) => {
+const getPostFromCache = (post_id) => {
+  return new Promise(async (resolve, reject) => {
+
+    let redisClient;
+    try {
+      redisClient = await require("../../../config/redis");
+    } catch(e) {
+      return reject(e);
+    }
+
     redisClient.get(`post:${post_id}`, (err, result) => {
 
       if(err)

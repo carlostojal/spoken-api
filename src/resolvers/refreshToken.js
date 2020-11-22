@@ -3,7 +3,7 @@ const createToken = require("../helpers/session/createToken");
 const getFromCache = require("../helpers/cache/getFromCache");
 const cache = require("../helpers/cache/cache");
 const deleteFromCache = require("../helpers/cache/deleteFromCache");
-const getUserByToken = require("../helpers/session/getUserByToken");
+const saveTokenToCache = require("../helpers/controllers/sessions/saveTokenToCache");
 
 /*
 *
@@ -32,7 +32,7 @@ const getUserByToken = require("../helpers/session/getUserByToken");
 *   
 */
 
-const refreshToken = (refresh_token, mysqlClient, redisClient) => {
+const refreshToken = (refresh_token) => {
   return new Promise(async (resolve, reject) => {
 
     // get user by decoding token
@@ -40,7 +40,7 @@ const refreshToken = (refresh_token, mysqlClient, redisClient) => {
     try {
       decoded = jwt.verify(refresh_token, process.env.REFRESH_TOKEN_SECRET);
     } catch(e) {
-      
+
     }
 
     if(!decoded || !decoded.user)
@@ -51,10 +51,9 @@ const refreshToken = (refresh_token, mysqlClient, redisClient) => {
     // get session data from token
     let session = null;
     try {
-      session = await getFromCache(`session:${user.id}:${refresh_token}`, null, redisClient);
+      session = await getFromCache(`session:${user.id}:${refresh_token}`, null);
       session = JSON.parse(session);
     } catch(e) {
-      
       return reject(new Error("ERROR_GETTING_SESSION"));
     }
 
@@ -63,9 +62,8 @@ const refreshToken = (refresh_token, mysqlClient, redisClient) => {
 
     // delete old session
     try {
-      await deleteFromCache(`session:${user.id}:${refresh_token}`, null, redisClient);
+      await deleteFromCache(`session:${user.id}:${refresh_token}`, null);
     } catch(e) {
-      
       return reject(new Error("ERROR_DELETING_OLD_SESSION"));
     }
 
@@ -76,9 +74,8 @@ const refreshToken = (refresh_token, mysqlClient, redisClient) => {
 
     // create new session
     try {
-      await cache(`session:${user.id}:${new_refresh_token.value}`, null, JSON.stringify(session), new_refresh_token.expiresAt, true, true, redisClient);
+      await saveTokenToCache(user.id, new_refresh_token.value, session);
     } catch(e) {
-      
       return reject(new Error("ERROR_SAVING_SESSION"));
     }
 

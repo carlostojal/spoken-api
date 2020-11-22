@@ -30,7 +30,7 @@ const formatPost = require("../helpers/formatPost");
 *   
 */
 
-const getUserFeed = (page, perPage, user, mysqlClient, redisClient) => {
+const getUserFeed = (page, perPage, user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -38,16 +38,16 @@ const getUserFeed = (page, perPage, user, mysqlClient, redisClient) => {
 
     let posts;
     try {
-      posts = await getFeedFromCache(page, user.id, redisClient);
+      posts = await getFeedFromCache(page, user.id);
       if(posts && posts.length > 0) {
         for(let i = 0; i < posts.length; i++) {
           let post_id = posts[i];
-          posts[i] = await getPostFromCache(post_id, redisClient);
+          posts[i] = await getPostFromCache(post_id);
           if(!posts[i])
-            posts[i] = await getPostById(post_id, mysqlClient, redisClient);
+            posts[i] = await getPostById(post_id);
         }
       } else {
-        posts = await getFeed(page, perPage, user.id, mysqlClient, redisClient);
+        posts = await getFeed(page, perPage, user.id);
       }
     } catch(e) {
       return reject(new Error("ERROR_GETTING_FEED"));

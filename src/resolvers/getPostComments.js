@@ -1,9 +1,10 @@
 const { AuthenticationError } = require("apollo-server");
 const getPostById = require("../helpers/controllers/posts/getPostById");
 const userFollowsUser = require("../helpers/controllers/users/userFollowsUser");
+const getCommentsByPostId = require("../helpers/controllers/posts/getCommentsByPostId");
 const formatPost = require("../helpers/formatPost");
 
-const getPostComments = (page, perPage, post_id, user, redisClient, mysqlClient) => {
+const getPostComments = (page, perPage, post_id, user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -12,7 +13,7 @@ const getPostComments = (page, perPage, post_id, user, redisClient, mysqlClient)
     // get the post from the DB
     let post = null;
     try {
-      post = await getPostById(post_id, mysqlClient);
+      post = await getPostById(post_id);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_POST"));
     }
@@ -24,7 +25,7 @@ const getPostComments = (page, perPage, post_id, user, redisClient, mysqlClient)
     let has_permission = user.id == post.poster_id;
     if(!has_permission) {
       try {
-        has_permission = await userFollowsUser(user.id, post.poster_id, mysqlClient);
+        has_permission = await userFollowsUser(user.id, post.poster_id);
       } catch(e) {
         return reject(new Error("ERROR_CHECKING_PERMISSIONS"));
       }
@@ -36,7 +37,7 @@ const getPostComments = (page, perPage, post_id, user, redisClient, mysqlClient)
     // get comments from the DB
     let comments = null;
     try {
-      comments = await getCommentsByPostId(post_id, page, perPage, mysqlClient);
+      comments = await getCommentsByPostId(post_id, page, perPage);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_COMMENTS"));
     }

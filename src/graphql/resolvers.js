@@ -8,6 +8,7 @@ const getFollowRequests = require("../resolvers/getFollowRequests");
 const getFollowers = require("../resolvers/getFollowers");
 const getFollowing = require("../resolvers/getFollowing");
 const getPostReactions = require("../resolvers/getPostReactions");
+const getPostComments = require("../resolvers/getPostComments");
 const userSearch = require("../resolvers/userSearch");
 const getSessions = require("../resolvers/getSessions");
 const registerUser = require("../resolvers/registerUser");
@@ -27,7 +28,7 @@ const resolvers = {
   Query: {
     // get user tokens from username and password
     getToken: async (parent, args, context, info) => {
-      const tokens = await getToken(args.username, args.password, args.userPlatform, context.req.connection.remoteAddress, context.req.headers["user-agent"], context.mysqlClient, context.redisClient);
+      const tokens = await getToken(args.username, args.password, args.userPlatform, context.req.connection.remoteAddress, context.req.headers["user-agent"]);
       // send refresh token as httpOnly cookie
       context.res.cookie("refresh_token", tokens.refresh_token.value, {
         maxAge: process.env.REFRESH_TOKEN_DURATION * 24 * 3600 * 1000,
@@ -38,7 +39,7 @@ const resolvers = {
 
     sendConfirmationEmail: async (parent, args, context, info) => {
       try {
-        await sendConfirmationEmail(args.username, args.password, context.mysqlClient, context.redisClient);
+        await sendConfirmationEmail(args.username, args.password);
       } catch(e) {
         return e;
       }
@@ -58,7 +59,7 @@ const resolvers = {
       // get refresh token from cookies
       const refresh_token = getCookieByName("refresh_token", context.req.headers.cookie);
       // get new tokens from refresh token
-      const tokens = await refreshToken(refresh_token, context.mysqlClient, context.redisClient);
+      const tokens = await refreshToken(refresh_token);
       // send new refresh token through cookies
       context.res.cookie("refresh_token", tokens.refresh_token.value, {
         maxAge: process.env.REFRESH_TOKEN_DURATION * 24 * 3600 * 1000,
@@ -69,40 +70,40 @@ const resolvers = {
 
     // get user data from ID or for the current user
     getUserData: (parent, args, context, info) => {
-      return getUserData(args.id, context.user, context.mysqlClient, context.redisClient);
+      return getUserData(args.id, context.user);
     },
 
     // get user feed posts
     getUserFeed: (parent, args, context, info) => {
-      return getUserFeed(args.page, args.perPage, context.user, context.mysqlClient, context.redisClient);
+      return getUserFeed(args.page, args.perPage, context.user);
     },
 
     getFollowRequests: (parent, args, context, info) => {
-      return getFollowRequests(context.user, context.mysqlClient);
+      return getFollowRequests(context.user);
     },
 
     getFollowers: (parent, args, context, info) => {
-      return getFollowers(context.user, context.mysqlClient);
+      return getFollowers(context.user);
     },
 
     getFollowing: (parent, args, context, info) => {
-      return getFollowing(context.user, context.mysqlClient);
+      return getFollowing(context.user);
     },
 
     getPostReactions: (parent, args, context, info) => {
-      return getPostReactions(args.page, args.perPage, args.id, context.user, context.mysqlClient);
+      return getPostReactions(args.page, args.perPage, args.id, context.user);
     },
 
     getPostComments: (parent, args, context, info) => {
-      return getPostComments(args.page, args.perPage, args.id, context.user, context.redisClient, context.mysqlClient);
+      return getPostComments(args.page, args.perPage, args.id, context.user);
     },
 
     userSearch: (parent, args, context, info) => {
-      return userSearch(args.query, context.user, context.mysqlClient, context.redisClient);
+      return userSearch(args.query);
     },
 
     getSessions: (parent, args, context, info) => {
-      return getSessions(context.user, context.redisClient);
+      return getSessions(context.user);
     }
 
   },

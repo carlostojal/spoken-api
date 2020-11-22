@@ -1,7 +1,7 @@
 const { AuthorizationError } = require("apollo-server");
 const getSessionsController = require("../helpers/controllers/sessions/getSessions");
 
-const getSessions = (user, redisClient) => {
+const getSessions = (user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -9,7 +9,7 @@ const getSessions = (user, redisClient) => {
 
     let sessions = null;
     try {
-      sessions = await getSessionsController(user.id, redisClient);
+      sessions = await getSessionsController(user.id);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_SESSIONS"));

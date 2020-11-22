@@ -29,7 +29,7 @@ const mediaIdToUrl = require("../helpers/media/mediaIdToUrl");
 *   
 */
 
-const getUserData = (id, user, mysqlClient, redisClient) => {
+const getUserData = (id, user) => {
   return new Promise(async (resolve, reject) => {
 
     // function to remove private user data and return
@@ -55,9 +55,9 @@ const getUserData = (id, user, mysqlClient, redisClient) => {
     let returnUser = null;
 
     try {
-      returnUser = await getUserFromCache(id, redisClient);
+      returnUser = await getUserFromCache(id);
       if(!returnUser)
-        returnUser = await getUserById(id, mysqlClient, redisClient);
+        returnUser = await getUserById(id);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_USER"));
     }

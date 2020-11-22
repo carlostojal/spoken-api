@@ -1,6 +1,14 @@
 
-const getUserFromCache = (id, redisClient) => {
-  return new Promise((resolve, reject) => {
+const getUserFromCache = (id) => {
+  return new Promise(async (resolve, reject) => {
+
+    let redisClient;
+    try {
+      redisClient = await require("../../../config/redis");
+    } catch(e) {
+      return reject(e);
+    }
+
     redisClient.get(`user:${id}`, (err, result) => {
 
       if(err)
@@ -14,7 +22,7 @@ const getUserFromCache = (id, redisClient) => {
       }
 
       return resolve(user);
-    })
+    });
   });
 };
 

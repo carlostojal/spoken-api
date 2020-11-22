@@ -3,7 +3,7 @@ const getPostById = require("../helpers/controllers/posts/getPostById");
 const getReactions = require("../helpers/controllers/reactions/getReactions");
 const userFollowsUser = require("../helpers/controllers/users/userFollowsUser");
 
-const getPostReactions = (page, perPage, post_id, user, mysqlClient) => {
+const getPostReactions = (page, perPage, post_id, user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -11,7 +11,7 @@ const getPostReactions = (page, perPage, post_id, user, mysqlClient) => {
 
     let post = null;
     try {
-      post = await getPostById(post_id, mysqlClient);
+      post = await getPostById(post_id);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_POST"));
     }
@@ -21,7 +21,7 @@ const getPostReactions = (page, perPage, post_id, user, mysqlClient) => {
 
     let has_permission = false;
     try {
-      has_permission = await userFollowsUser(user.id, post.poster_id, mysqlClient);
+      has_permission = await userFollowsUser(user.id, post.poster_id);
     } catch(e) {
       return reject(new Error("ERROR_CHECKING_PERMISSIONS"));
     }
@@ -31,7 +31,7 @@ const getPostReactions = (page, perPage, post_id, user, mysqlClient) => {
 
     let reactions = null;
     try {
-      reactions = await getReactions(post_id, page, perPage, mysqlClient);
+      reactions = await getReactions(post_id, page, perPage);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_REACTIONS"));
     }

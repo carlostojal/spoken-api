@@ -1,7 +1,14 @@
 const savePostToCache = require("./savePostToCache");
 
-const getPostById = (id, mysqlClient, redisClient) => {
-  return new Promise((resolve, reject) => {
+const getPostById = (id) => {
+  return new Promise(async (resolve, reject) => {
+
+    let mysqlClient;
+    try {
+      mysqlClient = await require("../../../config/mysql");
+    } catch(e) {
+      return reject(e);
+    }
 
     mysqlClient.query(`SELECT CurrentPost.id, CurrentPost.time, CurrentPost.text, CurrentPost.media_id, CurrentPost.edited,
     CurrentPostUser.id AS poster_id, CurrentPostUser.name AS poster_name, CurrentPostUser.surname AS poster_surname, CurrentPostUser.username AS poster_username, CurrentPostUser.profile_pic_media_id,
@@ -28,7 +35,7 @@ const getPostById = (id, mysqlClient, redisClient) => {
       result = JSON.parse(JSON.stringify(result));
       const post = result.length == 1 ? result[0] : null;
 
-      savePostToCache(post, redisClient);
+      savePostToCache(post);
 
       return resolve(post);
     });
