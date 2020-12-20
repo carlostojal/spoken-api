@@ -20,8 +20,6 @@ const getUserById = (id) => {
 
       saveUserToCache(user);
 
-      mysqlClient.end();
-
       return resolve(user);
     });
   });

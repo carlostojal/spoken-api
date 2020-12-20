@@ -24,7 +24,6 @@ const getUserByToken = (token, mysqlClient, redisClient) => {
       user = await getFromCache(`userdata-uid-${decoded.user.id}`, null, redisClient);
       user = JSON.parse(user);
     } catch(e) {
-      
       return reject(new Error("ERROR_GETTING_USER"));
     }
 
@@ -35,7 +34,6 @@ const getUserByToken = (token, mysqlClient, redisClient) => {
     try {
       user = await getUserById(decoded.user.id, mysqlClient, redisClient);
     } catch(e) {
-      
       return reject(new Error("ERROR_GETTING_USER"));
     }
 

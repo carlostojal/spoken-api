@@ -57,7 +57,7 @@ const getUserFeed = (page, perPage, user) => {
       for(let i = 0; i < posts.length; i++)
         posts[i] = formatPost(posts[i]);
     } catch(e) {
-      return reject(new Error("ERROR_FORMATING_POSTS"));
+      return reject(new Error("ERROR_FORMATTING_POSTS"));
     }
 
     return resolve(posts);

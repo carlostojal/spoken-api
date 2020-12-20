@@ -1,4 +1,3 @@
-const { catch } = require("../../../config/mysql");
 
 const getSessions = (user_id) => {
   return new Promise(async (resolve, reject) => {

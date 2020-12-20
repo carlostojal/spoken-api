@@ -1,4 +1,3 @@
-const { catch } = require("../../../config/mysql");
 
 const getReactions = (post_id, page, perPage) => {
   return new Promise(async (resolve, reject) => {

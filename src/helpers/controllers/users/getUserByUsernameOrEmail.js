@@ -19,8 +19,6 @@ const getUserByUsernameOrEmail = (username) => {
       result = JSON.parse(JSON.stringify(result));
       const user = result.length == 1 ? result[0] : null;
 
-      mysqlClient.end();
-
       return resolve(user);
     });
   });
