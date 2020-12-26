@@ -15,7 +15,7 @@ const checkNsfw = (media) => {
 
     let model = null;
     try {
-      model = await nsfwjs.load(`${process.env.EXPRESS_ADDRESS}:${process.env.EXPRESS_PORT}/nsfw_model/`, { size: 299 });
+      model = await nsfwjs.load(`${process.env.EXPRESS_ADDRESS}:${process.env.EXPRESS_PORT}/nsfw_model/`);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_LOADING_MODEL"));
@@ -33,6 +33,7 @@ const checkNsfw = (media) => {
     try {
       predictions = await model.classify(tf.node.decodeImage(image));
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_GETTING_PREDICTIONS"));
     }
 
