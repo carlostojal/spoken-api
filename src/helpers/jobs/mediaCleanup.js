@@ -28,10 +28,10 @@ const mediaCleanup = () => {
                     try {
                         await removeMediaById(item.id)
                     } catch(e) {
-                        return reject(new Error("ERROR_REMOVING_DB_OBJECT"));
+                        console.error(new Error("ERROR_REMOVING_DB_OBJECT"));
                     }
                 } else {
-                    return reject(new Error("ERROR_REMOVING_FILE"));
+                    console.error(new Error("ERROR_REMOVING_FILE"));
                 }
             });
             
