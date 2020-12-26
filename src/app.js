@@ -1,6 +1,7 @@
 const { ApolloServer } = require("apollo-server");
 require("dotenv").config({ path: ".env" });
 require("./express"); // express server
+require("./helpers/jobs")(); // cron jobs
 const mysqlClient = require("./config/mysql");
 const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers");

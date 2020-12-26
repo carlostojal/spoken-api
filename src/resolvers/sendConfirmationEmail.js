@@ -40,8 +40,8 @@ const sendConfirmationEmail = (username, password) => {
         const mailOptions = {
           from: process.env.EMAIL_ADDRESS,
           to: user.email,
-          subject: "SpokenNetwork Account Confirmation",
-          html: `Hello, ${user.name}.<br><br>Welcome to SpokenNetwork!<br>Your account confirmation code is <b>${user.confirmation_code}</b>.<br><br>Best regards,<br>SpokenNetwork Team.`
+          subject: "Spoken Account Confirmation",
+          html: `Hello, ${user.name}.<br><br>Welcome to Spoken!<br>Your account confirmation code is <b>${user.confirmation_code}</b>.<br><br>Best regards,<br>Spoken Team.`
         }
     
         transport.sendMail(mailOptions, (err, info) => {
