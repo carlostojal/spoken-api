@@ -11,10 +11,13 @@ const mediaCleanup = () => {
 
             media.forEach(async (item, index) => {
 
+                console.log(`Media with ID ${item.id} is expired.`);
+
                 let deleteSuccess = true;
 
                 // remove file from system
                 try {
+                    console.log(`Removing media with ID ${item.id}...`);
                     fs.unlinkSync(item.path);
                 } catch(e) {
                     // -2 errno is ENOENT error (the file was already deleted)
@@ -24,9 +27,12 @@ const mediaCleanup = () => {
 
                 // only remove from database if the delete was successful
                 if(deleteSuccess) {
+                    console.log("Deleted.");
                     // remove media object from database
                     try {
+                        console.log("Removing from database...");
                         await removeMediaById(item.id)
+                        console.log("Removed.\n");
                     } catch(e) {
                         console.error(new Error("ERROR_REMOVING_DB_OBJECT"));
                     }

@@ -23,6 +23,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
+// serve the NSFW classification model statically
 app.use("/nsfw_model", express.static(path.join(__dirname, "models/nsfw")));
 
 // media upload
