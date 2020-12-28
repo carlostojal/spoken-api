@@ -6,7 +6,7 @@ const checkCommentToxicity = (comment) => {
 
     let mysqlClient;
     try {
-      mysqlClient = await require("../../../config/mysql");
+      mysqlClient = await require("../config/mysql");
     } catch(e) {
       return reject(e);
     }

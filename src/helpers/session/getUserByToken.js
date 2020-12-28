@@ -6,16 +6,18 @@ const cache = require("../cache/cache");
 const getUserByToken = (token) => {
   return new Promise(async (resolve, reject) => {
 
+    console.log(token);
+
     let mysqlClient;
     try {
-      mysqlClient = await require("../../../config/mysql");
+      mysqlClient = await require("../../config/mysql");
     } catch(e) {
       return reject(e);
     }
 
     let redisClient;
     try {
-      redisClient = await require("../../../config/redis");
+      redisClient = await require("../../config/redis");
     } catch(e) {
       return reject(e);
     }
@@ -25,7 +27,7 @@ const getUserByToken = (token) => {
     try {
       decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     } catch(e) {
-      
+
     }
 
     // token is not valid, so the decoded data is null
@@ -34,6 +36,7 @@ const getUserByToken = (token) => {
 
     // get user from cache
     let user;
+    /*
     try {
       user = await getFromCache(`userdata-uid-${decoded.user.id}`, null, redisClient);
       user = JSON.parse(user);
@@ -42,7 +45,7 @@ const getUserByToken = (token) => {
     }
 
     if(user)
-      return resolve(user);
+      return resolve(user);*/
     
     // the user was not in cache, so get from database
     try {
@@ -51,12 +54,15 @@ const getUserByToken = (token) => {
       return reject(new Error("ERROR_GETTING_USER"));
     }
 
+    /*
     // save the user in cache
     try {
       await cache(`userdata-uid-${user.id}`, null, JSON.stringify(user), process.env.USER_DATA_CACHE_DURATION, false, false, redisClient);
     } catch(e) {
       
-    }
+    }*/
+
+    console.log(user);
 
     return resolve(user);
   });
