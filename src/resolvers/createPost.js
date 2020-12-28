@@ -35,7 +35,7 @@ const checkPostToxicity = require("../helpers/checkPostToxicity");
 *   
 */
 
-const createPost = (text, media_id, user, redisClient, mysqlClient) => {
+const createPost = (text, media_id, user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -51,16 +51,15 @@ const createPost = (text, media_id, user, redisClient, mysqlClient) => {
 
     // insert simple post
     try {
-      await insertPost(post, mysqlClient);
+      await insertPost(post);
     } catch(e) {
-      
       return reject(new Error("ERROR_REGISTERING_POST"));
     }
 
     // get the post from the database
     let post1 = null;
     try {
-      post1 = await getPostById(post.id, mysqlClient);
+      post1 = await getPostById(post.id);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_POST"));
     }
@@ -73,7 +72,7 @@ const createPost = (text, media_id, user, redisClient, mysqlClient) => {
     }
 
     // check if the post text is toxic (the user will not wait for this action)
-    checkPostToxicity(post, mysqlClient);
+    checkPostToxicity(post);
 
     return resolve(post1);
   });

@@ -1,6 +1,13 @@
 
-const insertReaction = (reaction, mysqlClient) => {
-  return new Promise((resolve, reject) => {
+const insertReaction = (reaction) => {
+  return new Promise(async (resolve, reject) => {
+
+    let mysqlClient;
+    try {
+      mysqlClient = await require("../../../config/mysql");
+    } catch(e) {
+      return reject(e);
+    }
 
     mysqlClient.query(`INSERT INTO PostReactions (id, user_id, post_id, time) VALUES (?, ?, ?, ?)`, [reaction.id, reaction.user_id, reaction.post_id, reaction.time], (err, result) => {
       

@@ -3,8 +3,22 @@ const getUserById = require("../controllers/users/getUserById");
 const getFromCache = require("../cache/getFromCache");
 const cache = require("../cache/cache");
 
-const getUserByToken = (token, mysqlClient, redisClient) => {
+const getUserByToken = (token) => {
   return new Promise(async (resolve, reject) => {
+
+    let mysqlClient;
+    try {
+      mysqlClient = await require("../../../config/mysql");
+    } catch(e) {
+      return reject(e);
+    }
+
+    let redisClient;
+    try {
+      redisClient = await require("../../../config/redis");
+    } catch(e) {
+      return reject(e);
+    }
 
     // verify and decode user token
     let decoded = null;
@@ -32,7 +46,7 @@ const getUserByToken = (token, mysqlClient, redisClient) => {
     
     // the user was not in cache, so get from database
     try {
-      user = await getUserById(decoded.user.id, mysqlClient, redisClient);
+      user = await getUserById(decoded.user.id);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_USER"));
     }

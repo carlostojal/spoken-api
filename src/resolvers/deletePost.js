@@ -3,7 +3,7 @@ const getPostById = require("../helpers/controllers/posts/getPostById");
 const removePostById = require("../helpers/controllers/posts/removePostById");
 const formatPost = require("../helpers/formatPost");
 
-const deletePost = (id, user, mysqlClient) => {
+const deletePost = (id, user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -11,7 +11,7 @@ const deletePost = (id, user, mysqlClient) => {
     
     let post = null;
     try {
-      post = await getPostById(id, mysqlClient);
+      post = await getPostById(id);
     } catch(e) {
       
       return reject(new Error("ERROR_GETTING_POST"));
@@ -25,7 +25,7 @@ const deletePost = (id, user, mysqlClient) => {
       return reject(new Error("BAD_PERSMISSIONS"));
 
     try {
-      await removePostById(id, mysqlClient);
+      await removePostById(id);
     } catch(e) {
       
       return reject(new Error("ERROR_REMOVING_POST"));

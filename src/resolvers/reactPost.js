@@ -7,7 +7,7 @@ const insertReaction = require("../helpers/controllers/reactions/insertReaction"
 const generateId = require("../helpers/generateId");
 const formatPost = require("../helpers/formatPost");
 
-const reactPost = (post_id, user, redisClient, mysqlClient) => {
+const reactPost = (post_id, user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -15,7 +15,7 @@ const reactPost = (post_id, user, redisClient, mysqlClient) => {
 
     let post = null;
     try {
-      post = await getPostById(post_id, mysqlClient);
+      post = await getPostById(post_id);
     } catch(e) {
       
       return reject(new Error("ERROR_GETTING_POST"));
@@ -34,7 +34,7 @@ const reactPost = (post_id, user, redisClient, mysqlClient) => {
     // check if the user follows the user who made the post
     let hasPermission = false;
     try {
-      hasPermission = await userFollowsUser(user.id, post.poster.id, mysqlClient);
+      hasPermission = await userFollowsUser(user.id, post.poster.id);
     } catch(e) {
       
       return reject(new Error("ERROR_CHECKING_PERMISSION"));
@@ -46,7 +46,7 @@ const reactPost = (post_id, user, redisClient, mysqlClient) => {
     // check if the current user reacted the post
     let user_reacted = false;
     try {
-      user_reacted = await userReacted(user, post, mysqlClient);
+      user_reacted = await userReacted(user, post);
     } catch(e) {
       
       return reject(new Error("ERROR_CHECKING_REACTION"));
@@ -55,7 +55,7 @@ const reactPost = (post_id, user, redisClient, mysqlClient) => {
     // the reaction was registered, so remove
     if(user_reacted) {
       try {
-        await removeReaction(user, post, mysqlClient);
+        await removeReaction(user, post);
       } catch(e) {
         
         return reject(new Error("ERROR_REMOVING_REACTION"));
@@ -68,7 +68,7 @@ const reactPost = (post_id, user, redisClient, mysqlClient) => {
         time: Date.now()
       }
       try {
-        await insertReaction(reaction, mysqlClient);
+        await insertReaction(reaction);
       } catch(e) {
         return reject(new Error("ERROR_SAVING_REACTION"));
       }

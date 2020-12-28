@@ -45,7 +45,7 @@ app.post("/upload", async (req, res) => {
   // authenticate user from token
   let user = null;
   try {
-    user = await getUserByToken(token, mysqlClient, redisClient);
+    user = await getUserByToken(token);
   } catch(e) {
     return res.status(500).send("AUTHORIZATION_ERROR");
   }
@@ -122,7 +122,7 @@ app.get("/media/:id/:token?", async (req, res) => {
 
   let media = null;
   try {
-    media = await getMediaById(media_id, mysqlClient);
+    media = await getMediaById(media_id);
   } catch(e) {
     return res.status(500).send("ERROR_GETTING_MEDIA");
   }
@@ -137,7 +137,7 @@ app.get("/media/:id/:token?", async (req, res) => {
 
     let user = null;
     try {
-      user = await getUserByToken(token, mysqlClient);
+      user = await getUserByToken(token);
     } catch(e) {
       return res.status(500).send("ERROR_AUTHORIZING_USER");
     }

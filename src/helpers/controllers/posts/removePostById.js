@@ -1,6 +1,14 @@
 
-const removePostById = (id, mysqlClient) => {
-  return new Promise((resolve, reject) => {
+const removePostById = (id) => {
+  return new Promise(async (resolve, reject) => {
+
+    let mysqlClient;
+    try {
+      mysqlClient = await require("../../../config/mysql");
+    } catch(e) {
+      return reject(e);
+    }
+
     mysqlClient.query(`DELETE FROM Posts WHERE id = ?`, [id], (err, result) => {
 
       if(err) {

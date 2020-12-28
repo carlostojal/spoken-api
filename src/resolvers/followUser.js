@@ -29,7 +29,7 @@ const removeRelation = require("../helpers/controllers/relations/removeRelation"
 *   
 */
 
-const followUser = (id, user, mysqlClient) => {
+const followUser = (id, user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -43,7 +43,7 @@ const followUser = (id, user, mysqlClient) => {
 
     let user1 = null;
     try {
-      user1 = await getUserById(id, mysqlClient);
+      user1 = await getUserById(id);
     } catch(e) {
       
       return reject(new Error("ERROR_GETTING_USER"));
@@ -63,13 +63,13 @@ const followUser = (id, user, mysqlClient) => {
     };
 
     try {
-      await insertRelation(followRelation, mysqlClient);
+      await insertRelation(followRelation);
     } catch(e) {
       
       if(e.errno == 1062) { // duplicate key (relation already exists)
         // will remove the relation
         try {
-          await removeRelation(user.id, user1.id, mysqlClient);
+          await removeRelation(user.id, user1.id);
         } catch(e) {
           
           return reject(new Error("ERROR_REMOVING_RELATION"));

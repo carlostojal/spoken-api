@@ -25,7 +25,7 @@ const confirmAccount = (username, code) => {
 
     let user = null;
     try {
-      user = await getUserByUsernameOrEmail(username, mysqlClient);
+      user = await getUserByUsernameOrEmail(username);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_USER"));
     }

@@ -1,7 +1,7 @@
 const { AuthenticationError } = require("apollo-server");
 const searchUser = require("../helpers/controllers/users/searchUser");
 
-const userSearch = (query, user, mysqlClient, redisClient) => {
+const userSearch = (query, user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -9,7 +9,7 @@ const userSearch = (query, user, mysqlClient, redisClient) => {
 
     let users = null;
     try {
-      users = await searchUser(query, mysqlClient, redisClient);
+      users = await searchUser(query);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_USERS"));
     }

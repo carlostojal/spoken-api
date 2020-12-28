@@ -37,7 +37,7 @@ const checkPasswordStrength = require("check-password-strength");
 *   
 */
 
-const registerUser = (name, surname, birthdate, email, username, password, profile_type, profile_privacy_type, mysqlClient) => {
+const registerUser = (name, surname, birthdate, email, username, password, profile_type, profile_privacy_type) => {
   return new Promise((resolve, reject) => {
 
     if(!checkBirthdate(birthdate))

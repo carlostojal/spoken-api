@@ -6,7 +6,7 @@ const formatPost = require("../helpers/formatPost");
 const checkCommentToxicity = require("../helpers/checkCommentToxicity");
 const insertPost = require("../helpers/controllers/posts/insertPost");
 
-const commentPost = (post_id, user, text, redisClient, mysqlClient) => {
+const commentPost = (post_id, user, text) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -15,7 +15,7 @@ const commentPost = (post_id, user, text, redisClient, mysqlClient) => {
     let post = null;
 
     try {
-      post = await getPostById(post_id, mysqlClient);
+      post = await getPostById(post_id);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_POST"));
     }
@@ -23,7 +23,7 @@ const commentPost = (post_id, user, text, redisClient, mysqlClient) => {
     let has_permission = false;
 
     try {
-      has_permission = await userFollowsUser(user.id, post.poster_id, mysqlClient);
+      has_permission = await userFollowsUser(user.id, post.poster_id);
     } catch(e) {
       return reject(new Error("ERROR_CHECKING_PERMISSION"));
     }
@@ -40,7 +40,7 @@ const commentPost = (post_id, user, text, redisClient, mysqlClient) => {
     };
 
     try {
-      await insertPost(comment, mysqlClient);
+      await insertPost(comment);
     } catch(e) {
       return reject(new Error("ERROR_REGISTERING_COMMENT"));
     }
@@ -52,7 +52,7 @@ const commentPost = (post_id, user, text, redisClient, mysqlClient) => {
     }
 
     try {
-      checkCommentToxicity(comment, mysqlClient);
+      checkCommentToxicity(comment);
     } catch(e) {
 
     }

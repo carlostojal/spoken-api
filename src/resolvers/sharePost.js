@@ -6,7 +6,7 @@ const insertPost = require("../helpers/controllers/posts/insertPost");
 const formatPost = require("../helpers/formatPost");
 const checkPostToxicity = require("../helpers/checkPostToxicity");
 
-const sharePost = (post_id, user, mysqlClient) => {
+const sharePost = (post_id, user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -15,7 +15,7 @@ const sharePost = (post_id, user, mysqlClient) => {
     // get the post from ID
     let post = null;
     try {
-      post = await getPostById(post_id, mysqlClient);
+      post = await getPostById(post_id);
     } catch(e) {
       
       return reject(new Error("ERROR_GETTING_POST"));
@@ -29,7 +29,7 @@ const sharePost = (post_id, user, mysqlClient) => {
     let has_permission = user.id == post.poster_id;
     if(!has_permission) {
       try {
-        has_permission = await userFollowsUser(user.id, post.poster_id, mysqlClient);
+        has_permission = await userFollowsUser(user.id, post.poster_id);
       } catch(e) {
         return reject(new Error("ERROR_CHECKING_PERMISSION"));
       }
@@ -49,14 +49,14 @@ const sharePost = (post_id, user, mysqlClient) => {
 
     // register a new post by this user, that will later reference the shared post
     try {
-      await insertPost(share_post, mysqlClient);
+      await insertPost(share_post);
     } catch(e) {
       return reject(new Error("ERROR_REGISTERING_POST"));
     }
 
     // get post populated from DB
     try {
-      post = await getPostById(share_post.id, mysqlClient);
+      post = await getPostById(share_post.id);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_POST"));
     }

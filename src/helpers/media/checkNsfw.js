@@ -53,7 +53,7 @@ const checkNsfw = (media) => {
 
     const is_nsfw = max.prob > parseFloat(process.env.MIN_NSFW_PROBABILITY);
     
-    await updateMediaSafety(media.id, is_nsfw ? 1: 0, is_nsfw ? max.class : null, mysqlClient);
+    await updateMediaSafety(media.id, is_nsfw ? 1: 0, is_nsfw ? max.class : null);
 
     // console.log(predictions);
     return resolve(null);
