@@ -1,20 +1,27 @@
+const saveUserToCache = require("./saveUserToCache");
 
-const getUserById = (id, mysqlClient) => {
-  return new Promise((resolve, reject) => {
+const getUserById = (id) => {
+  return new Promise(async (resolve, reject) => {
 
-    mysqlClient.query(`SELECT * FROM Users WHERE id LIKE ?`, [id], (err, result) => {
+    let mysqlClient;
+    try {
+      mysqlClient = await require("../../../config/mysql");
+    } catch(e) {
+      return reject(e);
+    }
 
-      if(err) {
-        
+    mysqlClient.query(`SELECT * FROM Users WHERE id LIKE ?`, [id], async (err, result) => {
+
+      if(err)
         return reject(err);
-      }
 
       result = JSON.parse(JSON.stringify(result));
       const user = result.length == 1 ? result[0] : null;
 
+      saveUserToCache(user);
+
       return resolve(user);
     });
-
   });
 };
 

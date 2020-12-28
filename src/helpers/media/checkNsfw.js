@@ -1,14 +1,21 @@
-const tf = require("@tensorflow/tfjs");
+const tf = require("@tensorflow/tfjs-node");
 const nsfwjs = require("nsfwjs");
 const fs = require("fs");
 const updateMediaSafety = require("../controllers/media/updateMediaSafety");
 
-const checkNsfw = (media, mysqlClient) => {
+const checkNsfw = (media) => {
   return new Promise(async (resolve, reject) => {
+
+    let mysqlClient;
+    try {
+      mysqlClient = await require("../../config/mysql");
+    } catch(e) {
+      return reject(e);
+    }
 
     let model = null;
     try {
-      model = await nsfwjs.load("file://src/models/nsfw/", { size: 299 });
+      model = await nsfwjs.load(`${process.env.EXPRESS_ADDRESS}:${process.env.EXPRESS_PORT}/nsfw_model/`);
     } catch(e) {
       return reject(new Error("ERROR_LOADING_MODEL"));
     }
@@ -17,7 +24,6 @@ const checkNsfw = (media, mysqlClient) => {
     try {
       image = fs.readFileSync(media.path);
     } catch(e) {
-      console.error(e);
       return reject(new Error("ERROR_READING_FILE"));
     }
 
@@ -28,8 +34,8 @@ const checkNsfw = (media, mysqlClient) => {
       return reject(new Error("ERROR_GETTING_PREDICTIONS"));
     }
 
-    // classes not valid to NSFW classification
-    const invalid_classes = ["Neutral", "Sexy"];
+    // classes not considered NSFW for this case
+    const invalid_classes = ["Neutral", "Sexy", "Drawing"];
 
     let max = {
       class: null,

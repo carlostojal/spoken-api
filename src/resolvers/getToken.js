@@ -2,7 +2,8 @@ const bcrypt = require("bcrypt");
 const geoip = require("geoip-lite");
 const platform = require("platform");
 const createToken = require("../helpers/session/createToken");
-const cache = require("../helpers/cache/cache");
+const getUserByUsernameOrEmail = require("../helpers/controllers/users/getUserByUsernameOrEmail");
+const saveTokenToCache = require("../helpers/controllers/sessions/saveTokenToCache");
 
 /*
 *
@@ -33,73 +34,71 @@ const cache = require("../helpers/cache/cache");
 *   
 */
 
-const getToken = (username, password, userPlatform, remoteAddress, userAgent, mysqlClient, redisClient) => {
-  return new Promise((resolve, reject) => {
-    mysqlClient.query(`SELECT * FROM Users WHERE username LIKE '${username}' OR email LIKE '${username}'`, (err, result) => {
+const getToken = (username, password, userPlatform, remoteAddress, userAgent) => {
+  return new Promise(async (resolve, reject) => {
 
-      if(err) {
+    let user; 
+
+    try {
+      user = await getUserByUsernameOrEmail(username);
+    } catch(e) {
+      return reject(new Error("ERROR_GETTING_USER"));
+    }
+
+    if(!user)
+      return reject(new Error("USER_NOT_FOUND"));
+
+    bcrypt.compare(password, user.password, async (err, compareSuccess) => { // compare the provided password with the user one
+    
+      if (err)
+        return reject(new Error("AUTHENTICATION_ERROR"));
+
+      if(!compareSuccess) return reject(new Error("WRONG_PASSWORD"));
+
+      if(!user.email_confirmed) 
+        return reject(new Error("EMAIL_NOT_CONFIRMED"));
+
+      // get user geolocation
+      let geo = null;
+      try {
+        geo = geoip.lookup(remoteAddress);
+      } catch(e) {
         
-        return reject(new Error("ERROR_GETTING_USER"));
+        return reject(new Error("ERROR_GETTING_LOGIN_LOCATION"));
       }
 
-      result = JSON.parse(JSON.stringify(result));
 
-      if(!result || result.length == 0)
-        return reject(new Error("USER_NOT_FOUND"));
-      
-      const user = result[0];
-
-      bcrypt.compare(password, user.password, async (err, compareSuccess) => { // compare the provided password with the user one
-      
-        if (err) {
-          
-          return reject(new Error("AUTHENTICATION_ERROR"));
-        }
-
-        if(!compareSuccess) return reject(new Error("WRONG_PASSWORD"));
-
-        if(!user.email_confirmed) 
-          return reject(new Error("EMAIL_NOT_CONFIRMED"));
-
-        // get user geolocation
-        let geo = null;
-
+      // get user platform
+      let platformData = null;
+      if(userPlatform) {
+        platformData = userPlatform;
+      } else {
         try {
-          geo = geoip.lookup(remoteAddress);
+          platformData = platform.parse(userAgent);
+          platformData = platformData.description;
         } catch(e) {
           
-          return reject(new Error("ERROR_GETTING_LOGIN_LOCATION"));
         }
+      }
 
+      // create tokens with specified duration and user id
+      const refresh_token = createToken(user, "refresh");
+      const access_token = createToken(user, "access");
 
-        // get user platform
-        let platformData = null;
+      const session = {createdAt: refresh_token.createdAt, expiresAt: refresh_token.expiresAt, userLocation: geo, userPlatform: platformData};
 
-        if(userPlatform) {
-          platformData = userPlatform;
-        } else {
-          try {
-            platformData = platform.parse(userAgent);
-            platformData = platformData.description;
-          } catch(e) {
-            
-          }
-        }
+      saveTokenToCache(user.id, refresh_token.value, session);
 
-        // create tokens with specified duration and user id
-        const refresh_token = createToken(user, "refresh");
-        const access_token = createToken(user, "access");
+      /*
+      // save refresh token
+      try {
+        await cache(`session:${user.id}:${refresh_token.value}`, null, JSON.stringify({createdAt: refresh_token.createdAt, expiresAt: refresh_token.expiresAt * 1000, userLocation: geo, userPlatform: platformData}), process.env.REFRESH_TOKEN_DURATION * 24 * 60 * 60, true, true, redisClient);
+      } catch(e) {
+        
+        return reject(new Error("ERROR_SAVING_REFRESH_TOKEN"));
+      }*/
 
-        // save refresh token
-        try {
-          await cache(`session-uid-${user.id}-${refresh_token.value}`, null, JSON.stringify({createdAt: refresh_token.createdAt, expiresAt: refresh_token.expiresAt, userLocation: geo, userPlatform: platformData}), process.env.REFRESH_TOKEN_DURATION * 24 * 60 * 60, true, true, redisClient);
-        } catch(e) {
-          
-          return reject(new Error("ERROR_SAVING_REFRESH_TOKEN"));
-        }
-
-        return resolve({ access_token, refresh_token });
-      });
+      return resolve({ access_token, refresh_token });
     });
   });
 }

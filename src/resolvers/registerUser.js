@@ -75,7 +75,7 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
         };
 
         try {
-          await insertUser(user, mysqlClient);
+          await insertUser(user);
           success = true;
         } catch(e) {
           if(e.errno == 1062) { // duplicate key
@@ -92,7 +92,7 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
         };
 
         try {
-          await insertRelation(relation, mysqlClient);
+          await insertRelation(relation);
         } catch(e) {
           console.error(e);
           return reject(new Error("ERROR_REGISTERING"));

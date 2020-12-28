@@ -31,7 +31,8 @@ const typeDefs = gql`
     text: String,
     media: Media
     edited: Boolean,
-    original_post: Post
+    original_post: Post,
+    user_reacted: Boolean
   }
 
   type Comment {
@@ -56,6 +57,13 @@ const typeDefs = gql`
     create_time: String
   }
 
+  type Session {
+    createdAt: String,
+    expiresAt: String,
+    userLocation: String,
+    userPlatform: String
+  }
+
   type Query {
     getToken(username: String!, password: String!, userPlatform: String): String
     sendConfirmationEmail(username: String!, password: String!): String
@@ -68,6 +76,8 @@ const typeDefs = gql`
     getFollowing: [FollowRelation]
     getPostReactions(page: Int!, perPage: Int!, id: String): [User]
     getPostComments(page: Int!, perPage: Int!, id: String!): [Post]
+    userSearch(query: String!): [User]
+    getSessions: [Session]
   }
 
   type Mutation {

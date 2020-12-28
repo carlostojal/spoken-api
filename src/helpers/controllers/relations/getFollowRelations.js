@@ -1,6 +1,14 @@
 
-const getFollowRelations = (user_id, accepted, mysqlClient) => {
-  return new Promise((resolve, reject) => {
+const getFollowRelations = (user_id, accepted) => {
+  return new Promise(async (resolve, reject) => {
+
+    let mysqlClient;
+    try {
+      mysqlClient = await require("../../../config/mysql");
+    } catch(e) {
+      return reject(e);
+    }
+
     mysqlClient.query(`SELECT User.id AS user_id, User.name AS user_name, User.surname AS user_surname, User.username AS user_username,
     Follows.id AS follows_id, Follows.name AS follows_name, Follows.surname AS follows_surname, Follows.username AS follows_username, 
     FollowRelations.accepted, FollowRelations.create_time

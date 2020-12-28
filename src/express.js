@@ -2,6 +2,7 @@ const express = require("express");
 const fileUpload = require("express-fileupload");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const path = require("path");
 const compressImage = require("./helpers/media/compressImage");
 const getUserByToken = require("./helpers/session/getUserByToken");
 const redisClient = require("./config/redis");
@@ -21,6 +22,9 @@ app.use(fileUpload({
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+
+// serve the NSFW classification model statically
+app.use("/nsfw_model", express.static(path.join(__dirname, "models/nsfw")));
 
 // media upload
 app.post("/upload", async (req, res) => {
@@ -97,12 +101,12 @@ app.post("/upload", async (req, res) => {
 
   // save media in DB
   try {
-    await insertMedia(media, mysqlClient);
+    await insertMedia(media);
   } catch(e) {
     return res.status(500).send("ERROR_REGISTERING_MEDIA");
   }
 
-  checkNsfw(media, mysqlClient);
+  checkNsfw(media);
 
   return res.status(200).send("FILE_UPLOADED");
 });

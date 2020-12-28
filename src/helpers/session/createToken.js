@@ -17,9 +17,9 @@ const createToken = (user, type = "access") => {
       surname: user.surname,
       username: user.username
     }
-  }, process.env.TOKEN_SECRET);
+  }, type == "access" ? process.env.ACCESS_TOKEN_SECRET : process.env.REFRESH_TOKEN_SECRET);
 
-  return { user: user._id, value: token, createdAt: Date.now(), expiresAt: expiry, type };
+  return { user: user._id, value: token, createdAt: Date.now(), expiresAt: expiry * 1000, type };
 }
 
 module.exports = createToken;

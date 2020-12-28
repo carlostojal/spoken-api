@@ -1,7 +1,14 @@
 const getUserByUsernameOrEmail = require("../helpers/controllers/users/getUserByUsernameOrEmail");
 
-const confirmAccount = (username, code, mysqlClient) => {
+const confirmAccount = (username, code) => {
   return new Promise(async (resolve, reject) => {
+
+    let mysqlClient;
+    try {
+      mysqlClient = await require("../config/mysql");
+    } catch(e) {
+      return reject(e);
+    }
 
     const update = (user) => {
       return new Promise((resolve, reject) => {
@@ -30,7 +37,6 @@ const confirmAccount = (username, code, mysqlClient) => {
         try {
           await update(user);
         } catch(e) {
-          
           return reject(new Error("ERROR_UPDATING_USER"));
         }
       } else {

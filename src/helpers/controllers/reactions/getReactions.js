@@ -1,6 +1,14 @@
 
-const getReactions = (post_id, page, perPage, mysqlClient) => {
-  return new Promise((resolve, reject) => {
+const getReactions = (post_id, page, perPage) => {
+  return new Promise(async (resolve, reject) => {
+
+    let mysqlClient;
+    try {
+      mysqlClient = await require("../../../config/mysql");
+    } catch(e) {
+      return reject(e);
+    }
+
     mysqlClient.query(`SELECT User.id, User.name, User.surname, User.username
     FROM PostReactions 
     INNER JOIN Users User ON PostReactions.user_id = User.id

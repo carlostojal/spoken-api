@@ -2,7 +2,7 @@ const { AuthenticationError } = require("apollo-server");
 const getFollowRelations = require("../helpers/controllers/relations/getFollowRelations");
 const formatRelation = require("../helpers/formatRelation");
 
-const getFollowing = (user, mysqlClient) => {
+const getFollowing = (user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -10,7 +10,7 @@ const getFollowing = (user, mysqlClient) => {
 
     let result = null;
     try {
-      result = await getFollowRelations(user.id, true, mysqlClient);
+      result = await getFollowRelations(user.id, true);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_RELATIONS"));
     }

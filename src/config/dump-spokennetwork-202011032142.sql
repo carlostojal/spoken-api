@@ -29,10 +29,20 @@ CREATE TABLE `FollowRelations` (
   `accepted` tinyint(1) NOT NULL,
   PRIMARY KEY (`follows`,`user`),
   KEY `FollowRelations_FK` (`user`),
-  CONSTRAINT `FollowRelations_FK` FOREIGN KEY (`user`) REFERENCES `Users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FollowRelations_FK_1` FOREIGN KEY (`follows`) REFERENCES `Users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `FollowRelations_Follows` FOREIGN KEY (`follows`) REFERENCES `Users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FollowRelations_User` FOREIGN KEY (`user`) REFERENCES `Users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `FollowRelations`
+--
+
+LOCK TABLES `FollowRelations` WRITE;
+/*!40000 ALTER TABLE `FollowRelations` DISABLE KEYS */;
+INSERT INTO `FollowRelations` VALUES ('mM8MDIkJNlQbKlD','mM8MDIkJNlQbKlD',1602340662572,1),('rKRS7vfvXyAfc0g','rKRS7vfvXyAfc0g',1603583429887,1);
+/*!40000 ALTER TABLE `FollowRelations` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `Media`
@@ -52,9 +62,18 @@ CREATE TABLE `Media` (
   `review_status` varchar(15) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `Media_FK` (`user_id`),
-  CONSTRAINT `Media_FK` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`)
+  CONSTRAINT `Media_Users` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Media`
+--
+
+LOCK TABLES `Media` WRITE;
+/*!40000 ALTER TABLE `Media` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Media` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `PostComments`
@@ -72,10 +91,19 @@ CREATE TABLE `PostComments` (
   PRIMARY KEY (`id`),
   KEY `PostComments_FK` (`post_id`),
   KEY `PostComments_FK_1` (`user_id`),
-  CONSTRAINT `PostComments_FK` FOREIGN KEY (`post_id`) REFERENCES `Posts` (`id`),
-  CONSTRAINT `PostComments_FK_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`)
+  CONSTRAINT `PostComments_Posts` FOREIGN KEY (`post_id`) REFERENCES `Posts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `PostComments_Users` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `PostComments`
+--
+
+LOCK TABLES `PostComments` WRITE;
+/*!40000 ALTER TABLE `PostComments` DISABLE KEYS */;
+/*!40000 ALTER TABLE `PostComments` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `PostReactions`
@@ -92,27 +120,20 @@ CREATE TABLE `PostReactions` (
   PRIMARY KEY (`id`),
   KEY `PostReactions_FK` (`post_id`),
   KEY `PostReactions_FK_1` (`user_id`),
-  CONSTRAINT `PostReactions_FK` FOREIGN KEY (`post_id`) REFERENCES `Posts` (`id`),
-  CONSTRAINT `PostReactions_FK_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`)
+  CONSTRAINT `PostReactions_Posts` FOREIGN KEY (`post_id`) REFERENCES `Posts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `PostReactions_Users` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `PostTopics`
+-- Dumping data for table `PostReactions`
 --
 
-DROP TABLE IF EXISTS `PostTopics`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `PostTopics` (
-  `post_id` varchar(15) NOT NULL,
-  `topic_id` varchar(15) NOT NULL,
-  PRIMARY KEY (`post_id`,`topic_id`),
-  KEY `PostTopics_FK_1` (`topic_id`),
-  CONSTRAINT `PostTopics_FK` FOREIGN KEY (`post_id`) REFERENCES `Posts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `PostTopics_FK_1` FOREIGN KEY (`topic_id`) REFERENCES `Topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+LOCK TABLES `PostReactions` WRITE;
+/*!40000 ALTER TABLE `PostReactions` DISABLE KEYS */;
+INSERT INTO `PostReactions` VALUES ('ovziP6TKK6km4Nu','mM8MDIkJNlQbKlD','uiQI0oWxpdf7NEq',1603022878223),('xWR0wFf5ttBkS4G','mM8MDIkJNlQbKlD','qGEP9shTFzC70Ii',1603032437595);
+/*!40000 ALTER TABLE `PostReactions` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `Posts`
@@ -123,7 +144,7 @@ DROP TABLE IF EXISTS `Posts`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Posts` (
   `id` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `user_id` varchar(15) NOT NULL,
+  `user_id` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `time` bigint NOT NULL,
   `text` text CHARACTER SET utf8 COLLATE utf8_general_ci,
   `media_id` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
@@ -136,42 +157,21 @@ CREATE TABLE `Posts` (
   KEY `Posts_FK` (`media_id`),
   KEY `Posts_FK_1` (`user_id`),
   KEY `Posts_FK_2` (`original_post_id`),
-  CONSTRAINT `Posts_FK` FOREIGN KEY (`media_id`) REFERENCES `Media` (`id`),
-  CONSTRAINT `Posts_FK_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `Posts_FK_2` FOREIGN KEY (`original_post_id`) REFERENCES `Posts` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT `Posts_Media` FOREIGN KEY (`media_id`) REFERENCES `Media` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `Posts_OriginalPost` FOREIGN KEY (`original_post_id`) REFERENCES `Posts` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `Posts_Users` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `Topics`
+-- Dumping data for table `Posts`
 --
 
-DROP TABLE IF EXISTS `Topics`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Topics` (
-  `id` varchar(15) NOT NULL,
-  `name` varchar(30) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `UserTopics`
---
-
-DROP TABLE IF EXISTS `UserTopics`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `UserTopics` (
-  `user_id` varchar(15) NOT NULL,
-  `topic_id` varchar(15) NOT NULL,
-  PRIMARY KEY (`user_id`,`topic_id`),
-  KEY `UserTopics_FK_1` (`topic_id`),
-  CONSTRAINT `UserTopics_FK` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `UserTopics_FK_1` FOREIGN KEY (`topic_id`) REFERENCES `Topics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+LOCK TABLES `Posts` WRITE;
+/*!40000 ALTER TABLE `Posts` DISABLE KEYS */;
+INSERT INTO `Posts` VALUES ('qGEP9shTFzC70Ii','mM8MDIkJNlQbKlD',1602699523468,'Hello 2',NULL,NULL,0,NULL,NULL,NULL),('SINkz6tklpBTm7U','mM8MDIkJNlQbKlD',1602699401929,'Hello 1',NULL,NULL,0,NULL,NULL,NULL),('uiQI0oWxpdf7NEq','mM8MDIkJNlQbKlD',1602699164255,'Hello',NULL,NULL,0,NULL,NULL,NULL);
+/*!40000 ALTER TABLE `Posts` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `Users`
@@ -200,6 +200,16 @@ CREATE TABLE `Users` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `Users`
+--
+
+LOCK TABLES `Users` WRITE;
+/*!40000 ALTER TABLE `Users` DISABLE KEYS */;
+INSERT INTO `Users` VALUES ('mM8MDIkJNlQbKlD','Carlos','Tojal',1070064000000,'carlos.tojal@hotmail.com',1,9000,'carlostojal','$2b$10$gB2UVfAj9MerOR0jpNu.OO8vcrN26h.tKJGyKKu/PWz5iy..Ci1xW',NULL,'personal','private'),('rKRS7vfvXyAfc0g','Test','Test',1603583367525,'test@test.com',1,9874,'test','$2b$10$d3YFtl3RC76RtPg3Zxq8auFHUNUrtpgT27p2PBdXic7tG8UzlzN06',NULL,'personal','public');
+/*!40000 ALTER TABLE `Users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping routines for database 'spokennetwork'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -212,4 +222,4 @@ CREATE TABLE `Users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-10-10 14:34:52
+-- Dump completed on 2020-11-03 21:42:06
