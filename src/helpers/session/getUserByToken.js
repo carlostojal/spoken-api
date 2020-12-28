@@ -6,8 +6,6 @@ const cache = require("../cache/cache");
 const getUserByToken = (token) => {
   return new Promise(async (resolve, reject) => {
 
-    console.log(token);
-
     let mysqlClient;
     try {
       mysqlClient = await require("../../config/mysql");
@@ -61,8 +59,6 @@ const getUserByToken = (token) => {
     } catch(e) {
       
     }*/
-
-    console.log(user);
 
     return resolve(user);
   });
