@@ -2,32 +2,7 @@ const { AuthenticationError } = require("apollo-server");
 const getUserById = require("../helpers/controllers/users/getUserById");
 const insertRelation = require("../helpers/controllers/relations/insertRelation");
 const removeRelation = require("../helpers/controllers/relations/removeRelation");
-
-/*
-*
-* Promise followUser(id, user)
-*
-* Summary:
-*   The followUser function user ID and the session
-*   user object.
-*   Creates / removes the follow relation.
-*
-* Parameters:
-*   String: id
-*   Object: user
-*
-* Return Value:
-*   Promise: 
-*     Object: user
-*
-* Description:
-*   This function takes the user ID of the followed user
-*   and the session user object.
-*   Tries to create the relation. If it already exists,
-*   removes it (unfollow).
-*   The followed user array is returned.
-*   
-*/
+const sendNotification = require("../helpers/sendNotification");
 
 const followUser = (id, user) => {
   return new Promise(async (resolve, reject) => {
@@ -64,6 +39,9 @@ const followUser = (id, user) => {
 
     try {
       await insertRelation(followRelation);
+
+      await sendNotification("New follower", `${user.username} started following you.`, user1.id);
+
     } catch(e) {
       
       if(e.errno == 1062) { // duplicate key (relation already exists)
@@ -71,7 +49,6 @@ const followUser = (id, user) => {
         try {
           await removeRelation(user.id, user1.id);
         } catch(e) {
-          
           return reject(new Error("ERROR_REMOVING_RELATION"));
         }
       }
