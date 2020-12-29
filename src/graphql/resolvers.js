@@ -21,6 +21,7 @@ const editPost = require("../resolvers/editPost");
 const reactPost = require("../resolvers/reactPost");
 const commentPost = require("../resolvers/commentPost");
 const sharePost = require("../resolvers/sharePost");
+const setExpoPushToken = require("../resolvers/setExpoPushToken");
 const deletePost = require("../resolvers/deletePost");
 const getCookieByName = require("../helpers/getCookieByName");
 
@@ -161,6 +162,10 @@ const resolvers = {
     // shares a existing post
     sharePost: (parent, args, context, info) => {
       return sharePost(args.id, context.user, context.mysqlClient);
+    },
+
+    setExpoPushToken: (parent, args, context, info) => {
+      return setExpoPushToken(args.token, context.user);
     }
   }
 }

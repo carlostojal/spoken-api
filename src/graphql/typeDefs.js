@@ -92,6 +92,7 @@ const typeDefs = gql`
     reactPost(id: String!): Post
     commentPost(id: String!, text: String!): Post
     sharePost(id: String!): Post
+    setExpoPushToken(token: String!): Boolean
   }
 `;
 
