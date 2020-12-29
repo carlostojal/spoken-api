@@ -39,10 +39,11 @@ const getFeed = (page, perPage, user_id) => {
 
       result = JSON.parse(JSON.stringify(result));
 
+      /*
       result.map(async (post) => {
         await addPostToCachePage(post.id, user_id, page);
         await savePostToCache(post);
-      });
+      });*/
 
       return resolve(result);
     });
