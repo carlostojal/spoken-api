@@ -40,7 +40,11 @@ const followUser = (id, user) => {
     try {
       await insertRelation(followRelation);
 
-      await sendNotification("New follower", `${user.username} started following you.`, user1.id);
+      try {
+        sendNotification("New follower", `"${user.username}" started following you.`, user1.id);
+      } catch(e) {
+        console.error(new Error("ERROR_SENDING_NOTIFICATION"));
+      }
 
     } catch(e) {
       
@@ -51,8 +55,9 @@ const followUser = (id, user) => {
         } catch(e) {
           return reject(new Error("ERROR_REMOVING_RELATION"));
         }
+      } else {
+        return reject(new Error("ERROR_CREATING_RELATION"));
       }
-      return reject(new Error("ERROR_CREATING_RELATION"));
     }
 
     return resolve(user1);

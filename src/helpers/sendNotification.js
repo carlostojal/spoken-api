@@ -3,6 +3,8 @@ const { Expo } = require("expo-server-sdk");
 const sendNotification = (title, body, user_id) => {
   return new Promise(async (resolve, reject) => {
 
+    console.log("sending follow notification");
+
     let mysqlClient;
     try {
       mysqlClient = await require("../config/mysql");
@@ -15,11 +17,12 @@ const sendNotification = (title, body, user_id) => {
       if(err)
         return reject(err);
 
-      console.log(result);
-
-      result = JSON.parse(JSON.stringify(result));
+      result = JSON.parse(JSON.stringify(result))[0];
 
       if(result.push_token) {
+
+        if(!Expo.isExpoPushToken(result.push_token))
+          return reject(new Error("INVALID_PUSH_TOKEN"));
 
         const expo = new Expo();
 
@@ -29,10 +32,9 @@ const sendNotification = (title, body, user_id) => {
           body
         }];
 
-        const chunk = expo.chunkPushNotifications(messages);
-
         try {
-          await expo.sendPushNotificationsAsync(chunk);
+          await expo.sendPushNotificationsAsync(messages);
+          console.log("notification sent");
         } catch(e) {
           return reject(e);
         }

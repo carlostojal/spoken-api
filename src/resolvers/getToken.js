@@ -4,6 +4,7 @@ const platform = require("platform");
 const createToken = require("../helpers/session/createToken");
 const getUserByUsernameOrEmail = require("../helpers/controllers/users/getUserByUsernameOrEmail");
 const saveTokenToCache = require("../helpers/controllers/sessions/saveTokenToCache");
+const setPushToken = require("../helpers/controllers/users/setPushToken");
 
 /*
 *
@@ -34,7 +35,7 @@ const saveTokenToCache = require("../helpers/controllers/sessions/saveTokenToCac
 *   
 */
 
-const getToken = (username, password, userPlatform, remoteAddress, userAgent) => {
+const getToken = (username, password, userPlatform, remoteAddress, userAgent, pushToken) => {
   return new Promise(async (resolve, reject) => {
 
     let user; 
@@ -88,6 +89,13 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent) =>
       const session = {createdAt: refresh_token.createdAt, expiresAt: refresh_token.expiresAt, userLocation: geo, userPlatform: platformData};
 
       saveTokenToCache(user.id, refresh_token.value, session);
+
+      try {
+        await setPushToken(user.id, pushToken)
+      } catch(e) {
+        
+      }
+      
 
       /*
       // save refresh token
