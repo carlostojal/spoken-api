@@ -10,7 +10,7 @@ const insertMedia = require("./helpers/controllers/media/insertMedia");
 const generateId = require("./helpers/generateId");
 const getMediaById = require("./helpers/controllers/media/getMediaById");
 const userFollowsUser = require("./helpers/controllers/users/userFollowsUser");
-// const checkNsfw = require("./helpers/media/checkNsfw");
+const checkNsfw = require("./helpers/media/checkNsfw");
 const app = express();
 
 app.use(fileUpload({
