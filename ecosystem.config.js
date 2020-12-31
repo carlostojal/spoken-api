@@ -12,7 +12,7 @@ module.exports = {
       user : 'spokennetwork-adm',
       host : '192.168.1.73',
       ref  : 'origin/master',
-      repo : 'git@github.com:carlostojal/spoken-api.git',
+      repo : 'git@spoken_deployment:carlostojal/spoken-api.git',
       path : '/home/spokennetwork-adm/spoken-api',
       "post-deploy": "npm install && pm2 reload --env production"
     }
