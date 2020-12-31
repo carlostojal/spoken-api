@@ -5,8 +5,6 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const compressImage = require("./helpers/media/compressImage");
 const getUserByToken = require("./helpers/session/getUserByToken");
-const redisClient = require("./config/redis");
-const mysqlClient = require("./config/mysql");
 const deleteFile = require("./helpers/media/deleteFile");
 const insertMedia = require("./helpers/controllers/media/insertMedia");
 const generateId = require("./helpers/generateId");
@@ -31,28 +29,45 @@ app.post("/upload", async (req, res) => {
 
   const allowed_formats = ["jpg", "jpeg", "png"];
 
+  let result = {
+    media_id: null,
+    result: null,
+    status: 200
+  };
+
   // no files were uploaded
-  if(!req.files)
-    return res.status(400).send("NO_FILE");
+  if(!req.files) {
+    result.result = "NO_FILE";
+    result.status = 400;
+    return res.status(result.status).send(result);
+  }
   
   // get token from headers
   const token = req.headers.authorization;
 
   // no token was provided
-  if(!token || token == "")
-    return res.status(403).send("NO_ACCESS_TOKEN")
-
+  if(!token || token == "") {
+    result.result = "NO_ACCESS_TOKEN";
+    result.status = 403;
+    return res.status(result.status).send(result);
+  }
+    
   // authenticate user from token
   let user = null;
   try {
     user = await getUserByToken(token);
   } catch(e) {
-    return res.status(500).send("AUTHORIZATION_ERROR");
+    result.result = "AUTHORIZATION_ERROR";
+    result.status = 500;
+    return res.status(result.status).send(result);
   }
 
   // the token was not valid
-  if(!user)
-    return res.status(403).send("BAD_AUTHENTICATION");
+  if(!user) {
+    result.result = "BAD_AUTHENTICATION";
+    result.status = 403;
+    return res.status(result.status).send(result);
+  }
 
   // get media from request args
   const media_file = req.files.media;
@@ -62,8 +77,11 @@ app.post("/upload", async (req, res) => {
   // get file format
   const split_file_name = media_file.name.split(".");
   const format = split_file_name[split_file_name.length - 1];
-  if(!allowed_formats.includes(format))
-    return res.status(500).send("FORMAT_NOT_ALLOWED");
+  if(!allowed_formats.includes(format)) {
+    result.result = "FORMAT_NOT_ALLOWED";
+    result.status = 400;
+    return res.status(result.status).send(result);
+  }
 
   // path to store the media
   const path = `uploads/temp/${generated_id}.${format}`;
@@ -78,14 +96,18 @@ app.post("/upload", async (req, res) => {
     image = await compressImage(path, dest_path);
   } catch(e) {
     console.error(e);
-    return res.status(500).send("ERROR_COMPRESSING_IMAGE");
+    result.result = "ERROR_COMPRESSING_MEDIA";
+    result.status = 500;
+    return res.status(result.status).send(result);
   }
 
   // delete the temp file
   try {
     await deleteFile(path);
   } catch(e) {
-    return res.status(500).send("ERROR_REMOVING_TEMP_FILE");
+    result.result = "ERROR_REMOVING_TEMP_FILE";
+    result.status = 500;
+    return res.status(result.status).send(result);
   }
 
   const media = {
@@ -103,12 +125,20 @@ app.post("/upload", async (req, res) => {
   try {
     await insertMedia(media);
   } catch(e) {
-    return res.status(500).send("ERROR_REGISTERING_MEDIA");
+    result.result = "ERROR_REGISTERING_MEDIA";
+    result.status = 500;
+    return res.status(result.status).send(result);
   }
 
-  checkNsfw(media);
+  try {
+    checkNsfw(media);
+  } catch(e) {
 
-  return res.status(200).send("FILE_UPLOADED");
+  }
+
+  result.result = "FILE_UPLOADED";
+  result.media_id = media.id;
+  return res.status(result.status).send(result);
 });
 
 // get media
