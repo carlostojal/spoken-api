@@ -45,7 +45,7 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
 
     const passwordStrength = checkPasswordStrength(password).id;
 
-    if(passwordStrength == 0 || passwordStrength == 1)
+    if(passwordStrength == 0)
       return reject(new Error("WEAK_PASSWORD"));
 
     bcrypt.genSalt(parseInt(process.env.HASH_SALT_ROUNDS), (err, salt) => {
