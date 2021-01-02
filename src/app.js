@@ -2,10 +2,20 @@ const { ApolloServer } = require("apollo-server");
 require("dotenv").config({ path: ".env" });
 require("./express"); // express server
 require("./helpers/jobs")(); // cron jobs
-const mysqlClient = require("./config/mysql");
+let mysqlClient = null;
+try {
+  mysqlClient = require("./config/mysql");
+} catch(e) {
+  console.error("Error connecting MySQL Client.")
+}
 const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers");
-const redisClient = require("./config/redis");
+let redisClient = null;
+try {
+  redisClient = require("./config/redis");
+} catch(e) {
+  console.error("Error connecting Redis Client.");
+}
 const getUserByToken = require("./helpers/session/getUserByToken");
 
 // apollo server startup
