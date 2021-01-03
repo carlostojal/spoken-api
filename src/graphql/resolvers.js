@@ -100,7 +100,7 @@ const resolvers = {
     },
 
     userSearch: (parent, args, context, info) => {
-      return userSearch(args.query);
+      return userSearch(args.query, context.user);
     },
 
     getSessions: (parent, args, context, info) => {
