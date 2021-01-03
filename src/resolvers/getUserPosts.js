@@ -10,19 +10,22 @@ const getUserPosts = (page, perPage, user_id, user) => {
     if(!user)
       return reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
-    let follows = false;
-    try {
-      follows = await userFollowsUser(user.id, user_id);
-    } catch(e) {
-      return reject(new Error("ERROR_CHECKING_PERMISSION"));
-    }
+    // if a user id was provided
+    if(user_id) {
+      let follows = false;
+      try {
+        follows = await userFollowsUser(user.id, user_id);
+      } catch(e) {
+        return reject(new Error("ERROR_CHECKING_PERMISSION"));
+      }
 
-    if(!follows)
-      return reject(new Error("NOT_ALLOWED"));
+      if(!follows)
+        return reject(new Error("NOT_ALLOWED"));
+    }
 
     let posts;
     try {
-      posts = await getPosts(page, perPage, user_id);
+      posts = await getPosts(page, perPage, user_id || user.id);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_POSTS"));
     }

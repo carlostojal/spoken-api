@@ -71,7 +71,7 @@ const typeDefs = gql`
     refreshToken: String
     getUserData(id: String): User
     getUserFeed(page: Int!, perPage: Int!): [Post]
-    getUserPosts(page: Int!, perPage: Int!, user_id: String!): [Post]
+    getUserPosts(page: Int!, perPage: Int!, user_id: String): [Post]
     getFollowRequests: [FollowRelation]
     getFollowers: [FollowRelation]
     getFollowing: [FollowRelation]
