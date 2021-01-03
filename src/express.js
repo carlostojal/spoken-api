@@ -3,13 +3,7 @@ const fileUpload = require("express-fileupload");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const path = require("path");
-const compressImage = require("./helpers/media/compressImage");
-const getUserByToken = require("./helpers/session/getUserByToken");
-const deleteFile = require("./helpers/media/deleteFile");
-const insertMedia = require("./helpers/controllers/media/insertMedia");
-const generateId = require("./helpers/generateId");
-const getMediaById = require("./helpers/controllers/media/getMediaById");
-const userFollowsUser = require("./helpers/controllers/users/userFollowsUser");
+
 // const checkNsfw = require("./helpers/media/checkNsfw");
 const app = express();
 
@@ -26,6 +20,12 @@ app.use("/nsfw_model", express.static(path.join(__dirname, "models/nsfw")));
 
 // media upload
 app.post("/upload", async (req, res) => {
+
+  const compressImage = require("./helpers/media/compressImage");
+  const getUserByToken = require("./helpers/session/getUserByToken");
+  const deleteFile = require("./helpers/media/deleteFile");
+  const insertMedia = require("./helpers/controllers/media/insertMedia");
+  const generateId = require("./helpers/generateId");
 
   const allowed_formats = ["jpg", "jpeg", "png"];
 
@@ -143,6 +143,10 @@ app.post("/upload", async (req, res) => {
 
 // get media
 app.get("/media/:id/:token?", async (req, res) => {
+
+  const getMediaById = require("./helpers/controllers/media/getMediaById");
+  const getUserByToken = require("./helpers/session/getUserByToken");
+  const userFollowsUser = require("./helpers/controllers/users/userFollowsUser");
   
   const media_id = req.params.id;
   const token = req.params.token;

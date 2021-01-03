@@ -1,11 +1,11 @@
 const CronJob = require("cron").CronJob;
-const mediaCleanup = require("./jobs/mediaCleanup");
 
 const jobs = async () => {
 
     const mediaCleanupJob = new CronJob(
         process.env.MEDIA_CLEANUP_CRONTAB,
         async () => {
+            const mediaCleanup = require("./jobs/mediaCleanup");
             console.log("Cleaning unused media...");
             try {
                 await mediaCleanup();

@@ -1,10 +1,11 @@
 const jwt = require("jsonwebtoken");
-const getUserById = require("../controllers/users/getUserById");
-const getFromCache = require("../cache/getFromCache");
-const cache = require("../cache/cache");
 
 const getUserByToken = (token) => {
   return new Promise(async (resolve, reject) => {
+
+    const getUserById = require("../controllers/users/getUserById");
+    const getFromCache = require("../cache/getFromCache");
+    const cache = require("../cache/cache");
 
     let mysqlClient;
     try {
