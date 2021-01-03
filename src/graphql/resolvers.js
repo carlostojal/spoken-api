@@ -112,11 +112,11 @@ const resolvers = {
   Mutation: {
     // registers a new user
     registerUser: (parent, args, context, info) => {
-      return registerUser(args.name, args.surname, args.birthdate, args.email, args.username, args.password, args.profile_type, args.profile_privacy_type, context.mysqlClient);
+      return registerUser(args.name, args.surname, args.birthdate, args.email, args.username, args.password, args.profile_type, args.profile_privacy_type);
     },
 
     confirmAccount: (parent, args, context, info) => {
-      return confirmAccount(args.username, args.code, context.mysqlClient);
+      return confirmAccount(args.username, args.code);
     },
 
     // edit current user data
@@ -126,42 +126,42 @@ const resolvers = {
 
     // creates a new post
     createPost: (parent, args, context, info) => {
-      return createPost(args.text, args.media_id, context.user, context.redisClient, context.mysqlClient);
+      return createPost(args.text, args.media_id, context.user);
     },
 
     // starts following user
     followUser: (parent, args, context, info) => {
-      return followUser(args.id, context.user, context.mysqlClient);
+      return followUser(args.id, context.user);
     },
 
     // accepts follow request from user ID
     acceptFollowRequest: (parent, args, context, info) => {
-      return acceptFollowRequest(args.user_id, context.user, context.mysqlClient);
+      return acceptFollowRequest(args.user_id, context.user);
     },
 
     // deletes post from post ID
     deletePost: (parent, args, context, info) => {
-      return deletePost(args.id, context.user, context.mysqlClient);
+      return deletePost(args.id, context.user);
     },
 
     // edits post from post ID. updates text
     editPost: (parent, args, context, info) => {
-      return editPost(args.id, args.text, context.user, context.redisClient, context.mysqlClient);
+      return editPost(args.id, args.text, context.user);
     },
 
     // react to post
     reactPost: (parent, args, context, info) => {
-      return reactPost(args.id, context.user, context.redisClient, context.mysqlClient);
+      return reactPost(args.id, context.user);
     },
 
     // create comment in post
     commentPost: (parent, args, context, info) => {
-      return commentPost(args.id, context.user, args.text, context.redisClient, context.mysqlClient);
+      return commentPost(args.id, context.user, args.text);
     },
 
     // shares a existing post
     sharePost: (parent, args, context, info) => {
-      return sharePost(args.id, context.user, context.mysqlClient);
+      return sharePost(args.id, context.user);
     },
 
     setExpoPushToken: (parent, args, context, info) => {
