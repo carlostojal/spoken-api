@@ -94,14 +94,13 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
         try {
           await insertRelation(relation);
         } catch(e) {
-          console.error(e);
           return reject(new Error("ERROR_REGISTERING"));
         }
 
         try {
           sendConfirmationEmail(user);
         } catch(e) {
-          return reject(new Error("ERROR_SENDING_CONFIRMATION_EMAIL"));
+          
         }
         
         return resolve(user);
