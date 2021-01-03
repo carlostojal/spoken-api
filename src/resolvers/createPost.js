@@ -53,6 +53,7 @@ const createPost = (text, media_id, user) => {
     try {
       await insertPost(post);
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_REGISTERING_POST"));
     }
 
