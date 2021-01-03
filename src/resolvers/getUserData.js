@@ -2,6 +2,7 @@ const { AuthenticationError } = require("apollo-server");
 const getUserById = require("../helpers/controllers/users/getUserById");
 const getUserFromCache = require("../helpers/controllers/users/getUserFromCache");
 const mediaIdToUrl = require("../helpers/media/mediaIdToUrl");
+const userFollowsUser = require("../helpers/controllers/users/userFollowsUser");
 
 /*
 *
@@ -61,6 +62,14 @@ const getUserData = (id, user) => {
     } catch(e) {
       return reject(new Error("ERROR_GETTING_USER"));
     }
+
+    try {
+      returnUser.is_followed = await userFollowsUser(user.id, id);
+    } catch(e) {
+      return reject(new Error("ERROR_GETTING_RELATION"));
+    }
+
+    returnUser.is_himself = !id || id == user.id;
 
     clearAndReturnUser(returnUser);
   });

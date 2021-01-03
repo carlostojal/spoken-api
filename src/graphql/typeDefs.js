@@ -22,6 +22,8 @@ const typeDefs = gql`
     profile_pic: Media,
     profile_type: String,
     profile_privacy_type: String
+    is_followed: Boolean
+    is_himself: Boolean
   }
 
   type Post {
