@@ -43,7 +43,7 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
     if(!checkBirthdate(birthdate))
       return reject(new Error("INVALID_BIRTHDATE"));
 
-    if(!name.match(process.env.NAME_REGEX) || !surname.match(process.env.SURNAME_REGEX))
+    if(!name.match(process.env.NAME_REGEX) || !surname.match(process.env.NAME_REGEX))
       return reject(new Error("INVALID_NAME_OR_SURNAME"));
 
     if(!email.match(process.env.EMAIL_REGEX))
