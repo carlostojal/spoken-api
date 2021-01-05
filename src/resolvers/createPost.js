@@ -45,11 +45,10 @@ const createPost = (text, media_id, user) => {
     text.trim();
 
     // replace consecutive multiple line breaks with double
-    text.replace(/\n\s*\n/g, '\n\n');
+    text.replace(/\n\s*\n/g, '\n');
 
-    if(text.length == 0)
+    if(text.length == 0 || text.match(process.env.EMPTY_POST_REGEX))
       return reject(new Error("INVALID_TEXT"));
-
 
     const post = {
       id: generateId(),
