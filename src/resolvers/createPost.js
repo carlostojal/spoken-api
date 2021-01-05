@@ -41,6 +41,13 @@ const createPost = (text, media_id, user) => {
     if(!user)
       return reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
+    // remove spaces from begginig and end
+    text.trim();
+
+    // replace consecutive multiple line breaks with double
+    text.replace(/\n\s*\n/g, '\n\n');
+
+
     const post = {
       id: generateId(),
       user_id: user.id,

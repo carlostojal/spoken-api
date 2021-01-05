@@ -6,39 +6,19 @@ const generateId = require("../helpers/generateId");
 const sendConfirmationEmail = require("./sendConfirmationEmail");
 const checkPasswordStrength = require("check-password-strength");
 
-/*
-*
-* Promise registerUser(name, surname, birthdate, email, username
-* password, profile_type, profile_privacy_type)
-*
-* Summary:
-*   The registerUser function takes user data and registers the
-*   user.
-*
-* Parameters:
-*   String: name
-*   String: surname
-*   String: birthdate
-*   String: email
-*   String: username
-*   String: password
-*   String: profile_type
-*   String: profile_privacy_type
-*
-* Return Value:
-*   Promise: 
-*     Object: user
-*
-* Description:
-*   This function takes user data, encrypts the provided password,
-*   checks for duplicated key values and then sends a confirmation 
-*   email.
-*   After this the registered user object is returned.
-*   
-*/
-
 const registerUser = (name, surname, birthdate, email, username, password, profile_type, profile_privacy_type) => {
   return new Promise((resolve, reject) => {
+
+    // convert email and username to lower case
+    email = email.toLowerCase();
+    username = username.toLowerCase();
+
+    // remove spaces from beggining and ending of string
+    name = name.trim();
+    surname = surname.trim();
+    email = email.trim();
+    username = username.trim();
+    password = password.trim();
 
     if(!checkBirthdate(birthdate))
       return reject(new Error("INVALID_BIRTHDATE"));
