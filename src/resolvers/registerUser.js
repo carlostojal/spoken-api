@@ -87,7 +87,7 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
         }
 
         try {
-          sendConfirmationEmail(user);
+          sendConfirmationEmail(user.username, password);
         } catch(e) {
           
         }
