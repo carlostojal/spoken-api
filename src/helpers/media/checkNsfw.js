@@ -1,4 +1,4 @@
-const tf = require("@tensorflow/tfjs");
+const tf = require("@tensorflow/tfjs-node");
 const nsfwjs = require("nsfwjs");
 const fs = require("fs");
 const updateMediaSafety = require("../controllers/media/updateMediaSafety");
@@ -15,7 +15,7 @@ const checkNsfw = (media) => {
 
     let model = null;
     try {
-      model = await nsfwjs.load(`${process.env.EXPRESS_ADDRESS}:${process.env.EXPRESS_PORT}/nsfw_model/`);
+      model = await nsfwjs.load(`${process.env.EXPRESS_ADDRESS}:${process.env.EXPRESS_PORT}/nsfw_model/`, {size: 299});
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_LOADING_MODEL"));
