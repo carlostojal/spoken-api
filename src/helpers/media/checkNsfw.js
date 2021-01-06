@@ -7,13 +7,6 @@ const updateMediaSafety = require("../controllers/media/updateMediaSafety");
 const checkNsfw = (media) => {
   return new Promise(async (resolve, reject) => {
 
-    let mysqlClient;
-    try {
-      mysqlClient = await require("../../config/mysql");
-    } catch(e) {
-      return reject(e);
-    }
-
     let model = null;
     try {
       model = await nsfwjs.load(`${process.env.EXPRESS_ADDRESS}:${process.env.EXPRESS_PORT}/nsfw_model/`, {size: 299});
@@ -53,7 +46,7 @@ const checkNsfw = (media) => {
       }
     });
 
-    const is_nsfw = max.prob > parseFloat(process.env.MIN_NSFW_PROBABILITY);
+    const is_nsfw = !invalid_classes.includes(max.class);
     
     await updateMediaSafety(media.id, is_nsfw ? 1: 0, is_nsfw ? max.class : null);
 
