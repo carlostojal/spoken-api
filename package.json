@@ -20,7 +20,7 @@
   "homepage": "https://github.com/carlostojal/spoken-api#readme",
   "dependencies": {
     "@tensorflow/tfjs": "^2.6.0",
-    "@tensorflow/tfjs-node": "^1.2.4",
+    "@tensorflow/tfjs-node": "^1.2.2",
     "apollo-server": "^2.15.1",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
