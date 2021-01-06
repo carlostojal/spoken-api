@@ -5,36 +5,6 @@ const getPostById = require("../helpers/controllers/posts/getPostById");
 const formatPost = require("../helpers/formatPost");
 const checkPostToxicity = require("../helpers/checkPostToxicity");
 
-/*
-*
-* Promise createPost(text, media_id, user)
-*
-* Summary:
-*   The createPost function takes post text,
-*   media ID (optional) and the session user object
-*   to create a new post.
-*
-* Parameters:
-*   String: text
-*   String: media_id
-*   Object: user
-*
-* Return Value:
-*   Promise: 
-*     Object: user
-*
-* Description:
-*   This function takes post text, media ID and the 
-*   the session user object.
-*   The media ID is optional and represents the ID 
-*   of the document that refers to a media (image/video) 
-*   relative path.
-*   The post object is then saved to the database and
-*   added to the user posts array.
-*   After this the created post is returned.
-*   
-*/
-
 const createPost = (text, media_id, user) => {
   return new Promise(async (resolve, reject) => {
 
@@ -42,10 +12,10 @@ const createPost = (text, media_id, user) => {
       return reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
     // remove spaces from begginig and end
-    text.trim();
+    text = text.trim();
 
-    // replace consecutive multiple line breaks with double
-    text.replace(/\n\s*\n/g, '\n');
+    // replace consecutive multiple line breaks with single
+    text = text.replace(/\n\s*\n/g, '\n');
 
     if(text.length == 0 || text.match(process.env.EMPTY_POST_REGEX))
       return reject(new Error("INVALID_TEXT"));
