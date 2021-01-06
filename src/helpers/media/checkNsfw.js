@@ -17,6 +17,7 @@ const checkNsfw = (media) => {
     try {
       model = await nsfwjs.load(`${process.env.EXPRESS_ADDRESS}:${process.env.EXPRESS_PORT}/nsfw_model/`);
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_LOADING_MODEL"));
     }
 
