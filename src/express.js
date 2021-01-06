@@ -4,7 +4,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const path = require("path");
 
-// const checkNsfw = require("./helpers/media/checkNsfw");
+const checkNsfw = require("./helpers/media/checkNsfw");
 const app = express();
 
 app.use(fileUpload({
@@ -131,7 +131,7 @@ app.post("/upload", async (req, res) => {
   }
 
   try {
-    // checkNsfw(media);
+    checkNsfw(media);
   } catch(e) {
 
   }
