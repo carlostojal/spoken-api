@@ -1,5 +1,4 @@
-const tf = require("@tensorflow/tfjs");
-require("@tensorflow/tfjs-node");
+const tf = require("@tensorflow/tfjs-node");
 const nsfwjs = require("nsfwjs");
 const fs = require("fs");
 const updateMediaSafety = require("../controllers/media/updateMediaSafety");
@@ -26,6 +25,7 @@ const checkNsfw = (media) => {
     try {
       predictions = await model.classify(tf.node.decodeImage(image));
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_GETTING_PREDICTIONS"));
     }
 
@@ -36,17 +36,26 @@ const checkNsfw = (media) => {
       class: null,
       prob: 0
     };
+
+    let maxNsfw = {
+      class: null,
+      prob: 0
+    };
     
     predictions.map((prediction) => {
+      if(prediction.probability > max.prob) {
+        max.class = prediction.className;
+        max.prob = prediction.probability;
+      }
       if(!invalid_classes.includes(prediction.className)) {
-        if(prediction.probability > max.prob) {
-          max.class = prediction.className;
-          max.prob = prediction.probability;
+        if(prediction.probability > maxNsfw.prob) {
+          maxNsfw.class = prediction.className;
+          maxNsfw.prob = prediction.probability;
         }
       }
     });
 
-    const is_nsfw = !invalid_classes.includes(max.class);
+    const is_nsfw = !invalid_classes.includes(max.class) || maxNsfw.prob >= process.env.MIN_NSFW_PROBABILITY;
     
     await updateMediaSafety(media.id, is_nsfw ? 1: 0, is_nsfw ? max.class : null);
 
