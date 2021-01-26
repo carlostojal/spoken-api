@@ -7,17 +7,12 @@ const resolvers = require("./graphql/resolvers");
 const getUserByToken = require("./helpers/session/getUserByToken");
 
 console.log("** Spoken API **\n\n");
-console.log(`Starting in ${process.env.NODE_ENV == "production" ? "production": "development"} environment.\n\n`);
+console.log(`Starting in ${process.env.NODE_ENV} environment.\n\n`);
 
 // apollo server startup
 const server = new ApolloServer({
   typeDefs: typeDefs,
   resolvers: resolvers,
-  playground: {
-    settings: {
-      "request.credentials": "include"
-    }
-  },
   context: async ({ req, res }) => {
 
     // get access token from headers
