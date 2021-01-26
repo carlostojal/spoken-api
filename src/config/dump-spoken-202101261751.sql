@@ -49,7 +49,7 @@ CREATE TABLE `Media` (
   `keywords` json DEFAULT NULL,
   `is_nsfw` tinyint(1) NOT NULL DEFAULT '0',
   `nsfw_cause` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `review_status` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `review_status` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
   PRIMARY KEY (`id`),
   KEY `Media_FK` (`user_id`),
   CONSTRAINT `Media_FK` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
@@ -101,7 +101,7 @@ CREATE TABLE `Posts` (
   CONSTRAINT `Posts_FK` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `Posts_FK_1` FOREIGN KEY (`media_id`) REFERENCES `Media` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `Posts_FK_2` FOREIGN KEY (`original_post_id`) REFERENCES `Posts` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -114,14 +114,14 @@ DROP TABLE IF EXISTS `Sessions`;
 CREATE TABLE `Sessions` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NOT NULL,
-  `token` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `expires_at` datetime NOT NULL,
   `user_platform` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `Sessions_FK` (`user_id`),
   CONSTRAINT `Sessions_FK` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -150,7 +150,7 @@ CREATE TABLE `Users` (
   UNIQUE KEY `Username_UN` (`username`),
   KEY `Users_FK` (`profile_pic_media_id`),
   CONSTRAINT `Users_FK` FOREIGN KEY (`profile_pic_media_id`) REFERENCES `Media` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -166,4 +166,4 @@ CREATE TABLE `Users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-01-26 12:10:40
+-- Dump completed on 2021-01-26 17:51:45
