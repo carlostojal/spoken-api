@@ -21,7 +21,6 @@ const createPost = (text, media_id, user) => {
       return reject(new Error("INVALID_TEXT"));
 
     const post = {
-      id: generateId(),
       user_id: user.id,
       time: Date.now(),
       text,
@@ -36,25 +35,10 @@ const createPost = (text, media_id, user) => {
       return reject(new Error("ERROR_REGISTERING_POST"));
     }
 
-    // get the post from the database
-    let post1 = null;
-    try {
-      post1 = await getPostById(post.id);
-    } catch(e) {
-      return reject(new Error("ERROR_GETTING_POST"));
-    }
-
-    // format post to be like in the expected form from GraphQL typedefs
-    try {
-      post1 = formatPost(post1);
-    } catch(e) {
-      return reject(new Error("ERROR_FORMATING_POST"));
-    }
-
     // check if the post text is toxic (the user will not wait for this action)
     checkPostToxicity(post);
 
-    return resolve(post1);
+    return resolve(post);
   });
 }
 

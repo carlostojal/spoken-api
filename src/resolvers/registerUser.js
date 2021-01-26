@@ -1,6 +1,5 @@
 const bcrypt = require("bcrypt");
 const insertUser = require("../helpers/controllers/users/insertUser");
-const insertRelation = require("../helpers/controllers/relations/insertRelation");
 const checkBirthdate = require("../helpers/checkBirthdate");
 const sendConfirmationEmail = require("./sendConfirmationEmail");
 const checkPasswordStrength = require("check-password-strength");

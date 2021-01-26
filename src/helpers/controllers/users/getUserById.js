@@ -18,7 +18,7 @@ const getUserById = (id) => {
       result = JSON.parse(JSON.stringify(result));
       const user = result.length == 1 ? result[0] : null;
 
-      saveUserToCache(user);
+      // saveUserToCache(user);
 
       return resolve(user);
     });

@@ -9,11 +9,10 @@ const insertPost = (post) => {
       return reject(e);
     }
 
-    mysqlClient.query(`INSERT INTO Posts (id, user_id, time, text, media_id, original_post_id, edited) VALUES 
-    (?, ?, ?, ?, ?, ?, ?)`, [post.id, post.user_id, post.time, post.text, post.media_id, post.original_post_id, 0], (err, result) => {
+    mysqlClient.query(`INSERT INTO Posts (user_id, text, media_id, original_post_id) VALUES 
+    (?, ?, ?, ?)`, [post.user_id, post.text, post.media_id, post.original_post_id], (err, result) => {
 
       if(err) {
-        
         return reject(err);
       }
 
