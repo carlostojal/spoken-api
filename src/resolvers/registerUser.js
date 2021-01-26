@@ -2,7 +2,6 @@ const bcrypt = require("bcrypt");
 const insertUser = require("../helpers/controllers/users/insertUser");
 const insertRelation = require("../helpers/controllers/relations/insertRelation");
 const checkBirthdate = require("../helpers/checkBirthdate");
-const generateId = require("../helpers/generateId");
 const sendConfirmationEmail = require("./sendConfirmationEmail");
 const checkPasswordStrength = require("check-password-strength");
 
@@ -51,10 +50,9 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
         }
 
         const user = {
-          id: generateId(),
           name,
           surname,
-          birthdate: new Date(parseInt(birthdate)).getTime(),
+          birthdate: new Date(parseInt(birthdate)),
           email,
           confirmation_code: Math.floor((Math.random() * 8999) + 1000),
           username: username.toLowerCase(),
@@ -71,19 +69,6 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
             return reject(new Error("DUPLICATE_USERNAME_OR_EMAIL"));
           }
           return reject(new Error("ERROR_REGISTERING_USER"));
-        }
-
-        const relation = {
-          user: user.id,
-          follows: user.id,
-          create_time: Date.now(),
-          accepted: true
-        };
-
-        try {
-          await insertRelation(relation);
-        } catch(e) {
-          return reject(new Error("ERROR_REGISTERING"));
         }
 
         try {
