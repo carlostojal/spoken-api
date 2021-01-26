@@ -32,7 +32,7 @@ const formatPost = (post) => {
         nsfw_cause: post.original_poster_nsfw_cause
       }
     },
-    time: post.time,
+    time: new Date(post.time).getTime(),
     text: post.text,
     media: {
       id: post.media_id,
