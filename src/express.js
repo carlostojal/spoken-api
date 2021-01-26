@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const path = require("path");
 
 const checkNsfw = require("./helpers/media/checkNsfw");
+const getLastInsertedMediaId = require("./helpers/controllers/media/getLastInsertedMedia");
 const app = express();
 
 app.use(fileUpload({
@@ -125,13 +126,20 @@ app.post("/upload", async (req, res) => {
   }
 
   try {
+    result.media_id = await getLastInsertedMediaId();
+  } catch(e) {
+    result.result = "ERROR_GETTING_INSERTED_ID";
+    result.status = 500;
+    return res.status(result.status).send(result);
+  }
+
+  try {
     checkNsfw(media);
   } catch(e) {
 
   }
 
   result.result = "FILE_UPLOADED";
-  result.media_id = media.id;
   return res.status(result.status).send(result);
 });
 
