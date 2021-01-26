@@ -4,7 +4,13 @@ module.exports = {
     script: './src/app.js',
     watch: '.',
     instances: "max",
-    exec_mode: "cluster"
+    exec_mode: "cluster",
+    env: {
+      NODE_ENV: "dev"
+    },
+    env_production: {
+      NODE_ENV: "production"
+    }
   }],
 
   deploy : {
