@@ -5,6 +5,7 @@ const createToken = require("../helpers/session/createToken");
 const getUserByUsernameOrEmail = require("../helpers/controllers/users/getUserByUsernameOrEmail");
 const saveTokenToCache = require("../helpers/controllers/sessions/saveTokenToCache");
 const setPushToken = require("../helpers/controllers/users/setPushToken");
+const saveSession = require("../helpers/controllers/sessions/saveSession");
 
 /*
 *
@@ -59,6 +60,7 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, pu
       if(!user.email_confirmed) 
         return reject(new Error("EMAIL_NOT_CONFIRMED"));
 
+      /*
       // get user geolocation
       let geo = null;
       try {
@@ -66,7 +68,7 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, pu
       } catch(e) {
         
         return reject(new Error("ERROR_GETTING_LOGIN_LOCATION"));
-      }
+      }*/
 
 
       // get user platform
@@ -86,9 +88,15 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, pu
       const refresh_token = createToken(user, "refresh");
       const access_token = createToken(user, "access");
 
-      const session = {createdAt: refresh_token.createdAt, expiresAt: refresh_token.expiresAt, userLocation: geo, userPlatform: platformData};
+      const session = {user_id: user.id, token: refresh_token.value, expires_at: new Date(refresh_token.expires_at), user_platform: platformData};
 
-      saveTokenToCache(user.id, refresh_token.value, session);
+      // saveTokenToCache(user.id, refresh_token.value, session);
+
+      try {
+        await saveSession(session);
+      } catch(e) {
+        return reject(new Error("ERROR_CREATING_SESSION"));
+      }
 
       try {
         await setPushToken(user.id, pushToken)

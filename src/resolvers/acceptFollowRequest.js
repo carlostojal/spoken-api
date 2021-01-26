@@ -2,29 +2,6 @@ const { AuthenticationError } = require("apollo-server");
 const acceptRelation = require("../helpers/controllers/relations/acceptRelation");
 const getUserById = require("../helpers/controllers/users/getUserById");
 
-/*
-*
-* Promise acceptFollowRequest(user_id, user)
-*
-* Summary:
-*   The acceptFollowRequest function accepts the 
-*   follow request from the user with the provided ID.
-*
-* Parameters:
-*   String: user_id
-*   Object: user
-*
-* Return Value:
-*   Promise: 
-*     Object: user
-*
-* Description:
-*   This function takes the user ID of the user following
-*   the session user.
-*   After this the accepted user object is returned.
-*   
-*/
-
 const acceptFollowRequest = (user_id, user) => {
   return new Promise(async (resolve, reject) => {
 

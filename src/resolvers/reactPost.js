@@ -4,7 +4,6 @@ const userFollowsUser = require("../helpers/controllers/users/userFollowsUser");
 const userReacted = require("../helpers/controllers/reactions/userReacted");
 const removeReaction = require("../helpers/controllers/reactions/removeReaction");
 const insertReaction = require("../helpers/controllers/reactions/insertReaction");
-const generateId = require("../helpers/generateId");
 const formatPost = require("../helpers/formatPost");
 
 const reactPost = (post_id, user) => {
@@ -62,10 +61,8 @@ const reactPost = (post_id, user) => {
       }
     } else { // the reaction was not registered, so register
       const reaction = {
-        id: generateId(),
         user_id: user.id,
-        post_id: post.id,
-        time: Date.now()
+        post_id: post.id
       }
       try {
         await insertReaction(reaction);

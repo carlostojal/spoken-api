@@ -4,33 +4,8 @@ const getFromCache = require("../helpers/cache/getFromCache");
 const cache = require("../helpers/cache/cache");
 const deleteFromCache = require("../helpers/cache/deleteFromCache");
 const saveTokenToCache = require("../helpers/controllers/sessions/saveTokenToCache");
-
-/*
-*
-* Promise refreshToken(refresh_token)
-*
-* Summary:
-*   The refreshToken function takes a refresh token and creates
-*   a new access token and refresh token from it.
-*
-* Parameters:
-*   String: refresh_token
-*
-* Return Value:
-*   Promise: 
-*     Object: tokens
-*       Object: access_token
-*         String: value
-*         Number: expiry
-*       Object: refresh_token
-*         String: value
-*         Number: expiry
-*
-* Description:
-*   This function takes a refresh token and generates a new access 
-*   token and refresh token if the given refresh token is valid.
-*   
-*/
+const getSessionByToken = require("../helpers/controllers/sessions/getSessionByToken");
+const updateSessionToken = require("../helpers/controllers/sessions/updateSessionToken");
 
 const refreshToken = (refresh_token) => {
   return new Promise(async (resolve, reject) => {
@@ -51,8 +26,7 @@ const refreshToken = (refresh_token) => {
     // get session data from token
     let session = null;
     try {
-      session = await getFromCache(`session:${user.id}:${refresh_token}`, null);
-      session = JSON.parse(session);
+      session = await getSessionByToken(refresh_token);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_SESSION"));
     }
@@ -70,13 +44,11 @@ const refreshToken = (refresh_token) => {
     const new_refresh_token = createToken(user, "refresh");
     const new_access_token = createToken(user, "access");
 
-    session.expiresAt = new_refresh_token.expiresAt * 1000;
-
-    // create new session
     try {
-      await saveTokenToCache(user.id, new_refresh_token.value, session);
+      await updateSessionToken(refresh_token, new_refresh_token);
     } catch(e) {
-      return reject(new Error("ERROR_SAVING_SESSION"));
+      console.error(e);
+      return reject(new Error("ERROR_UPDATING_SESSION"));
     }
 
     // resolve with tokens

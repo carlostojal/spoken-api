@@ -1,5 +1,5 @@
 
-const getSessions = (user_id) => {
+const getSessionByToken = (token) => {
   return new Promise(async (resolve, reject) => {
 
     let mysqlClient;
@@ -9,17 +9,19 @@ const getSessions = (user_id) => {
       return reject(e);
     }
 
-    mysqlClient.query("SELECT * FROM Sessions WHERE user_id = ?", [user_id], (err, result) => {
+    mysqlClient.query("SELECT * FROM Sessions WHERE token = ?", [token], (err, result) => {
 
       if(err) {
         return reject(err);
       }
 
       result = JSON.parse(JSON.stringify(result));
+      result = result.length == 1 ? result[0] : null
 
       return resolve(result);
-    })
-  });
+    });
+
+  })
 };
 
-module.exports = getSessions;
+module.exports = getSessionByToken;

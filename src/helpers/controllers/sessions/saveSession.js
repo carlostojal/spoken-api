@@ -1,5 +1,5 @@
 
-const acceptRelation = (user, follows) => {
+const saveSession = (session) => {
   return new Promise(async (resolve, reject) => {
 
     let mysqlClient;
@@ -9,7 +9,8 @@ const acceptRelation = (user, follows) => {
       return reject(e);
     }
 
-    mysqlClient.query(`UPDATE FollowRelations SET accepted = ? WHERE user = ? AND follows = ?`, [1, user, follows], (err, result) => {
+    mysqlClient.query("INSERT INTO Sessions (user_id, token, expires_at, user_platform) VALUES (?, ?, ?, ?)", 
+    [session.user_id, session.token, session.expires_at, session.user_platform], (err, res) => {
 
       if(err) {
         return reject(err);
@@ -20,4 +21,4 @@ const acceptRelation = (user, follows) => {
   });
 };
 
-module.exports = acceptRelation;
+module.exports = saveSession;

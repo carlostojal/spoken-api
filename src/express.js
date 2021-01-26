@@ -72,7 +72,7 @@ app.post("/upload", async (req, res) => {
   // get media from request args
   const media_file = req.files.media;
 
-  const generated_id = generateId();
+  const generated_string = generateId();
 
   // get file format
   const split_file_name = media_file.name.split(".");
@@ -84,7 +84,7 @@ app.post("/upload", async (req, res) => {
   }
 
   // path to store the media
-  const path = `uploads/temp/${generated_id}.${format}`;
+  const path = `uploads/temp/${user.id}_${generated_string}.${format}`;
   const dest_path = "uploads";
 
   // move the media file to the temp path
@@ -111,14 +111,8 @@ app.post("/upload", async (req, res) => {
   }
 
   const media = {
-    id: generated_id,
     user_id: user.id,
     path: image.destinationPath,
-    time: Date.now(),
-    keywords: null,
-    is_nsfw: null,
-    nsfw_cause: null,
-    review_status: "pending"
   };
 
   // save media in DB

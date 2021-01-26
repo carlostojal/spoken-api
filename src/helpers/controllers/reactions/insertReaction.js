@@ -9,7 +9,7 @@ const insertReaction = (reaction) => {
       return reject(e);
     }
 
-    mysqlClient.query(`INSERT INTO PostReactions (id, user_id, post_id, time) VALUES (?, ?, ?, ?)`, [reaction.id, reaction.user_id, reaction.post_id, reaction.time], (err, result) => {
+    mysqlClient.query(`INSERT INTO PostReactions (user_id, post_id) VALUES (?, ?, ?, ?)`, [reaction.user_id, reaction.post_id], (err, result) => {
       
       if(err) {
         return reject(new Error("ERROR_INSERTING_REACTION"));

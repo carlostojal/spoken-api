@@ -32,8 +32,6 @@ const followUser = (id, user) => {
     const followRelation = {
       user: user.id,
       follows: user1.id,
-      create_time: Date.now(),
-      accept_time: accepted ? Date.now() : null,
       accepted
     };
 

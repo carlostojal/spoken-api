@@ -1,8 +1,5 @@
 const { AuthenticationError } = require("apollo-server");
-const generateId = require("../helpers/generateId");
 const insertPost = require("../helpers/controllers/posts/insertPost");
-const getPostById = require("../helpers/controllers/posts/getPostById");
-const formatPost = require("../helpers/formatPost");
 const checkPostToxicity = require("../helpers/checkPostToxicity");
 
 const createPost = (text, media_id, user) => {
@@ -22,7 +19,6 @@ const createPost = (text, media_id, user) => {
 
     const post = {
       user_id: user.id,
-      time: Date.now(),
       text,
       media_id
     };

@@ -1,5 +1,4 @@
 const { AuthenticationError } = require("apollo-server");
-const generateId = require("../helpers/generateId");
 const getPostById = require("../helpers/controllers/posts/getPostById");
 const userFollowsUser = require("../helpers/controllers/users/userFollowsUser");
 const insertPost = require("../helpers/controllers/posts/insertPost");
@@ -41,9 +40,7 @@ const sharePost = (post_id, user) => {
 
     // create the share post object
     const share_post = {
-      id: generateId(),
       user_id: user.id,
-      time: Date.now(),
       original_post_id: post_id
     }
 

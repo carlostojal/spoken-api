@@ -1,5 +1,4 @@
 const { AuthenticationError } = require("apollo-server");
-const generateId = require("../helpers/generateId");
 const getPostById = require("../helpers/controllers/posts/getPostById");
 const userFollowsUser = require("../helpers/controllers/users/userFollowsUser");
 const formatPost = require("../helpers/formatPost");
@@ -32,10 +31,8 @@ const commentPost = (post_id, user, text) => {
       return reject(new Error("BAD_PERMISSIONS"));
 
     const comment = {
-      id: generateId(),
       user_id: user.id,
       original_post_id: post.id,
-      time: Date.now(),
       text
     };
 
