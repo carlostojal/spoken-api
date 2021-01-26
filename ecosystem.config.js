@@ -6,7 +6,7 @@ module.exports = {
     instances: "max",
     exec_mode: "cluster",
     env: {
-      NODE_ENV: "dev"
+      NODE_ENV: "development"
     },
     env_production: {
       NODE_ENV: "production"
