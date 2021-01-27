@@ -181,9 +181,9 @@ app.get("/media/:id/:token?", async (req, res) => {
     if(!user)
       return res.status(401).send("BAD_TOKEN");
 
-    const user_allowed = await userFollowsUser(user.id, media.uploader_id);
+    const user_allowed = await userFollowsUser(user.id, media.uploader_id) || user.id == media.uploader_id;
 
-    if(user.id != media.uploader_id && !user_allowed)
+    if(!user_allowed)
       return res.status(401).send("CONTENT_VIEW_NOT_ALLOWED");
   }
 
