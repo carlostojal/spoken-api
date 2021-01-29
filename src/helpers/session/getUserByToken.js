@@ -26,7 +26,7 @@ const getUserByToken = (token) => {
     try {
       decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     } catch(e) {
-
+      return reject(new Error("ERROR_VERIFYING_TOKEN"));
     }
 
     // token is not valid, so the decoded data is null
