@@ -5,31 +5,6 @@ const getPostById = require("../helpers/controllers/posts/getPostById");
 const getPostFromCache = require("../helpers/controllers/posts/getPostFromCache");
 const formatPost = require("../helpers/formatPost");
 
-/*
-*
-* Promise getUserFeed(page, perPage, user)
-*
-* Summary:
-*   The getUserFeed function returns an array
-*   of posts for the user feed with pagination.
-*
-* Parameters:
-*   Number: page
-*   Number: perPage
-*   Object: user
-*
-* Return Value:
-*   Promise: 
-*     Array of Objects
-*
-* Description:
-*   This function receives a page number and number 
-*   of posts to return per page. Returns an array
-*   of posts from the users who the session
-*   follows ordered by the post date.
-*   
-*/
-
 const getUserFeed = (page, perPage, user, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
