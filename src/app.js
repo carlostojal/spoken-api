@@ -12,6 +12,7 @@ console.log(`Starting in ${process.env.NODE_ENV} environment.\n\n`);
 const server = new ApolloServer({
   typeDefs: typeDefs,
   resolvers: resolvers,
+  tracing: true,
   context: async ({ req, res }) => {
 
     // get access token from headers
