@@ -15,7 +15,7 @@ const getUserPosts = (page, per_page, user_id, mysqlPool) => {
       LEFT JOIN Media ON Posts.media_id = Media.id
       WHERE Posts.user_id = ?
       ORDER BY Posts.time DESC
-      LIMIT ? OFFSET ?`, [user_id, per_page, (page - 1) * per_page], async (err, result) => {
+      LIMIT ? OFFSET ?`, [user_id, user_id, per_page, (page - 1) * per_page], async (err, result) => {
 
         connection.release();
 
