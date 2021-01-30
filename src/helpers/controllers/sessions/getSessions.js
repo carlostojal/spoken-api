@@ -1,24 +1,24 @@
 
-const getSessions = (user_id) => {
+const getSessions = (user_id, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
-    let mysqlClient;
-    try {
-      mysqlClient = await require("../../../config/mysql");
-    } catch(e) {
-      return reject(e);
-    }
+    mysqlPool.getConnection((err, connection) => {
 
-    mysqlClient.query("SELECT * FROM Sessions WHERE user_id = ?", [user_id], (err, result) => {
-
-      if(err) {
+      if(err)
         return reject(err);
-      }
 
-      result = JSON.parse(JSON.stringify(result));
+      connection.query("SELECT * FROM Sessions WHERE user_id = ?", [user_id], (err, result) => {
 
-      return resolve(result);
-    })
+        connection.release();
+
+        if(err)
+          return reject(err);
+  
+        result = JSON.parse(JSON.stringify(result));
+  
+        return resolve(result);
+      });
+    });
   });
 };
 

@@ -4,7 +4,7 @@ const editPostById = require("../helpers/controllers/posts/editPostById");
 const checkPostToxicity = require("../helpers/checkPostToxicity");
 const formatPost = require("../helpers/formatPost");
 
-const editPost = (id, text, user) => {
+const editPost = (id, text, user, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -12,7 +12,7 @@ const editPost = (id, text, user) => {
 
     let post = null;
     try {
-      post = await getPostById(id);
+      post = await getPostById(id, mysqlPool);
     } catch(e) {
       
       return reject(new Error("ERROR_GETTING_POST"));
@@ -32,13 +32,13 @@ const editPost = (id, text, user) => {
       return reject(new Error("BAD_PERMISSIONS"));
 
     try {
-      await editPostById(id, text);
+      await editPostById(id, text, mysqlPool);
     } catch(e) {
       
       return reject(new Error("ERROR_UPDATING_POST"));
     }
 
-    checkPostToxicity(post);
+    checkPostToxicity(post, mysqlPool);
 
     return resolve(post);
   });

@@ -1,21 +1,22 @@
 
-const setPushToken = (user_id, token) => {
+const setPushToken = (user_id, token, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
-    let mysqlClient;
-    try {
-      mysqlClient = await require("../../../config/mysql");
-    } catch(e) {
-      return reject(e);
-    }
-
-    mysqlClient.query(`UPDATE Users SET push_token = ? WHERE id = ?`, [token, user_id], async (err, result) => {
+    mysqlPool.getConnection((err, connection) => {
 
       if(err)
         return reject(err);
 
-      return resolve(null);
-    });
+      connection.query(`UPDATE Users SET push_token = ? WHERE id = ?`, [token, user_id], async (err, result) => {
+
+        connection.release();
+
+        if(err)
+          return reject(err);
+  
+        return resolve(null);
+      });
+    });    
   });
 };
 

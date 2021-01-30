@@ -36,13 +36,13 @@ const saveSession = require("../helpers/controllers/sessions/saveSession");
 *   
 */
 
-const getToken = (username, password, userPlatform, remoteAddress, userAgent, pushToken) => {
+const getToken = (username, password, userPlatform, remoteAddress, userAgent, pushToken, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
     let user; 
 
     try {
-      user = await getUserByUsernameOrEmail(username);
+      user = await getUserByUsernameOrEmail(username, mysqlPool);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_USER"));
     }
@@ -93,13 +93,13 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, pu
       // saveTokenToCache(user.id, refresh_token.value, session);
 
       try {
-        await saveSession(session);
+        await saveSession(session, mysqlPool);
       } catch(e) {
         return reject(new Error("ERROR_CREATING_SESSION"));
       }
 
       try {
-        await setPushToken(user.id, pushToken)
+        await setPushToken(user.id, pushToken, mysqlPool)
       } catch(e) {
         
       }

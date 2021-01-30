@@ -1,23 +1,22 @@
 
-const removeRelation = (user, follows) => {
+const removeRelation = (user, follows, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
-    let mysqlClient;
-    try {
-      mysqlClient = await require("../../../config/mysql");
-    } catch(e) {
-      return reject(e);
-    }
+    mysqlPool.getConnection((err, connection) => {
 
-    mysqlClient.query(`DELETE FROM FollowRelations WHERE user = ? AND follows = ?`, [user, follows], (err, result) => {
-      
-      if(err) {
-        
+      if(err)
         return reject(err);
-      }
 
-      return resolve(null);
-    })
+      connection.query(`DELETE FROM FollowRelations WHERE user = ? AND follows = ?`, [user, follows], (err, result) => {
+
+        connection.release();
+    
+        if(err)
+          return reject(err);
+  
+        return resolve(null);
+      });
+    });    
   });
 };
 

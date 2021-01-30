@@ -34,7 +34,7 @@ const cache = require("../helpers/cache/cache");
 *   
 */
 
-const editUser = (name, surname, email, username, password, profile_pic_media_id, profile_type, profile_privacy_type, user, redisClient) => {
+const editUser = (name, surname, email, username, password, profile_pic_media_id, profile_type, profile_privacy_type, user, mysqlPool) => {
   return new Promise((resolve, reject) => {
     /*
 

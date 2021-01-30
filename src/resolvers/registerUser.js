@@ -4,7 +4,7 @@ const checkBirthdate = require("../helpers/checkBirthdate");
 const sendConfirmationEmail = require("./sendConfirmationEmail");
 const checkPasswordStrength = require("check-password-strength");
 
-const registerUser = (name, surname, birthdate, email, username, password, profile_type, profile_privacy_type) => {
+const registerUser = (name, surname, birthdate, email, username, password, profile_type, profile_privacy_type, mysqlPool) => {
   return new Promise((resolve, reject) => {
 
     // convert email and username to lower case
@@ -61,7 +61,7 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
         };
 
         try {
-          await insertUser(user);
+          await insertUser(user, mysqlPool);
           success = true;
         } catch(e) {
           if(e.errno == 1062) { // duplicate key
@@ -71,7 +71,7 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
         }
 
         try {
-          sendConfirmationEmail(user.username, password);
+          sendConfirmationEmail(user.username, password, mysqlPool);
         } catch(e) {
           
         }

@@ -5,7 +5,7 @@ const formatPost = require("../helpers/formatPost");
 const checkCommentToxicity = require("../helpers/checkCommentToxicity");
 const insertPost = require("../helpers/controllers/posts/insertPost");
 
-const commentPost = (post_id, user, text) => {
+const commentPost = (post_id, user, text, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -14,7 +14,7 @@ const commentPost = (post_id, user, text) => {
     let post = null;
 
     try {
-      post = await getPostById(post_id);
+      post = await getPostById(post_id, mysqlPool);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_POST"));
     }
@@ -22,7 +22,7 @@ const commentPost = (post_id, user, text) => {
     let has_permission = false;
 
     try {
-      has_permission = await userFollowsUser(user.id, post.poster_id);
+      has_permission = await userFollowsUser(user.id, post.poster_id, mysqlPool);
     } catch(e) {
       return reject(new Error("ERROR_CHECKING_PERMISSION"));
     }
@@ -37,7 +37,7 @@ const commentPost = (post_id, user, text) => {
     };
 
     try {
-      await insertPost(comment);
+      await insertPost(comment, mysqlPool);
     } catch(e) {
       return reject(new Error("ERROR_REGISTERING_COMMENT"));
     }
@@ -49,7 +49,7 @@ const commentPost = (post_id, user, text) => {
     }
 
     try {
-      checkCommentToxicity(comment);
+      checkCommentToxicity(comment, mysqlPool);
     } catch(e) {
 
     }

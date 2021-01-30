@@ -1,5 +1,5 @@
 
-const removeCommentById = (id) => {
+const removeCommentById = (id, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
     let mysqlClient;

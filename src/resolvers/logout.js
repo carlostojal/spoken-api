@@ -1,31 +1,5 @@
 const { AuthenticationError } = require("apollo-server");
 
-/*
-*
-* Promise logout(refresh_token, access_token, user)
-*
-* Summary:
-*   The logout function receives the current access token and refresh token
-*   and removes them from the database. Also receives the user object to 
-*   perform the needed updates in the database. Returns the logged out
-*   user.
-*
-* Parameters:
-*   String: refresh_token
-*   String: access_token
-*   Object: user
-*
-* Return Value:
-*   Promise: 
-*     Object: user
-*
-* Description:
-*   This function receives the current tokens and removes them from the 
-*   user model. Also resets the refresh token cookie in browser.
-*   Returns the logged out user.
-*   
-*/
-
 const logout = (refresh_token, access_token, user) => {
 
   return new Promise((resolve, reject) => {

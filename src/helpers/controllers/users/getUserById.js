@@ -1,26 +1,27 @@
 const saveUserToCache = require("./saveUserToCache");
 
-const getUserById = (id) => {
+const getUserById = (id, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
-    let mysqlClient;
-    try {
-      mysqlClient = await require("../../../config/mysql");
-    } catch(e) {
-      return reject(e);
-    }
+    mysqlPool.getConnection((err, connection) => {
 
-    mysqlClient.query(`SELECT * FROM Users WHERE id LIKE ?`, [id], async (err, result) => {
-
-      if(err)
+      if(err) 
         return reject(err);
 
-      result = JSON.parse(JSON.stringify(result));
-      const user = result.length == 1 ? result[0] : null;
+      connection.query(`SELECT * FROM Users WHERE id LIKE ?`, [id], async (err, result) => {
 
-      // saveUserToCache(user);
+        connection.release();
 
-      return resolve(user);
+        if(err)
+          return reject(err);
+  
+        result = JSON.parse(JSON.stringify(result));
+        const user = result.length == 1 ? result[0] : null;
+  
+        // saveUserToCache(user);
+  
+        return resolve(user);
+      });
     });
   });
 };

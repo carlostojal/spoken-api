@@ -2,12 +2,12 @@ const bcrypt = require("bcrypt");
 const getUserByUsernameOrEmail = require("../helpers/controllers/users/getUserByUsernameOrEmail");
 const getEmailTransport = require("../helpers/getEmailTransport");
 
-const sendConfirmationEmail = (username, password) => {
+const sendConfirmationEmail = (username, password, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
     let user = null;
     try {
-      user = await getUserByUsernameOrEmail(username);
+      user = await getUserByUsernameOrEmail(username, mysqlPool);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_USER"));
     }

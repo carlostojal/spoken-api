@@ -1,15 +1,8 @@
 const checkTextToxicity = require("./checkTextToxicity");
 const removeCommentById = require("./controllers/posts/removeCommentById");
 
-const checkCommentToxicity = (comment) => {
+const checkCommentToxicity = (comment, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
-
-    let mysqlClient;
-    try {
-      mysqlClient = await require("../config/mysql");
-    } catch(e) {
-      return reject(e);
-    }
 
     const toxicity_result = null;
     try {
@@ -20,7 +13,7 @@ const checkCommentToxicity = (comment) => {
 
     if(toxicity_result.is_toxic) {
       try {
-        await removeCommentById(comment.id);
+        await removeCommentById(comment.id, mysqlPool);
       } catch(e) {
         return reject(new Error("ERROR_REMOVING_COMMENT"));
       }

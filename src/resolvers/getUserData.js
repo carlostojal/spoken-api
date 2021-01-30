@@ -4,33 +4,7 @@ const getUserFromCache = require("../helpers/controllers/users/getUserFromCache"
 const mediaIdToUrl = require("../helpers/media/mediaIdToUrl");
 const userFollowsUser = require("../helpers/controllers/users/userFollowsUser");
 
-/*
-*
-* Promise getUserData(id, user)
-*
-* Summary:
-*   The getUserData function receives an user ID
-*   and the session user object. 
-*   Returns the data of the user with the provided
-*   ID (if provided), else returns the current user
-*   data.
-*
-* Parameters:
-*   String (optional): id
-*   Object: user
-*
-* Return Value:
-*   Promise: 
-*     Object: user
-*
-* Description:
-*   In case of a user ID being provided that user data
-*   is get from the database and returned.
-*   Else the session user data is returned immediately.
-*   
-*/
-
-const getUserData = (id, user) => {
+const getUserData = (id, user, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
     // function to remove private user data and return
@@ -58,13 +32,13 @@ const getUserData = (id, user) => {
     try {
       returnUser = await getUserFromCache(id);
       if(!returnUser)
-        returnUser = await getUserById(id);
+        returnUser = await getUserById(id, mysqlPool);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_USER"));
     }
 
     try {
-      returnUser.is_followed = await userFollowsUser(user.id, id);
+      returnUser.is_followed = await userFollowsUser(user.id, id, mysqlPool);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_RELATION"));
     }

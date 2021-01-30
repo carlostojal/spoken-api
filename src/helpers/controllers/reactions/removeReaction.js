@@ -1,23 +1,24 @@
 
-const removeReaction = (user, post) => {
+const removeReaction = (user_id, post_id, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
+    
+    mysqlPool.getConnection((err, connection) => {
 
-    let mysqlClient;
-    try {
-      mysqlClient = await require("../../../config/mysql");
-    } catch(e) {
-      return reject(e);
-    }
-
-    mysqlClient.query(`DELETE FROM PostReactions WHERE user_id = ? AND post_id = ?`, [user.id, post.id], (err, result) => {
-
-      if(err) {
-        
+      if(err)
         return reject(err);
-      }
 
-      return resolve(null);
+      connection.query(`DELETE FROM PostReactions WHERE user_id = ? AND post_id = ?`, [user_id, post_id], (err, result) => {
+
+        connection.release();
+
+        if(err)
+          return reject(err);
+  
+        return resolve(null);
+      });
     });
+
+    
   });
 };
 

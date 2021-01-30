@@ -1,9 +1,11 @@
 const { ApolloServer } = require("apollo-server");
 require("dotenv").config({ path: ".env" });
+require("log-timestamp");
 require("./helpers/jobs")(); // cron jobs
 const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers");
 const getUserByToken = require("./helpers/session/getUserByToken");
+const mysqlPool = require("./config/mysql");
 
 console.log("\n** Spoken API **\n\n");
 console.log(`Starting in ${process.env.NODE_ENV} environment.\n\n`);
@@ -23,13 +25,13 @@ const server = new ApolloServer({
     // get user from token
     if(token) {
       try {
-        user = await getUserByToken(token);
+        user = await getUserByToken(token, mysqlPool);
       } catch(e) {
         
       }
     }
 
-    return { req, res, user };
+    return { req, res, user, mysqlPool };
   }
 });
 

@@ -6,7 +6,7 @@ const removeReaction = require("../helpers/controllers/reactions/removeReaction"
 const insertReaction = require("../helpers/controllers/reactions/insertReaction");
 const formatPost = require("../helpers/formatPost");
 
-const reactPost = (post_id, user) => {
+const reactPost = (post_id, user, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -14,7 +14,7 @@ const reactPost = (post_id, user) => {
 
     let post = null;
     try {
-      post = await getPostById(post_id);
+      post = await getPostById(post_id, mysqlPool);
     } catch(e) {
       
       return reject(new Error("ERROR_GETTING_POST"));
@@ -33,7 +33,7 @@ const reactPost = (post_id, user) => {
     // check if the user follows the user who made the post
     let hasPermission = false;
     try {
-      hasPermission = await userFollowsUser(user.id, post.poster.id);
+      hasPermission = await userFollowsUser(user.id, post.poster.id, mysqlPool);
     } catch(e) {
       
       return reject(new Error("ERROR_CHECKING_PERMISSION"));
@@ -45,7 +45,7 @@ const reactPost = (post_id, user) => {
     // check if the current user reacted the post
     let user_reacted = false;
     try {
-      user_reacted = await userReacted(user, post);
+      user_reacted = await userReacted(user, post, mysqlPool);
     } catch(e) {
       
       return reject(new Error("ERROR_CHECKING_REACTION"));
@@ -54,18 +54,14 @@ const reactPost = (post_id, user) => {
     // the reaction was registered, so remove
     if(user_reacted) {
       try {
-        await removeReaction(user, post);
+        await removeReaction(user, post, mysqlPool);
       } catch(e) {
         
         return reject(new Error("ERROR_REMOVING_REACTION"));
       }
     } else { // the reaction was not registered, so register
-      const reaction = {
-        user_id: user.id,
-        post_id: post.id
-      }
       try {
-        await insertReaction(reaction);
+        await insertReaction(user_id, post_id, mysqlPool);
       } catch(e) {
         return reject(new Error("ERROR_SAVING_REACTION"));
       }

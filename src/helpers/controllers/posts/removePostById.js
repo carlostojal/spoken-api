@@ -1,23 +1,22 @@
 
-const removePostById = (id) => {
+const removePostById = (id, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
-    let mysqlClient;
-    try {
-      mysqlClient = await require("../../../config/mysql");
-    } catch(e) {
-      return reject(e);
-    }
+    mysqlPool.getConnection((err, connection) => {
 
-    mysqlClient.query(`DELETE FROM Posts WHERE id = ?`, [id], (err, result) => {
-
-      if(err) {
-        
+      if(err)
         return reject(err);
-      }
 
-      return resolve(null);
-    })
+      connection.query(`DELETE FROM Posts WHERE id = ?`, [id], (err, result) => {
+
+        connection.release();
+
+        if(err)
+          return reject(err);
+  
+        return resolve(null);
+      });
+    });
   });
 };
 

@@ -1,25 +1,8 @@
 const jwt = require("jsonwebtoken");
+const getUserById = require("../controllers/users/getUserById");
 
-const getUserByToken = (token) => {
+const getUserByToken = (token, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
-
-    const getUserById = require("../controllers/users/getUserById");
-    const getFromCache = require("../cache/getFromCache");
-    const cache = require("../cache/cache");
-
-    let mysqlClient;
-    try {
-      mysqlClient = await require("../../config/mysql");
-    } catch(e) {
-      return reject(e);
-    }
-
-    let redisClient;
-    try {
-      redisClient = await require("../../config/redis");
-    } catch(e) {
-      return reject(e);
-    }
 
     // verify and decode user token
     let decoded = null;
@@ -48,7 +31,7 @@ const getUserByToken = (token) => {
     
     // the user was not in cache, so get from database
     try {
-      user = await getUserById(decoded.user.id);
+      user = await getUserById(decoded.user.id, mysqlPool);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_USER"));
     }

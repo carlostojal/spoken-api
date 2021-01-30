@@ -1,22 +1,24 @@
 
-const acceptRelation = (user, follows) => {
+const acceptRelation = (user, follows, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
+    
+    mysqlPool.getConnection((err, connection) => {
 
-    let mysqlClient;
-    try {
-      mysqlClient = await require("../../../config/mysql");
-    } catch(e) {
-      return reject(e);
-    }
-
-    mysqlClient.query(`UPDATE FollowRelations SET accepted = ? WHERE user = ? AND follows = ?`, [1, user, follows], (err, result) => {
-
-      if(err) {
+      if(err)
         return reject(err);
-      }
 
-      return resolve(null);
+      connection.query(`UPDATE FollowRelations SET accepted = ? WHERE user = ? AND follows = ?`, [1, user, follows], (err, result) => {
+
+        connection.release();
+
+        if(err)
+          return reject(err);
+  
+        return resolve(null);
+      });
     });
+
+    
   });
 };
 

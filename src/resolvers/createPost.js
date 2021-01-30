@@ -2,7 +2,7 @@ const { AuthenticationError } = require("apollo-server");
 const insertPost = require("../helpers/controllers/posts/insertPost");
 const checkPostToxicity = require("../helpers/checkPostToxicity");
 
-const createPost = (text, media_id, user) => {
+const createPost = (text, media_id, user, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -25,14 +25,14 @@ const createPost = (text, media_id, user) => {
 
     // insert simple post
     try {
-      await insertPost(post);
+      await insertPost(post, mysqlPool);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_REGISTERING_POST"));
     }
 
     // check if the post text is toxic (the user will not wait for this action)
-    checkPostToxicity(post);
+    checkPostToxicity(post, mysqlPool);
 
     return resolve(post);
   });

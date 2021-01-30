@@ -1,26 +1,25 @@
 
-const getSessionByToken = (token) => {
+const getSessionByToken = (token, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
-    let mysqlClient;
-    try {
-      mysqlClient = await require("../../../config/mysql");
-    } catch(e) {
-      return reject(e);
-    }
+    mysqlPool.getConnection((err, connection) => {
 
-    mysqlClient.query("SELECT * FROM Sessions WHERE token = ?", [token], (err, result) => {
-
-      if(err) {
+      if(err)
         return reject(err);
-      }
 
-      result = JSON.parse(JSON.stringify(result));
-      result = result.length == 1 ? result[0] : null
+      connection.query("SELECT * FROM Sessions WHERE token = ?", [token], (err, result) => {
 
-      return resolve(result);
+        connection.release();
+
+        if(err)
+          return reject(err);
+  
+        result = JSON.parse(JSON.stringify(result));
+        result = result.length == 1 ? result[0] : null
+  
+        return resolve(result);
+      });      
     });
-
   })
 };
 

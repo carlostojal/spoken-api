@@ -1,21 +1,21 @@
 
-const updateSessionToken = (old_token_value, new_token) => {
+const updateSessionToken = (old_token_value, new_token, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
-    let mysqlClient;
-    try {
-      mysqlClient = await require("../../../config/mysql");
-    } catch(e) {
-      return reject(e);
-    }
+    mysqlPool.getConnection((err, connection) => {
 
-    mysqlClient.query("UPDATE Sessions SET token = ?, created_at = ?, expires_at = ? WHERE token = ?", [new_token.value, new Date(), new Date(new_token.expires_at), old_token_value], (err, result) => {
-
-      if(err) {
+      if(err)
         return reject(err);
-      }
 
-      return resolve(null);
+      connection.query("UPDATE Sessions SET token = ?, created_at = ?, expires_at = ? WHERE token = ?", [new_token.value, new Date(), new Date(new_token.expires_at), old_token_value], (err, result) => {
+
+        connection.release();
+
+        if(err)
+          return reject(err);
+  
+        return resolve(null);
+      });
     });
   });   
 }

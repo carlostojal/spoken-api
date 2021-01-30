@@ -5,7 +5,7 @@ const userFollowsUser = require("../helpers/controllers/users/userFollowsUser");
 const getPosts = require("../helpers/controllers/posts/getUserPosts");
 const formatPost = require("../helpers/formatPost");
 
-const getUserPosts = (page, perPage, user_id, user) => {
+const getUserPosts = (page, perPage, user_id, user, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -16,7 +16,7 @@ const getUserPosts = (page, perPage, user_id, user) => {
 
       let user1;
       try {
-        user1 = await getUserById(user_id);
+        user1 = await getUserById(user_id, mysqlPool);
       } catch(e) {
         return reject(new Error("ERROR_GETTING_USER"));
       }
@@ -26,7 +26,7 @@ const getUserPosts = (page, perPage, user_id, user) => {
 
         let follows = false;
         try {
-          follows = await userFollowsUser(user.id, user_id);
+          follows = await userFollowsUser(user.id, user_id, mysqlPool);
         } catch(e) {
           return reject(new Error("ERROR_CHECKING_PERMISSION"));
         }
@@ -38,7 +38,7 @@ const getUserPosts = (page, perPage, user_id, user) => {
 
     let posts;
     try {
-      posts = await getPosts(page, perPage, user_id || user.id);
+      posts = await getPosts(page, perPage, user_id || user.id, mysqlPool);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_POSTS"));
     }

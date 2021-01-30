@@ -3,7 +3,7 @@ const getPostById = require("../helpers/controllers/posts/getPostById");
 const removePostById = require("../helpers/controllers/posts/removePostById");
 const formatPost = require("../helpers/formatPost");
 
-const deletePost = (id, user) => {
+const deletePost = (id, user, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -11,7 +11,7 @@ const deletePost = (id, user) => {
     
     let post = null;
     try {
-      post = await getPostById(id);
+      post = await getPostById(id, mysqlPool);
     } catch(e) {
       
       return reject(new Error("ERROR_GETTING_POST"));
@@ -20,12 +20,11 @@ const deletePost = (id, user) => {
     if(!post)
       return reject(new Error("POST_NOT_FOUND"));
 
-
     if(post.poster_id != user.id)
       return reject(new Error("BAD_PERSMISSIONS"));
 
     try {
-      await removePostById(id);
+      await removePostById(id, mysqlPool);
     } catch(e) {
       
       return reject(new Error("ERROR_REMOVING_POST"));

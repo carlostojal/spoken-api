@@ -5,7 +5,7 @@ const insertPost = require("../helpers/controllers/posts/insertPost");
 const formatPost = require("../helpers/formatPost");
 const checkPostToxicity = require("../helpers/checkPostToxicity");
 
-const sharePost = (post_id, user) => {
+const sharePost = (post_id, user, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -14,7 +14,7 @@ const sharePost = (post_id, user) => {
     // get the post from ID
     let post = null;
     try {
-      post = await getPostById(post_id);
+      post = await getPostById(post_id, mysqlPool);
     } catch(e) {
       
       return reject(new Error("ERROR_GETTING_POST"));
@@ -28,7 +28,7 @@ const sharePost = (post_id, user) => {
     let has_permission = user.id == post.poster_id;
     if(!has_permission) {
       try {
-        has_permission = await userFollowsUser(user.id, post.poster_id);
+        has_permission = await userFollowsUser(user.id, post.poster_id, mysqlPool);
       } catch(e) {
         return reject(new Error("ERROR_CHECKING_PERMISSION"));
       }
@@ -46,14 +46,14 @@ const sharePost = (post_id, user) => {
 
     // register a new post by this user, that will later reference the shared post
     try {
-      await insertPost(share_post);
+      await insertPost(share_post, mysqlPool);
     } catch(e) {
       return reject(new Error("ERROR_REGISTERING_POST"));
     }
 
     // get post populated from DB
     try {
-      post = await getPostById(share_post.id);
+      post = await getPostById(share_post.id, mysqlPool);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_POST"));
     }
@@ -66,7 +66,7 @@ const sharePost = (post_id, user) => {
     }
 
     // check if post text is toxic
-    checkPostToxicity(post);
+    checkPostToxicity(post, mysqlPool);
 
     return resolve(post);
   });

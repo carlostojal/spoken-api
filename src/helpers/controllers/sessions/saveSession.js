@@ -1,23 +1,25 @@
 
-const saveSession = (session) => {
+const saveSession = (session, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
-    let mysqlClient;
-    try {
-      mysqlClient = await require("../../../config/mysql");
-    } catch(e) {
-      return reject(e);
-    }
+    mysqlPool.getConnection((err, connection) => {
 
-    mysqlClient.query("INSERT INTO Sessions (user_id, token, expires_at, user_platform) VALUES (?, ?, ?, ?)", 
-    [session.user_id, session.token, session.expires_at, session.user_platform], (err, res) => {
-
-      if(err) {
+      if(err)
         return reject(err);
-      }
+      
+      connection.query("INSERT INTO Sessions (user_id, token, expires_at, user_platform) VALUES (?, ?, ?, ?)", 
+      [session.user_id, session.token, session.expires_at, session.user_platform], (err, res) => {
 
-      return resolve(null);
+        connection.release();
+  
+        if(err)
+          return reject(err);
+  
+        return resolve(null);
+      });
     });
+
+    
   });
 };
 

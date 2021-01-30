@@ -1,23 +1,23 @@
 
-const insertPost = (post) => {
+const insertPost = (post, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
-    let mysqlClient;
-    try {
-      mysqlClient = await require("../../../config/mysql");
-    } catch(e) {
-      return reject(e);
-    }
+    mysqlPool.getConnection((err, connection) => {
 
-    mysqlClient.query(`INSERT INTO Posts (user_id, text, media_id, original_post_id) VALUES 
-    (?, ?, ?, ?)`, [post.user_id, post.text, post.media_id, post.original_post_id], (err, result) => {
-
-      if(err) {
+      if(err)
         return reject(err);
-      }
 
-      return resolve(null);
-    })
+      connection.query(`INSERT INTO Posts (user_id, text, media_id, original_post_id) VALUES 
+      (?, ?, ?, ?)`, [post.user_id, post.text, post.media_id, post.original_post_id], (err, result) => {
+
+        connection.release();
+  
+        if(err)
+          return reject(err);
+  
+        return resolve(null);
+      });
+    });
   });
 };
 

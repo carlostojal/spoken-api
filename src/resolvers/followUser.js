@@ -4,7 +4,7 @@ const insertRelation = require("../helpers/controllers/relations/insertRelation"
 const removeRelation = require("../helpers/controllers/relations/removeRelation");
 const sendNotification = require("../helpers/sendNotification");
 
-const followUser = (id, user) => {
+const followUser = (id, user, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -18,7 +18,7 @@ const followUser = (id, user) => {
 
     let user1 = null;
     try {
-      user1 = await getUserById(id);
+      user1 = await getUserById(id, mysqlPool);
     } catch(e) {
       
       return reject(new Error("ERROR_GETTING_USER"));
@@ -36,10 +36,10 @@ const followUser = (id, user) => {
     };
 
     try {
-      await insertRelation(followRelation);
+      await insertRelation(followRelation, mysqlPool);
 
       try {
-        sendNotification("New follower", `"${user.username}" started following you.`, user1.id);
+        sendNotification("New follower", `"${user.username}" started following you.`, user1.id, mysqlPool);
       } catch(e) {
         console.error(new Error("ERROR_SENDING_NOTIFICATION"));
       }
@@ -49,7 +49,7 @@ const followUser = (id, user) => {
       if(e.errno == 1062) { // duplicate key (relation already exists)
         // will remove the relation
         try {
-          await removeRelation(user.id, user1.id);
+          await removeRelation(user.id, user1.id, mysqlPool);
         } catch(e) {
           return reject(new Error("ERROR_REMOVING_RELATION"));
         }

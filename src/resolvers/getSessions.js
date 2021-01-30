@@ -1,7 +1,7 @@
 const { AuthorizationError } = require("apollo-server");
 const getSessionsController = require("../helpers/controllers/sessions/getSessions");
 
-const getSessions = (user) => {
+const getSessions = (user, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -9,7 +9,7 @@ const getSessions = (user) => {
 
     let sessions = null;
     try {
-      sessions = await getSessionsController(user.id);
+      sessions = await getSessionsController(user.id, mysqlPool);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_SESSIONS"));

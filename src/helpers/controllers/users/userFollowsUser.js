@@ -1,22 +1,21 @@
 
-const userFollowsUser = (user_id, user1_id) => {
+const userFollowsUser = (user_id, user1_id, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
-    let mysqlClient;
-    try {
-      mysqlClient = await require("../../../config/mysql");
-    } catch(e) {
-      return reject(e);
-    }
+    mysqlPool.getConnection((err, connection) => {
 
-    mysqlClient.query(`SELECT * FROM FollowRelations WHERE user = ? AND follows = ? AND accepted = ?`, [user_id, user1_id, 1], (err, result) => {
-
-      if(err) {
-        
+      if(err)
         return reject(err);
-      }
 
-      return resolve(result && result.length == 1);
+      connection.query(`SELECT * FROM FollowRelations WHERE user = ? AND follows = ? AND accepted = ?`, [user_id, user1_id, 1], (err, result) => {
+
+        connection.release();
+
+        if(err)
+          return reject(err);
+  
+        return resolve(result && result.length == 1);
+      });
     });
   });
 };

@@ -1,13 +1,10 @@
 const jwt = require("jsonwebtoken");
 const createToken = require("../helpers/session/createToken");
-const getFromCache = require("../helpers/cache/getFromCache");
-const cache = require("../helpers/cache/cache");
 const deleteFromCache = require("../helpers/cache/deleteFromCache");
-const saveTokenToCache = require("../helpers/controllers/sessions/saveTokenToCache");
 const getSessionByToken = require("../helpers/controllers/sessions/getSessionByToken");
 const updateSessionToken = require("../helpers/controllers/sessions/updateSessionToken");
 
-const refreshToken = (refresh_token) => {
+const refreshToken = (refresh_token, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
     // get user by decoding token
@@ -26,7 +23,7 @@ const refreshToken = (refresh_token) => {
     // get session data from token
     let session = null;
     try {
-      session = await getSessionByToken(refresh_token);
+      session = await getSessionByToken(refresh_token, mysqlPool);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_SESSION"));
     }
@@ -45,7 +42,7 @@ const refreshToken = (refresh_token) => {
     const new_access_token = createToken(user, "access");
 
     try {
-      await updateSessionToken(refresh_token, new_refresh_token);
+      await updateSessionToken(refresh_token, new_refresh_token, mysqlPool);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_UPDATING_SESSION"));

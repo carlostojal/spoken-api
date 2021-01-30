@@ -30,7 +30,7 @@ const formatPost = require("../helpers/formatPost");
 *   
 */
 
-const getUserFeed = (page, perPage, user) => {
+const getUserFeed = (page, perPage, user, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -44,10 +44,10 @@ const getUserFeed = (page, perPage, user) => {
           let post_id = posts[i];
           posts[i] = await getPostFromCache(post_id);
           if(!posts[i])
-            posts[i] = await getPostById(post_id);
+            posts[i] = await getPostById(post_id, mysqlPool);
         }
       } else {
-        posts = await getFeed(page, perPage, user.id);
+        posts = await getFeed(page, perPage, user.id, mysqlPool);
       }
     } catch(e) {
       return reject(new Error("ERROR_GETTING_FEED"));

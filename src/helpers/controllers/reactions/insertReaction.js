@@ -1,21 +1,21 @@
 
-const insertReaction = (reaction) => {
+const insertReaction = (user_id, post_id, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
-    let mysqlClient;
-    try {
-      mysqlClient = await require("../../../config/mysql");
-    } catch(e) {
-      return reject(e);
-    }
+    mysqlPool.getConnection((err, connection) => {
 
-    mysqlClient.query(`INSERT INTO PostReactions (user_id, post_id) VALUES (?, ?, ?, ?)`, [reaction.user_id, reaction.post_id], (err, result) => {
-      
-      if(err) {
-        return reject(new Error("ERROR_INSERTING_REACTION"));
-      }
+      if(err)
+        return reject(err);
 
-      return resolve(null);
+      connection.query(`INSERT INTO PostReactions (user_id, post_id) VALUES (?, ?, ?, ?)`, [user_id, post_id], (err, result) => {
+
+        connection.release();
+    
+        if(err)
+          return reject(err);
+  
+        return resolve(null);
+      });
     });
   });
 };
