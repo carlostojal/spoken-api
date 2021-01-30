@@ -12,6 +12,7 @@ const getFollowers = (user, mysqlPool) => {
     try {
       result = await getFollowedRelations(user.id, true, mysqlPool);
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_GETTING_RELATIONS"));
     }
 
@@ -26,6 +27,7 @@ const getFollowers = (user, mysqlPool) => {
           followers[i] = formatRelation(result[i]);
       }
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_FORMATING_RELATIONS"));
     }
 

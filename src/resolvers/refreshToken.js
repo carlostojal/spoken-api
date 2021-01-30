@@ -12,7 +12,7 @@ const refreshToken = (refresh_token, mysqlPool) => {
     try {
       decoded = jwt.verify(refresh_token, process.env.REFRESH_TOKEN_SECRET);
     } catch(e) {
-
+      console.error(e);
     }
 
     if(!decoded || !decoded.user)
@@ -25,6 +25,7 @@ const refreshToken = (refresh_token, mysqlPool) => {
     try {
       session = await getSessionByToken(refresh_token, mysqlPool);
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_GETTING_SESSION"));
     }
 
@@ -35,6 +36,7 @@ const refreshToken = (refresh_token, mysqlPool) => {
     try {
       await deleteFromCache(`session:${user.id}:${refresh_token}`, null);
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_DELETING_OLD_SESSION"));
     }
 

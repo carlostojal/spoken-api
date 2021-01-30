@@ -27,7 +27,7 @@ const server = new ApolloServer({
       try {
         user = await getUserByToken(token, mysqlPool);
       } catch(e) {
-        
+        console.error(e);
       }
     }
 

@@ -14,7 +14,7 @@ const editPost = (id, text, user, mysqlPool) => {
     try {
       post = await getPostById(id, mysqlPool);
     } catch(e) {
-      
+      console.error(e);
       return reject(new Error("ERROR_GETTING_POST"));
     }
 
@@ -24,7 +24,7 @@ const editPost = (id, text, user, mysqlPool) => {
     try {
       post = formatPost(post);
     } catch(e) {
-      
+      console.error(e);
       return reject(new Error("ERROR_FORMATING_POST"));
     }
 
@@ -34,7 +34,7 @@ const editPost = (id, text, user, mysqlPool) => {
     try {
       await editPostById(id, text, mysqlPool);
     } catch(e) {
-      
+      console.error(e);
       return reject(new Error("ERROR_UPDATING_POST"));
     }
 

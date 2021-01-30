@@ -37,14 +37,14 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
 
     bcrypt.genSalt(parseInt(process.env.HASH_SALT_ROUNDS), (err, salt) => {
       if (err) {
-        
+        console.error(err);
         return reject(new Error("ERROR_HASHING_PASSWORD"));
       }
 
       bcrypt.hash(password, salt, async (err, hash_password) => {
 
         if (err) {
-          
+          console.error(err);
           return reject(new Error("ERROR_HASHING_PASSWORD"));
         }
 
@@ -67,13 +67,14 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
           if(e.errno == 1062) { // duplicate key
             return reject(new Error("DUPLICATE_USERNAME_OR_EMAIL"));
           }
+          console.error(e);
           return reject(new Error("ERROR_REGISTERING_USER"));
         }
 
         try {
           sendConfirmationEmail(user.username, password, mysqlPool);
         } catch(e) {
-          
+          console.error(e);
         }
         
         return resolve(user);

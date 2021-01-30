@@ -36,6 +36,7 @@ const confirmAccount = (username, code, mysqlPool) => {
           try {
             await update(user);
           } catch(e) {
+            console.error(e);
             return reject(new Error("ERROR_UPDATING_USER"));
           }
         } else {

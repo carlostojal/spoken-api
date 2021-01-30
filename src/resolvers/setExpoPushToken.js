@@ -11,7 +11,7 @@ const setExpoPushToken = (token, user, mysqlPool) => {
     try {
       await setPushToken(user.id, token, mysqlPool);
     } catch(e) {
-      return reject(new Error("ERROR_SETTING_TOKEN"));
+      return reject(e);
     }
 
     return resolve(true);

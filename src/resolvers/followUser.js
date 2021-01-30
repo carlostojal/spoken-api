@@ -20,7 +20,7 @@ const followUser = (id, user, mysqlPool) => {
     try {
       user1 = await getUserById(id, mysqlPool);
     } catch(e) {
-      
+      console.error(e);
       return reject(new Error("ERROR_GETTING_USER"));
     }
 
@@ -41,6 +41,7 @@ const followUser = (id, user, mysqlPool) => {
       try {
         sendNotification("New follower", `"${user.username}" started following you.`, user1.id, mysqlPool);
       } catch(e) {
+        console.error(e);
         console.error(new Error("ERROR_SENDING_NOTIFICATION"));
       }
 
@@ -51,6 +52,7 @@ const followUser = (id, user, mysqlPool) => {
         try {
           await removeRelation(user.id, user1.id, mysqlPool);
         } catch(e) {
+          console.error(e);
           return reject(new Error("ERROR_REMOVING_RELATION"));
         }
       } else {

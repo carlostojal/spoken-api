@@ -16,7 +16,7 @@ const reactPost = (post_id, user, mysqlPool) => {
     try {
       post = await getPostById(post_id, mysqlPool);
     } catch(e) {
-      
+      console.error(e);
       return reject(new Error("ERROR_GETTING_POST"));
     }
 
@@ -35,7 +35,7 @@ const reactPost = (post_id, user, mysqlPool) => {
     try {
       hasPermission = await userFollowsUser(user.id, post.poster.id, mysqlPool);
     } catch(e) {
-      
+      console.error(e);
       return reject(new Error("ERROR_CHECKING_PERMISSION"));
     }
 
@@ -47,7 +47,7 @@ const reactPost = (post_id, user, mysqlPool) => {
     try {
       user_reacted = await userReacted(user, post, mysqlPool);
     } catch(e) {
-      
+      console.error(e);
       return reject(new Error("ERROR_CHECKING_REACTION"));
     }
 
@@ -56,13 +56,14 @@ const reactPost = (post_id, user, mysqlPool) => {
       try {
         await removeReaction(user, post, mysqlPool);
       } catch(e) {
-        
+        console.error(e);
         return reject(new Error("ERROR_REMOVING_REACTION"));
       }
     } else { // the reaction was not registered, so register
       try {
         await insertReaction(user_id, post_id, mysqlPool);
       } catch(e) {
+        console.error(e);
         return reject(new Error("ERROR_SAVING_REACTION"));
       }
     }

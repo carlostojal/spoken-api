@@ -44,6 +44,7 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, pu
     try {
       user = await getUserByUsernameOrEmail(username, mysqlPool);
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_GETTING_USER"));
     }
 
@@ -80,7 +81,7 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, pu
           platformData = platform.parse(userAgent);
           platformData = platformData.description;
         } catch(e) {
-          
+          console.error(e);
         }
       }
 
@@ -95,13 +96,14 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, pu
       try {
         await saveSession(session, mysqlPool);
       } catch(e) {
+        console.error(e);
         return reject(new Error("ERROR_CREATING_SESSION"));
       }
 
       try {
         await setPushToken(user.id, pushToken, mysqlPool)
       } catch(e) {
-        
+        console.error(e);
       }
       
 

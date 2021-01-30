@@ -11,6 +11,7 @@ const userSearch = (query, user, mysqlPool) => {
     try {
       users = await searchUser(query, mysqlPool);
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_GETTING_USERS"));
     }
 

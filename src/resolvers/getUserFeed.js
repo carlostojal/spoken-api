@@ -25,6 +25,7 @@ const getUserFeed = (page, perPage, user, mysqlPool) => {
         posts = await getFeed(page, perPage, user.id, mysqlPool);
       }
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_GETTING_FEED"));
     }
 
@@ -32,6 +33,7 @@ const getUserFeed = (page, perPage, user, mysqlPool) => {
       for(let i = 0; i < posts.length; i++)
         posts[i] = formatPost(posts[i]);
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_FORMATTING_POSTS"));
     }
 

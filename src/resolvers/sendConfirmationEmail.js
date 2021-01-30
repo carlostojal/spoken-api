@@ -9,6 +9,7 @@ const sendConfirmationEmail = (username, password, mysqlPool) => {
     try {
       user = await getUserByUsernameOrEmail(username, mysqlPool);
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_GETTING_USER"));
     }
 

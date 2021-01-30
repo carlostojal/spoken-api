@@ -34,12 +34,14 @@ const getUserData = (id, user, mysqlPool) => {
       if(!returnUser)
         returnUser = await getUserById(id, mysqlPool);
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_GETTING_USER"));
     }
 
     try {
       returnUser.is_followed = await userFollowsUser(user.id, id, mysqlPool);
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_GETTING_RELATION"));
     }
 

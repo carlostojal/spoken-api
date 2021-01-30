@@ -16,6 +16,7 @@ const commentPost = (post_id, user, text, mysqlPool) => {
     try {
       post = await getPostById(post_id, mysqlPool);
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_GETTING_POST"));
     }
 
@@ -24,6 +25,7 @@ const commentPost = (post_id, user, text, mysqlPool) => {
     try {
       has_permission = await userFollowsUser(user.id, post.poster_id, mysqlPool);
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_CHECKING_PERMISSION"));
     }
 
@@ -39,19 +41,21 @@ const commentPost = (post_id, user, text, mysqlPool) => {
     try {
       await insertPost(comment, mysqlPool);
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_REGISTERING_COMMENT"));
     }
 
     try {
       post = formatPost(post);
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_FORMATING_POST"));
     }
 
     try {
       checkCommentToxicity(comment, mysqlPool);
     } catch(e) {
-
+      console.error(e);
     }
 
     return resolve(post);

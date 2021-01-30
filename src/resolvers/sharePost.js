@@ -16,7 +16,7 @@ const sharePost = (post_id, user, mysqlPool) => {
     try {
       post = await getPostById(post_id, mysqlPool);
     } catch(e) {
-      
+      console.error(e);
       return reject(new Error("ERROR_GETTING_POST"));
     }
 
@@ -30,6 +30,7 @@ const sharePost = (post_id, user, mysqlPool) => {
       try {
         has_permission = await userFollowsUser(user.id, post.poster_id, mysqlPool);
       } catch(e) {
+        console.error(e);
         return reject(new Error("ERROR_CHECKING_PERMISSION"));
       }
     }
@@ -48,6 +49,7 @@ const sharePost = (post_id, user, mysqlPool) => {
     try {
       await insertPost(share_post, mysqlPool);
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_REGISTERING_POST"));
     }
 
@@ -55,6 +57,7 @@ const sharePost = (post_id, user, mysqlPool) => {
     try {
       post = await getPostById(share_post.id, mysqlPool);
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_GETTING_POST"));
     }
 
@@ -62,6 +65,7 @@ const sharePost = (post_id, user, mysqlPool) => {
     try {
       post = formatPost(post);
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_FORMATING_POST"));
     }
 

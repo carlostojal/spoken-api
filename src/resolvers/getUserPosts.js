@@ -18,6 +18,7 @@ const getUserPosts = (page, perPage, user_id, user, mysqlPool) => {
       try {
         user1 = await getUserById(user_id, mysqlPool);
       } catch(e) {
+        console.error(e);
         return reject(new Error("ERROR_GETTING_USER"));
       }
 
@@ -28,6 +29,7 @@ const getUserPosts = (page, perPage, user_id, user, mysqlPool) => {
         try {
           follows = await userFollowsUser(user.id, user_id, mysqlPool);
         } catch(e) {
+          console.error(e);
           return reject(new Error("ERROR_CHECKING_PERMISSION"));
         }
 
@@ -40,6 +42,7 @@ const getUserPosts = (page, perPage, user_id, user, mysqlPool) => {
     try {
       posts = await getPosts(page, perPage, user_id || user.id, mysqlPool);
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_GETTING_POSTS"));
     }
 
@@ -47,6 +50,7 @@ const getUserPosts = (page, perPage, user_id, user, mysqlPool) => {
       for(let i = 0; i < posts.length; i++)
         posts[i] = formatPost(posts[i]);
     } catch(e) {
+      console.error(e);
       return reject(new Error("ERROR_FORMATTING_POSTS"));
     }
 
