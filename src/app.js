@@ -1,4 +1,6 @@
-const { ApolloServer } = require("apollo-server");
+const express = require("express");
+const { ApolloServer } = require("apollo-server-express");
+const os = require("os");
 require("dotenv").config({ path: ".env" });
 require("log-timestamp");
 require("./helpers/jobs")(); // cron jobs
@@ -9,6 +11,12 @@ const mysqlPool = require("./config/mysql");
 
 console.log("\n** Spoken API **\n\n");
 console.log(`Starting in ${process.env.NODE_ENV} environment.\n\n`);
+
+const app = express();
+
+app.get("/info", (req, res) => {
+  return res.send(`Server name is <b>${os.hostname()}</b>.\nUp since <b>${new Date(Date.now() - (os.uptime() * 1000))}</b>.`);
+});
 
 // apollo server startup
 const server = new ApolloServer({
@@ -34,8 +42,11 @@ const server = new ApolloServer({
     return { req, res, user, mysqlPool };
   }
 });
+server.applyMiddleware({ app });
 
-server.listen(process.env.GRAPHQL_PORT || 4000).then(({ url }) => {
-  console.log(`GraphQL Playground running at ${url}\n`);
+const port = process.env.GRAPHQL_PORT || 4000
+
+app.listen({ port }, () => {
+  console.log(`GraphQL Playground running at http://localhost:${port}/${server.graphqlPath}\n`);
 });
 

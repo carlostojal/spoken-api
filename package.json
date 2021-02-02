@@ -21,6 +21,7 @@
   "homepage": "https://github.com/carlostojal/spoken-api#readme",
   "dependencies": {
     "apollo-server": "^2.15.1",
+    "apollo-server-express": "^2.19.2",
     "bcrypt": "^5.0.0",
     "check-password-strength": "^1.0.15",
     "cron": "^1.8.2",
