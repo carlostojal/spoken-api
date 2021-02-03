@@ -24,6 +24,7 @@
     "apollo-server-express": "^2.19.2",
     "bcrypt": "^5.0.0",
     "check-password-strength": "^1.0.15",
+    "cors": "^2.8.5",
     "cron": "^1.8.2",
     "dotenv": "^8.2.0",
     "expo-server-sdk": "^3.6.0",

@@ -1,5 +1,6 @@
 const express = require("express");
 const { ApolloServer } = require("apollo-server-express");
+const cors = require("cors");
 const os = require("os");
 require("dotenv").config({ path: ".env" });
 require("log-timestamp");
@@ -13,6 +14,13 @@ console.log("\n** Spoken API **\n\n");
 console.log(`Starting in ${process.env.NODE_ENV} environment.\n\n`);
 
 const app = express();
+
+const corsOptions = {
+  origin: process.env.ALLOW_ORIGIN,
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 
 app.get("/info", (req, res) => {
   return res.send(`Server name is <b>${os.hostname()}</b>.\nUp since <b>${new Date(Date.now() - (os.uptime() * 1000))}</b>.`);
@@ -42,11 +50,11 @@ const server = new ApolloServer({
     return { req, res, user, mysqlPool };
   }
 });
-server.applyMiddleware({ app });
+server.applyMiddleware({ app, cors: corsOptions });
 
-const port = process.env.GRAPHQL_PORT || 4000
+const port = process.env.GRAPHQL_PORT || 4000;
 
 app.listen({ port }, () => {
-  console.log(`GraphQL Playground running at http://localhost:${port}/${server.graphqlPath}\n`);
+  console.log(`GraphQL Playground running at http://localhost:${port}${server.graphqlPath}\n`);
 });
 
