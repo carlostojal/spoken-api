@@ -10,11 +10,11 @@ const pool = mysql.createPool({
 });
 
 pool.on("acquire", ({ threadId }) => {
-  console.log(`MySQL connection with ID ${threadId} acquired.`)
+  // console.log(`MySQL connection with ID ${threadId} acquired.`)
 });
 
 pool.on("release", ({ threadId }) => {
-  console.log(`MySQL connection with ID ${threadId} released.`);
+  // console.log(`MySQL connection with ID ${threadId} released.`);
 });
 
 console.log("MySQL Pool created.");

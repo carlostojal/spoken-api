@@ -15,8 +15,20 @@ console.log(`Starting in ${process.env.NODE_ENV} environment.\n\n`);
 
 const app = express();
 
+const corsAllowedList = [
+  undefined,
+  process.env.ALLOW_ORIGIN_1,
+  process.env.ALLOW_ORIGIN_2,
+  process.env.ALLOW_ORIGIN_3
+];
+
 const corsOptions = {
-  origin: process.env.ALLOW_ORIGIN,
+  origin: (origin, callback) => {
+    if(corsAllowedList.indexOf(origin) !== -1)
+      callback(null, true);
+    else
+      callback(new Error("NOT_ALLOWED_ORIGIN"));
+  },
   credentials: true
 };
 
