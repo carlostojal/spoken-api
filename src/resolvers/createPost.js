@@ -1,5 +1,6 @@
 const { AuthenticationError } = require("apollo-server");
 const insertPost = require("../helpers/controllers/posts/insertPost");
+const userIsMediaOwner = require("../helpers/controllers/media/userIsMediaOwner");
 const checkPostToxicity = require("../helpers/checkPostToxicity");
 
 const createPost = (text, media_id, user, mysqlPool) => {
@@ -22,6 +23,20 @@ const createPost = (text, media_id, user, mysqlPool) => {
       text,
       media_id
     };
+
+    if(media_id) {
+      let user_is_media_owner = false;
+      try {
+        user_is_media_owner = await userIsMediaOwner(media_id, user, mysqlPool);
+      } catch(e) {
+        console.error(e);
+        return reject(new Error("ERROR_CHECKING_MEDIA_OWNERSHIP"));
+      }
+
+      // this media was uploaded by another user
+      if(!user_is_media_owner)
+        return reject(new Error("USER_IS_NOT_MEDIA_OWNER"));
+    }
 
     // insert simple post
     try {
