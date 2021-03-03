@@ -60,10 +60,10 @@ const typeDefs = gql`
   }
 
   type Session {
-    createdAt: String,
-    expiresAt: String,
-    userLocation: String,
-    userPlatform: String
+    id: ID,
+    created_at: String,
+    expires_at: String,
+    user_platform: String
   }
 
   type Query {
@@ -96,6 +96,7 @@ const typeDefs = gql`
     commentPost(id: Int!, text: String!): Post
     sharePost(id: Int!): Post
     setExpoPushToken(token: String!): Boolean
+    deleteSessionById(session_id: Int!): String
   }
 `;
 

@@ -24,10 +24,7 @@ const corsAllowedList = [
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if(corsAllowedList.indexOf(origin) !== -1)
-      callback(null, true);
-    else
-      callback(new Error("NOT_ALLOWED_ORIGIN"));
+    callback(null, true);
   },
   credentials: true
 };

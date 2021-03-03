@@ -25,6 +25,7 @@ const reactPost = require("../resolvers/reactPost");
 const commentPost = require("../resolvers/commentPost");
 const sharePost = require("../resolvers/sharePost");
 const setExpoPushToken = require("../resolvers/setExpoPushToken");
+const deleteSessionById = require("../resolvers/deleteSessionById");
 
 const resolvers = {
   Query: {
@@ -171,6 +172,10 @@ const resolvers = {
 
     setExpoPushToken: (parent, args, context, info) => {
       return setExpoPushToken(args.token, context.user, context.mysqlPool);
+    },
+
+    deleteSessionById: (parent, args, context, info) => {
+      return deleteSessionById(args.session_id, context.user, context.mysqlPool);
     }
   }
 }
