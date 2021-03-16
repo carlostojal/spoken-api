@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4d2b984d-c285-4351-923a-0602a0491773}</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <ProjectView>ShowAllFiles</ProjectView>
+    <StartupFile>src\app.js</StartupFile>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">16.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <ItemGroup>
+    <Content Include="package-lock.json" />
+    <Content Include="package.json" />
+    <Content Include="README.md" />
+    <Content Include="ecosystem.config.js" />
+    <Content Include="src\app.js" />
+    <Content Include="tests\getToken.test.js" />
+    <Content Include="src\config\mysql.js" />
+    <Content Include="src\config\redis.js" />
+    <Content Include="src\graphql\resolvers.js" />
+    <Content Include="src\graphql\typeDefs.js" />
+    <Content Include="src\helpers\checkBirthdate.js" />
+    <Content Include="src\helpers\checkCommentToxicity.js" />
+    <Content Include="src\helpers\checkPostToxicity.js" />
+    <Content Include="src\helpers\checkTextToxicity.js" />
+    <Content Include="src\helpers\formatComment.js" />
+    <Content Include="src\helpers\formatPost.js" />
+    <Content Include="src\helpers\formatRelation.js" />
+    <Content Include="src\helpers\generateId.js" />
+    <Content Include="src\helpers\getCookieByName.js" />
+    <Content Include="src\helpers\getEmailTransport.js" />
+    <Content Include="src\helpers\jobs.js" />
+    <Content Include="src\helpers\sendNotification.js" />
+    <Content Include="src\resolvers\acceptFollowRequest.js" />
+    <Content Include="src\resolvers\commentPost.js" />
+    <Content Include="src\resolvers\confirmAccount.js" />
+    <Content Include="src\resolvers\createPost.js" />
+    <Content Include="src\resolvers\deletePost.js" />
+    <Content Include="src\resolvers\deleteSessionById.js" />
+    <Content Include="src\resolvers\editPost.js" />
+    <Content Include="src\resolvers\editUser.js" />
+    <Content Include="src\resolvers\followUser.js" />
+    <Content Include="src\resolvers\getFollowers.js" />
+    <Content Include="src\resolvers\getFollowing.js" />
+    <Content Include="src\resolvers\getFollowRequests.js" />
+    <Content Include="src\resolvers\getPostComments.js" />
+    <Content Include="src\resolvers\getPostReactions.js" />
+    <Content Include="src\resolvers\getSessions.js" />
+    <Content Include="src\resolvers\getToken.js" />
+    <Content Include="src\resolvers\getUserData.js" />
+    <Content Include="src\resolvers\getUserFeed.js" />
+    <Content Include="src\resolvers\getUserPosts.js" />
+    <Content Include="src\resolvers\logout.js" />
+    <Content Include="src\resolvers\reactPost.js" />
+    <Content Include="src\resolvers\refreshToken.js" />
+    <Content Include="src\resolvers\registerUser.js" />
+    <Content Include="src\resolvers\sendConfirmationEmail.js" />
+    <Content Include="src\resolvers\setExpoPushToken.js" />
+    <Content Include="src\resolvers\sharePost.js" />
+    <Content Include="src\resolvers\userSearch.js" />
+    <Content Include="src\helpers\cache\cache.js" />
+    <Content Include="src\helpers\cache\deleteFromCache.js" />
+    <Content Include="src\helpers\cache\getFromCache.js" />
+    <Content Include="src\helpers\cache\getListFromCache.js" />
+    <Content Include="src\helpers\cache\listCache.js" />
+    <Content Include="src\helpers\media\mediaIdToUrl.js" />
+    <Content Include="src\helpers\session\createToken.js" />
+    <Content Include="src\helpers\session\getUserByToken.js" />
+    <Content Include="src\helpers\controllers\media\userIsMediaOwner.js" />
+    <Content Include="src\helpers\controllers\posts\addPostToCachePage.js" />
+    <Content Include="src\helpers\controllers\posts\editPostById.js" />
+    <Content Include="src\helpers\controllers\posts\getCommentsByPostId.js" />
+    <Content Include="src\helpers\controllers\posts\getFeed.js" />
+    <Content Include="src\helpers\controllers\posts\getFeedFromCache.js" />
+    <Content Include="src\helpers\controllers\posts\getPostById.js" />
+    <Content Include="src\helpers\controllers\posts\getPostFromCache.js" />
+    <Content Include="src\helpers\controllers\posts\getUserPosts.js" />
+    <Content Include="src\helpers\controllers\posts\insertPost.js" />
+    <Content Include="src\helpers\controllers\posts\removeCommentById.js" />
+    <Content Include="src\helpers\controllers\posts\removePostById.js" />
+    <Content Include="src\helpers\controllers\posts\savePostToCache.js" />
+    <Content Include="src\helpers\controllers\reactions\getReactions.js" />
+    <Content Include="src\helpers\controllers\reactions\insertReaction.js" />
+    <Content Include="src\helpers\controllers\reactions\removeReaction.js" />
+    <Content Include="src\helpers\controllers\reactions\userReacted.js" />
+    <Content Include="src\helpers\controllers\relations\acceptRelation.js" />
+    <Content Include="src\helpers\controllers\relations\getFollowedRelations.js" />
+    <Content Include="src\helpers\controllers\relations\getFollowRelations.js" />
+    <Content Include="src\helpers\controllers\relations\insertRelation.js" />
+    <Content Include="src\helpers\controllers\relations\removeRelation.js" />
+    <Content Include="src\helpers\controllers\sessions\deleteSessionById.js" />
+    <Content Include="src\helpers\controllers\sessions\getSessionByToken.js" />
+    <Content Include="src\helpers\controllers\sessions\getSessions.js" />
+    <Content Include="src\helpers\controllers\sessions\saveSession.js" />
+    <Content Include="src\helpers\controllers\sessions\saveTokenToCache.js" />
+    <Content Include="src\helpers\controllers\sessions\updateSessionToken.js" />
+    <Content Include="src\helpers\controllers\users\getUserById.js" />
+    <Content Include="src\helpers\controllers\users\getUserByUsernameOrEmail.js" />
+    <Content Include="src\helpers\controllers\users\getUserFromCache.js" />
+    <Content Include="src\helpers\controllers\users\insertUser.js" />
+    <Content Include="src\helpers\controllers\users\saveUserToCache.js" />
+    <Content Include="src\helpers\controllers\users\searchUser.js" />
+    <Content Include="src\helpers\controllers\users\setPushToken.js" />
+    <Content Include="src\helpers\controllers\users\userFollowsUser.js" />
+    <Content Include="src\models\nsfw\model.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src" />
+    <Folder Include="src\config" />
+    <Folder Include="src\graphql" />
+    <Folder Include="src\helpers" />
+    <Folder Include="src\helpers\cache" />
+    <Folder Include="src\helpers\controllers" />
+    <Folder Include="src\helpers\controllers\media" />
+    <Folder Include="src\helpers\controllers\posts" />
+    <Folder Include="src\helpers\controllers\reactions" />
+    <Folder Include="src\helpers\controllers\relations" />
+    <Folder Include="src\helpers\controllers\sessions" />
+    <Folder Include="src\helpers\controllers\users" />
+    <Folder Include="src\helpers\media" />
+    <Folder Include="src\helpers\session" />
+    <Folder Include="src\models" />
+    <Folder Include="src\models\nsfw" />
+    <Folder Include="src\resolvers" />
+    <Folder Include="tests" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:48022/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost:1337</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

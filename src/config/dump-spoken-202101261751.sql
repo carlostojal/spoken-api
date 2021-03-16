@@ -27,10 +27,7 @@ CREATE TABLE `FollowRelations` (
   `follows` int NOT NULL,
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
   `accepted` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`user`,`follows`),
-  KEY `FollowRelations_FK_1` (`follows`),
-  CONSTRAINT `FollowRelations_FK` FOREIGN KEY (`user`) REFERENCES `Users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FollowRelations_FK_1` FOREIGN KEY (`follows`) REFERENCES `Users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY (`user`,`follows`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -50,9 +47,7 @@ CREATE TABLE `Media` (
   `is_nsfw` tinyint(1) NOT NULL DEFAULT '0',
   `nsfw_cause` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `review_status` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
-  PRIMARY KEY (`id`),
-  KEY `Media_FK` (`user_id`),
-  CONSTRAINT `Media_FK` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -68,11 +63,7 @@ CREATE TABLE `PostReactions` (
   `user_id` int NOT NULL,
   `post_id` int NOT NULL,
   `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `PostReactions_FK` (`user_id`),
-  KEY `PostReactions_FK_1` (`post_id`),
-  CONSTRAINT `PostReactions_FK` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `PostReactions_FK_1` FOREIGN KEY (`post_id`) REFERENCES `Posts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -94,13 +85,7 @@ CREATE TABLE `Posts` (
   `is_toxic` int NOT NULL DEFAULT '0',
   `toxic_cause` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `review_status` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `Posts_FK` (`user_id`),
-  KEY `Posts_FK_1` (`media_id`),
-  KEY `Posts_FK_2` (`original_post_id`),
-  CONSTRAINT `Posts_FK` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `Posts_FK_1` FOREIGN KEY (`media_id`) REFERENCES `Media` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT `Posts_FK_2` FOREIGN KEY (`original_post_id`) REFERENCES `Posts` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -118,9 +103,7 @@ CREATE TABLE `Sessions` (
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `expires_at` datetime NOT NULL,
   `user_platform` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `Sessions_FK` (`user_id`),
-  CONSTRAINT `Sessions_FK` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -145,11 +128,7 @@ CREATE TABLE `Users` (
   `profile_privacy_type` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'public',
   `profile_type` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'personal',
   `push_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `Users_UN` (`email`),
-  UNIQUE KEY `Username_UN` (`username`),
-  KEY `Users_FK` (`profile_pic_media_id`),
-  CONSTRAINT `Users_FK` FOREIGN KEY (`profile_pic_media_id`) REFERENCES `Media` (`id`) ON UPDATE CASCADE
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

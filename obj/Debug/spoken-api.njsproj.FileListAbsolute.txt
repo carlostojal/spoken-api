@@ -1,0 +1,3 @@
+C:\Users\Carlos Tojal\Documents\projetos\spoken-api\obj\Debug\spoken-api.njsprojAssemblyReference.cache
+C:\Users\Carlos Tojal\Documents\projetos\spoken-api\obj\Debug\spoken-api.njsproj.CoreCompileInputs.cache
+C:\Users\Carlos Tojal\Documents\projetos\spoken-api\bin\Microsoft.NodejsTools.WebRole.dll
