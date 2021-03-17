@@ -90,6 +90,7 @@ const typeDefs = gql`
     createPost(text: String!, media_id: Int): Post
     followUser(id: String!): User
     acceptFollowRequest(user_id: Int!): User
+    ignoreFollowRequest(user_id: Int!): User
     deletePost(id: Int!): Post
     editPost(id: Int!, text: String!): Post
     reactPost(id: Int!): Post

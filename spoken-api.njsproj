@@ -21,6 +21,12 @@
     <Content Include="README.md" />
     <Content Include="ecosystem.config.js" />
     <Content Include="src\app.js" />
+    <Content Include="src\helpers\controllers\relations\ignoreRelation.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\resolvers\ignoreFollowRequest.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="tests\getToken.test.js" />
     <Content Include="src\config\mysql.js" />
     <Content Include="src\config\redis.js" />

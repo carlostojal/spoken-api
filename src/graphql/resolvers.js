@@ -19,6 +19,7 @@ const editUser = require("../resolvers/editUser");
 const createPost = require("../resolvers/createPost");
 const followUser = require("../resolvers/followUser");
 const acceptFollowRequest = require("../resolvers/acceptFollowRequest");
+const ignoreFollowRequest = require("../resolvers/ignoreFollowRequest");
 const deletePost = require("../resolvers/deletePost");
 const editPost = require("../resolvers/editPost");
 const reactPost = require("../resolvers/reactPost");
@@ -143,6 +144,10 @@ const resolvers = {
     // accepts follow request from user ID
     acceptFollowRequest: (parent, args, context, info) => {
       return acceptFollowRequest(args.user_id, context.user, context.mysqlPool);
+    },
+
+    ignoreFollowRequest: (parent, args, context, info) => {
+      return ignoreFollowRequest(args.user_id, context.user, context.mysqlPool);
     },
 
     // deletes post from post ID
