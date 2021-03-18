@@ -1,5 +1,5 @@
 
-const getFollowRelations = (user_id, accepted, mysqlPool) => {
+const getFollowRelations = (user_id, accepted, ignored, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
 
     mysqlPool.getConnection((err, connection) => {
@@ -13,7 +13,7 @@ const getFollowRelations = (user_id, accepted, mysqlPool) => {
       FROM FollowRelations
       INNER JOIN Users User ON FollowRelations.user = User.id 
       INNER JOIN Users Follows ON FollowRelations.follows = Follows.id
-      WHERE FollowRelations.user = ? AND FollowRelations.accepted = ?`, [user_id, accepted ? 1 : 0], (err, result) => {
+      WHERE FollowRelations.user = ? AND FollowRelations.accepted = ? AND FollowRelations.ignored = ?`, [user_id, accepted ? 1 : 0, ignored ? 1 : 0], (err, result) => {
 
         connection.release();
   

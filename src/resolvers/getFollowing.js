@@ -10,7 +10,7 @@ const getFollowing = (user, mysqlPool) => {
 
     let result = null;
     try {
-      result = await getFollowRelations(user.id, true, mysqlPool);
+      result = await getFollowRelations(user.id, true, false, mysqlPool);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_RELATIONS"));
