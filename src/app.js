@@ -8,6 +8,7 @@ require("./helpers/jobs")(); // cron jobs
 const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers");
 const getUserByToken = require("./helpers/session/getUserByToken");
+const capturePromoteOrder = require("./helpers/paypal/capturePromoteOrder");
 const mysqlPool = require("./config/mysql");
 
 console.log("\n** Spoken API **\n\n");
@@ -26,6 +27,17 @@ app.use(cors(corsOptions));
 
 app.get("/info", (req, res) => {
   return res.send(`Server name is <b>${os.hostname()}</b>.\nUp since <b>${new Date(Date.now() - (os.uptime() * 1000))}</b>.`);
+});
+
+app.get("/capture_order", async (req, res) => {
+  try {
+    await capturePromoteOrder(req.query.token, mysqlPool);
+  } catch(e) {
+    console.error(e);
+    return res.send("Error capturing order.");
+  }
+  
+  return res.send("Order concluded.");
 });
 
 // apollo server startup

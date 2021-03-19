@@ -8,7 +8,7 @@ const getPostById = (id, mysqlPool) => {
       if(err)
         return reject(err);
 
-      connection.query(`SELECT Posts.id, Posts.time, Posts.text, Posts.edited,
+      connection.query(`SELECT Posts.id, Posts.time, Posts.text, Posts.edited, Posts.promoted,
       Users.id poster_id, Users.name AS poster_name, Users.surname AS poster_surname, Users.username AS poster_username,
       Media.id AS media_id, Media.is_nsfw AS media_is_nsfw, Media.nsfw_cause AS media_nsfw_cause
       FROM Posts 
