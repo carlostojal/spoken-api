@@ -37,7 +37,7 @@ app.get("/capture_order", async (req, res) => {
     return res.send("Error capturing order.");
   }
   
-  return res.send("Order concluded.");
+  return res.send("Order concluded. You can now return to the app.");
 });
 
 // apollo server startup
