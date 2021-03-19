@@ -17,8 +17,6 @@ const editPostById = (id, text, mysqlPool) => {
         return resolve(null);
       });
     });
-
-    
   });
 };
 

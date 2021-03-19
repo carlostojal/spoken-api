@@ -8,7 +8,7 @@ const getPostById = (id, mysqlPool) => {
       if(err)
         return reject(err);
 
-      connection.query(`SELECT Posts.id, Posts.time, Posts.text, Posts.edited, (SELECT COUNT(*) FROM PostReactions WHERE post_id = Posts.id AND user_id = ?) AS user_reacted,
+      connection.query(`SELECT Posts.id, Posts.time, Posts.text, Posts.edited,
       Users.id poster_id, Users.name AS poster_name, Users.surname AS poster_surname, Users.username AS poster_username,
       Media.id AS media_id, Media.is_nsfw AS media_is_nsfw, Media.nsfw_cause AS media_nsfw_cause
       FROM Posts 

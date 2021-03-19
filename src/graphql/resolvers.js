@@ -22,6 +22,7 @@ const acceptFollowRequest = require("../resolvers/acceptFollowRequest");
 const ignoreFollowRequest = require("../resolvers/ignoreFollowRequest");
 const deletePost = require("../resolvers/deletePost");
 const editPost = require("../resolvers/editPost");
+const promotePost = require("../resolvers/promotePost");
 const reactPost = require("../resolvers/reactPost");
 const commentPost = require("../resolvers/commentPost");
 const sharePost = require("../resolvers/sharePost");
@@ -158,6 +159,10 @@ const resolvers = {
     // edits post from post ID. updates text
     editPost: (parent, args, context, info) => {
       return editPost(args.id, args.text, context.user, context.mysqlPool);
+    },
+
+    promotePost: (parent, args, context, info) => {
+      return promotePost(args.id, context.user, context.mysqlPool);
     },
 
     // react to post

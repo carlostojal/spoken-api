@@ -66,6 +66,18 @@ const typeDefs = gql`
     user_platform: String
   }
 
+  type PayPalOrder {
+    id: ID,
+    links: [PayPalOrderLink]
+    status: String
+  }
+
+  type PayPalOrderLink {
+    href: String,
+    method: String,
+    rel: String
+  }
+
   type Query {
     getToken(username: String!, password: String!, userPlatform: String, pushToken: String): String
     sendConfirmationEmail(username: String!, password: String!): String
@@ -93,6 +105,7 @@ const typeDefs = gql`
     ignoreFollowRequest(user_id: Int!): User
     deletePost(id: Int!): Post
     editPost(id: Int!, text: String!): Post
+    promotePost(id: Int!): PayPalOrder
     reactPost(id: Int!): Post
     commentPost(id: Int!, text: String!): Post
     sharePost(id: Int!): Post
