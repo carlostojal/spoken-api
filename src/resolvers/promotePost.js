@@ -8,6 +8,7 @@ const promotePost = (id, user, mysqlPool) => {
     if(!user)
       return reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
+    // check if post exists
     let post = null;
     try {
       post = await getPostById(id, mysqlPool);
@@ -19,12 +20,15 @@ const promotePost = (id, user, mysqlPool) => {
     if(!post)
       return reject(new Error("POST_NOT_FOUND"));
 
+    // if the post is already promoted don't allow
     if(post.promoted)
       return reject(new Error("POST_ALREADY_PROMOTED"));
 
+    // check if the current user is the post owner
     if(post.poster_id != user.id)
       return reject(new Error("BAD_PERMISSIONS"));
 
+    // create the PayPal order
     let order;
     try {
       order = await createPromoteOrder(id);
@@ -33,9 +37,13 @@ const promotePost = (id, user, mysqlPool) => {
       return reject(new Error("ERROR_CREATING_ORDER"));
     }
 
-    // console.log(order);
+    // only keep the approve link to return
+    order.links =  order.links.filter((link) => {
+      return link.rel === "approve";
+    });
 
-    return resolve(order);
+    // return the link to the client
+    return resolve(order.links[0].href);
   });
 };
 

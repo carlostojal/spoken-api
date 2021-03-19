@@ -105,7 +105,7 @@ const typeDefs = gql`
     ignoreFollowRequest(user_id: Int!): User
     deletePost(id: Int!): Post
     editPost(id: Int!, text: String!): Post
-    promotePost(id: Int!): PayPalOrder
+    promotePost(id: Int!): String
     reactPost(id: Int!): Post
     commentPost(id: Int!, text: String!): Post
     sharePost(id: Int!): Post
