@@ -8,6 +8,9 @@ const promotePost = (id, user, mysqlPool) => {
     if(!user)
       return reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
+    if(user.profile_type != "business")
+      return reject(new Error("NOT_BUSINESS_ACCOUNT"));
+
     // check if post exists
     let post = null;
     try {
