@@ -11,11 +11,28 @@ const createPromoteOrder = (post_id) => {
       "purchase_units": [
         {
           "reference_id": post_id,
+          "description": `Spoken Post Promotion`,
           "amount": {
             "currency_code": process.env.POST_PROMOTION_CURRENCY,
-            "value": process.env.POST_PROMOTION_COST
+            "value": process.env.POST_PROMOTION_BASE_COST,
+            "breakdown": {
+              "item_total": {
+                "currency_code": process.env.POST_PROMOTION_CURRENCY,
+                "value": process.env.POST_PROMOTION_BASE_COST
+              }
+            }
           },
-          "description": `Spoken post promotion. Post ID: ${post_id}`
+          "items": [
+            {
+              "name": "Base promotion",
+              "description": "Post promotion base price.",
+              "unit_amount": {
+                "currency_code": process.env.POST_PROMOTION_CURRENCY,
+                "value": process.env.POST_PROMOTION_BASE_COST
+              },
+              "quantity": "1"
+            }
+          ]
         }
       ],
       "application_context": {
