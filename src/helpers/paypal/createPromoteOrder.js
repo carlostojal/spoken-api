@@ -1,6 +1,6 @@
 const paypal = require("@paypal/checkout-server-sdk");
 
-const createPromoteOrder = (post_id) => {
+const createPromoteOrder = (post) => {
   return new Promise(async (resolve, reject) => {
     const environment = new paypal.core.SandboxEnvironment(process.env.PAYPAL_CLIENT_ID, process.env.PAYPAL_CLIENT_SECRET);
     const client = new paypal.core.PayPalHttpClient(environment);
@@ -10,7 +10,7 @@ const createPromoteOrder = (post_id) => {
       "intent": "AUTHORIZE",
       "purchase_units": [
         {
-          "reference_id": post_id,
+          "reference_id": post.id,
           "description": `Spoken Post Promotion`,
           "amount": {
             "currency_code": process.env.POST_PROMOTION_CURRENCY,
@@ -25,7 +25,7 @@ const createPromoteOrder = (post_id) => {
           "items": [
             {
               "name": "Base promotion",
-              "description": `Promotion on post with ID ${post_id}.`,
+              "description": `Promotion on post with text \"${post.text.substring(0, 10)}${post.text.length > 10 ? "..." : ""}\".`,
               "unit_amount": {
                 "currency_code": process.env.POST_PROMOTION_CURRENCY,
                 "value": process.env.POST_PROMOTION_BASE_COST

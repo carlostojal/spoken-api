@@ -34,7 +34,7 @@ const promotePost = (id, user, mysqlPool) => {
     // create the PayPal order
     let order;
     try {
-      order = await createPromoteOrder(id);
+      order = await createPromoteOrder(post);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_CREATING_ORDER"));
