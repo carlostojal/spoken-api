@@ -11,6 +11,7 @@ const getFollowers = require("../resolvers/getFollowers");
 const getFollowing = require("../resolvers/getFollowing");
 const getPostReactions = require("../resolvers/getPostReactions");
 const getPostComments = require("../resolvers/getPostComments");
+const getPostTags = require("../resolvers/getPostTags");
 const userSearch = require("../resolvers/userSearch");
 const getSessions = require("../resolvers/getSessions");
 const registerUser = require("../resolvers/registerUser");
@@ -105,6 +106,10 @@ const resolvers = {
 
     getPostComments: (parent, args, context, info) => {
       return getPostComments(args.page, args.perPage, args.id, context.user, context.mysqlPool);
+    },
+
+    getPostTags: (parent, args, context, info) => {
+      return getPostTags(args.id, context.user, context.mysqlPool);
     },
 
     userSearch: (parent, args, context, info) => {

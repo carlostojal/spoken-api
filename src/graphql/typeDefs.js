@@ -34,15 +34,14 @@ const typeDefs = gql`
     media: Media
     edited: Boolean,
     original_post: Post,
-    user_reacted: Boolean
+    user_reacted: Boolean,
+    promoted: Boolean,
+    tags: [PostTags]
   }
 
-  type Comment {
+  type PostTags {
     id: ID,
-    time: String,
-    user: User,
-    text: String,
-    edited: Boolean
+    name: String
   }
 
   type Media {
@@ -66,18 +65,6 @@ const typeDefs = gql`
     user_platform: String
   }
 
-  type PayPalOrder {
-    id: ID,
-    links: [PayPalOrderLink]
-    status: String
-  }
-
-  type PayPalOrderLink {
-    href: String,
-    method: String,
-    rel: String
-  }
-
   type Query {
     getToken(username: String!, password: String!, userPlatform: String, pushToken: String): String
     sendConfirmationEmail(username: String!, password: String!): String
@@ -91,6 +78,7 @@ const typeDefs = gql`
     getFollowing: [FollowRelation]
     getPostReactions(page: Int!, perPage: Int!, id: Int!): [User]
     getPostComments(page: Int!, perPage: Int!, id: Int!): [Post]
+    getPostTags(id: Int!): [PostTags]
     userSearch(query: String!): [User]
     getSessions: [Session]
   }
@@ -108,6 +96,8 @@ const typeDefs = gql`
     promotePost(id: Int!): String
     reactPost(id: Int!): Post
     commentPost(id: Int!, text: String!): Post
+    addPostTag(tag_id: Int!, post_id: Int!): PostTags
+    deletePostTag(tag_id: Int!, post_id: Int!): PostTags
     sharePost(id: Int!): Post
     setExpoPushToken(token: String!): Boolean
     deleteSessionById(session_id: Int!): String

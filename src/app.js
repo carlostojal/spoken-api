@@ -33,8 +33,14 @@ app.get("/capture_order", async (req, res) => {
   try {
     await capturePromoteOrder(req.query.token, mysqlPool);
   } catch(e) {
-    console.error(e);
-    return res.send("Error capturing order.");
+    let out;
+    if(e.message == "ERROR_PROMOTING_POST")
+      out += "There was an internal error. You were refunded.";
+    else if(e.message == "ERROR_REFUNDING")
+      out += "There was an error refunding your order.";
+    else
+      out += "There was an error processing your order.";
+    return res.send(out);
   }
   
   return res.send("Order concluded. You can now return to the app.");

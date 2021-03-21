@@ -7,7 +7,7 @@ const createPromoteOrder = (post_id) => {
 
     let request = new paypal.orders.OrdersCreateRequest();
     request.requestBody({
-      "intent": "CAPTURE",
+      "intent": "AUTHORIZE",
       "purchase_units": [
         {
           "reference_id": post_id,
@@ -25,7 +25,7 @@ const createPromoteOrder = (post_id) => {
           "items": [
             {
               "name": "Base promotion",
-              "description": "Post promotion base price.",
+              "description": `Promotion on post with ID ${post_id}.`,
               "unit_amount": {
                 "currency_code": process.env.POST_PROMOTION_CURRENCY,
                 "value": process.env.POST_PROMOTION_BASE_COST
@@ -36,7 +36,7 @@ const createPromoteOrder = (post_id) => {
         }
       ],
       "application_context": {
-        "user_action": "PAY_NOW",
+        "user_action": "CONTINUE",
         "return_url": `${process.env.EXPRESS_ADDRESS}:${process.env.EXPRESS_PORT}/${process.env.POST_PROMOTION_RETURN_URL}`
       }
     });
