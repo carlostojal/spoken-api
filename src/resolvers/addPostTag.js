@@ -20,6 +20,9 @@ const addPostTag = (post_id, tag_id, user, mysqlPool) => {
     if(!post)
       return reject(new Error("POST_NOT_FOUND"));
 
+    if(post.promoted)
+      return reject(new Error("POST_IS_PROMOTED"));
+
     let tag = null;
     try {
       tag = await getTagById(tag_id, mysqlPool);
