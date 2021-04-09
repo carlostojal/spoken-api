@@ -1,5 +1,6 @@
 const express = require("express");
 const { ApolloServer } = require("apollo-server-express");
+const { RedisCache } = require("apollo-server-cache-redis");
 const cors = require("cors");
 const os = require("os");
 require("dotenv").config({ path: ".env" });
@@ -51,6 +52,9 @@ const server = new ApolloServer({
   typeDefs: typeDefs,
   resolvers: resolvers,
   tracing: true,
+  persistedQueries: {
+    cache: new RedisCache()
+  },
   context: async ({ req, res }) => {
 
     // get access token from headers
