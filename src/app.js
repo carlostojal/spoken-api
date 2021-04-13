@@ -82,3 +82,6 @@ app.listen({ port }, () => {
   console.log(`GraphQL Playground running at http://localhost:${port}${server.graphqlPath}\n`);
 });
 
+process.on("exit", () => {
+  console.log("Shutting down server...");
+});

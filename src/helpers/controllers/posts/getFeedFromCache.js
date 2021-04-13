@@ -9,12 +9,12 @@ const getFeedFromCache = (page, user_id) => {
       return reject(e);
     }
 
-    redisClient.LRANGE(`feed:${user_id}:${page}`, 0, -1, (err, result) => {
+    redisClient.get(`feed:${user_id}:${page}`, (err, result) => {
 
       if(err)
         return reject(err);
 
-      return resolve(result);
+      return resolve(result ? JSON.parse(result) : null);
     });
   });
 };

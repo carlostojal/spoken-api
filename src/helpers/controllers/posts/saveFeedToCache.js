@@ -1,5 +1,5 @@
 
-const addPostToCachePage = (post_id, user_id, page) => {
+const saveFeedToCache = (page, user_id, feed) => {
   return new Promise(async (resolve, reject) => {
 
     let redisClient;
@@ -9,14 +9,14 @@ const addPostToCachePage = (post_id, user_id, page) => {
       return reject(e);
     }
 
-    redisClient.rpush(`feed:${user_id}:${page}`, post_id, (err, res) => {
-
+    redisClient.set(`feed:${user_id}:${page}`, JSON.stringify(feed), "EX", process.env.USER_FEED_CACHE_DURATION, (err, result) => {
+      
       if(err)
         return reject(err);
 
       return resolve(null);
-    })
+    });
   });
 };
 
-module.exports = addPostToCachePage;
+module.exports = saveFeedToCache;

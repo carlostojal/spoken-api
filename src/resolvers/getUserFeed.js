@@ -1,8 +1,8 @@
 const { AuthenticationError } = require("apollo-server");
 const getFeed = require("../helpers/controllers/posts/getFeed");
 const getFeedFromCache = require("../helpers/controllers/posts/getFeedFromCache");
-const getPostById = require("../helpers/controllers/posts/getPostById");
-const getPostFromCache = require("../helpers/controllers/posts/getPostFromCache");
+const saveFeedToCache = require("../helpers/controllers/posts/saveFeedToCache");
+const savePostToCache = require("../helpers/controllers/posts/savePostToCache");
 const formatPost = require("../helpers/formatPost");
 
 const getUserFeed = (page, perPage, user, mysqlPool) => {
@@ -14,27 +14,22 @@ const getUserFeed = (page, perPage, user, mysqlPool) => {
     let posts;
     try {
       posts = await getFeedFromCache(page, user.id);
-      if(posts && posts.length > 0) {
-        for(let i = 0; i < posts.length; i++) {
-          let post_id = posts[i];
-          posts[i] = await getPostFromCache(post_id);
-          if(!posts[i])
-            posts[i] = await getPostById(post_id, mysqlPool);
-        }
-      } else {
+      if(!posts) {
         posts = await getFeed(page, perPage, user.id, mysqlPool);
+        try {
+          for(let i = 0; i < posts.length; i++) {
+            posts[i] = formatPost(posts[i]);
+            savePostToCache(posts[i]);
+          }
+        } catch(e) {
+          console.error(e);
+          return reject(new Error("ERROR_FORMATTING_POSTS"));
+        }
+        saveFeedToCache(page, user.id, posts);
       }
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_FEED"));
-    }
-
-    try {
-      for(let i = 0; i < posts.length; i++)
-        posts[i] = formatPost(posts[i]);
-    } catch(e) {
-      console.error(e);
-      return reject(new Error("ERROR_FORMATTING_POSTS"));
     }
 
     return resolve(posts);
