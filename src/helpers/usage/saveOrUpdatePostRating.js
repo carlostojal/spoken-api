@@ -1,14 +1,6 @@
 
-const saveOrUpdatePostRating = (post, user_id, relevance) => {
+const saveOrUpdatePostRating = (obj) => {
   return new Promise(async (resolve, reject) => {
-
-    // create the new rating object
-    const obj = {
-      user_id,
-      ...post,
-      rating: relevance,
-      tags: null
-    };
 
     let redisClient;
     try {
@@ -31,9 +23,9 @@ const saveOrUpdatePostRating = (post, user_id, relevance) => {
         // try to find the current rating event exists
         let found = false;
         result.map((rating) => {
-          if(rating.user_id == user_id && rating.post.id == post.id) {
+          if(rating.user_id == obj.user_id && rating.post.id == obj.post.id) {
             found = true;
-            rating.rating = relevance;
+            rating.relevance = obj.relevance;
           }
         });
 
@@ -50,7 +42,7 @@ const saveOrUpdatePostRating = (post, user_id, relevance) => {
       }
 
       // save the ratings array to redis
-      redisClient.set("post_ratings", JSON.stringify(result), "EX", process.env.POST_ATTENTION_CACHE_DURATION, (err, result) => {
+      redisClient.set("post_ratings", JSON.stringify(result), "EX", process.env.POST_RATINGS_CACHE_DURATION, (err, result) => {
 
         if(err)
           return reject(err);
