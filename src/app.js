@@ -57,7 +57,7 @@ app.post("/post_ratings", async (req, res) => {
   let out = JSON.stringify("NOT_ALLOWED");
   // check if the machine accessing is the recommender machine
   // this will return sensitive information, so it is important that only the recommender system can access
-  if(req.connection.remoteAddress == `::ffff:${process.env.RECOMMENDER_ADDRESS}`)
+  if(req.connection.remoteAddress == process.env.RECOMMENDER_ADDRESS)
     out = await getPostRatings();
 
   return res.send(out);
