@@ -30,6 +30,7 @@ const sharePost = require("../resolvers/sharePost");
 const setExpoPushToken = require("../resolvers/setExpoPushToken");
 const deleteSessionById = require("../resolvers/deleteSessionById");
 const capturePostAttention = require("../resolvers/capturePostAttention");
+const captureUsageData = require("../resolvers/captureUsageData");
 
 const resolvers = {
   Query: {
@@ -188,6 +189,10 @@ const resolvers = {
 
     capturePostAttention: (parent, args, context, info) => {
       return capturePostAttention(args.id, args.view_time, args.reacted, args.shared, context.user, context.mysqlPool);
+    },
+
+    captureUsageData: (parent, args, context, info) => {
+      return captureUsageData(args.post_id, args.user_lat, args.user_long, args.user_os, args.view_time, context.user, context.mysqlPool);
     },
 
     setExpoPushToken: (parent, args, context, info) => {

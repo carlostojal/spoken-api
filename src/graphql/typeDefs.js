@@ -100,6 +100,7 @@ const typeDefs = gql`
     deletePostTag(tag_id: Int!, post_id: Int!): PostTags
     sharePost(id: Int!): Post
     capturePostAttention(id: Int!, view_time: Float!, reacted: Boolean!, shared: Boolean!): Boolean
+    captureUsageData(post_id: Int!, user_lat: Float, user_long: Float, user_os: String!, view_time: Float!)
     setExpoPushToken(token: String!): Boolean
     deleteSessionById(session_id: Int!): String
   }
