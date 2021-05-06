@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const mediaSchema = new Schema({
-  user_id: {type: Schema.Types.ObjectId, ref: "User"},
+  user: {type: Schema.Types.ObjectId, ref: "User"},
   path: String,
   time: {type: Schema.Types.Date, default: Date.now},
   keywords: String,

@@ -10,6 +10,8 @@ const userSchema = new Schema({
   confirmation_code: Number,
   username: {type: Schema.Types.String, unique: true, required: true},
   password: String,
+  followers: [userSchema],
+  follows: [userSchema],
   profile_pic: {type: Schema.Types.ObjectId, ref: "Media"},
   profile_privacy_type: String,
   profile_type: String,

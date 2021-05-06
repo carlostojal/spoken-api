@@ -1,22 +1,27 @@
+const Post = require("../../../db_models/Post");
+const FollowRelation = require("../../../db_models/FollowRelation");
 
-const getFeed = (page, perPage, user_id, mysqlPool) => {
+const getFeed = (page, perPage, user_id) => {
   return new Promise(async (resolve, reject) => {
 
-    mysqlPool.getConnection((err, connection) => {
+    const relations = FollowRelation.find({user: user_id});
+    let following_ids = [];
+    relations.map((relation) => {
+      following_ids.push(relation.follows);
+    });
+    
 
-      if(err)
-        return reject(err);
+    const posts = Post.find({poster: {$in: following_ids}}).populate("poster").exec((err, res) => {
 
-      connection.query(`CALL GetFeed(?, ?, ?)`, [user_id, perPage, (page - 1) * perPage], async (err, result) => {
+      if(err) return reject(err);
 
-        connection.release();
-  
-        if(err)
-          return reject(err);
-  
-        result = JSON.parse(JSON.stringify(result))[0];
-  
-        return resolve(result);
+      let posts = [];
+      res.map((post) => {
+
+        relations.map((relation) => {
+          if(relation.follows == post.poster._id)
+            posts.push(post);
+        });
       });
     });
   });
