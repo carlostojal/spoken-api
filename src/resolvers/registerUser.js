@@ -48,7 +48,7 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
           return reject(new Error("ERROR_HASHING_PASSWORD"));
         }
 
-        const user = {
+        const user = new User({
           name,
           surname,
           birthdate: new Date(parseInt(birthdate)),
@@ -59,12 +59,10 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
           password: hash_password,
           profile_type,
           profile_privacy_type: profile_privacy_type == "business" ? "public" : profile_privacy_type // business profiles are always public
-        };
-
-        const u = new User(user);
+        });
 
         try {
-          await u.save();
+          await user.save();
         } catch(e) {
           console.error(e);
           // duplicate keys
