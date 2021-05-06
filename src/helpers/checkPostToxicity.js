@@ -1,7 +1,7 @@
 const checkTextToxicity = require("./checkTextToxicity");
-const removePostById = require("./controllers/posts/removePostById");
+const Post = require("../db_models/Post");
 
-const checkPostToxicity = (post, mysqlPool) => {
+const checkPostToxicity = (post) => {
   return new Promise(async (resolve, reject) => {
 
     let toxicity_result = null;
@@ -14,7 +14,7 @@ const checkPostToxicity = (post, mysqlPool) => {
 
     if(toxicity_result.is_toxic) {
       try {
-        await removePostById(post.id, mysqlPool);
+        await Post.findByIdAndRemove(post.id);
       } catch(e) {
         return reject(new Error("ERROR_REMOVING_POST"));
       }
