@@ -11,6 +11,7 @@ const resolvers = require("./graphql/resolvers");
 const getUserByToken = require("./helpers/session/getUserByToken");
 const capturePromoteOrder = require("./helpers/paypal/capturePromoteOrder");
 const mysqlPool = require("./config/mysql");
+require("./config/mongoose");
 const getPostRatings = require("./helpers/usage/getPostRatings");
 
 console.log("\n** Spoken API **\n\n");

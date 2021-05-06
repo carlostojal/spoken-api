@@ -3,6 +3,7 @@ const insertUser = require("../helpers/controllers/users/insertUser");
 const checkBirthdate = require("../helpers/checkBirthdate");
 const sendConfirmationEmail = require("./sendConfirmationEmail");
 const checkPasswordStrength = require("check-password-strength");
+const User = require("../db_models/User");
 
 const registerUser = (name, surname, birthdate, email, username, password, profile_type, profile_privacy_type, mysqlPool) => {
   return new Promise((resolve, reject) => {
@@ -54,27 +55,35 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
           birthdate: new Date(parseInt(birthdate)),
           email,
           confirmation_code: Math.floor((Math.random() * 8999) + 1000),
+          email_confirmed: process.env.ENABLE_EMAIL_CONFIRMATION == "true" ? false : true,
           username: username.toLowerCase(),
           password: hash_password,
           profile_type,
           profile_privacy_type: profile_privacy_type == "business" ? "public" : profile_privacy_type // business profiles are always public
         };
 
+        const u = new User(user);
+
         try {
-          await insertUser(user, mysqlPool);
-          success = true;
+          await u.save();
         } catch(e) {
-          if(e.errno == 1062) { // duplicate key
-            return reject(new Error("DUPLICATE_USERNAME_OR_EMAIL"));
-          }
           console.error(e);
+          // duplicate keys
+          if(e.code == 11000) {
+            if(e.keyPattern.email) 
+              return reject(new Error("DUPLICATE_EMAIL"));
+            else if(e.keyPattern.username)
+              return reject(new Error("DUPLICATE_USERNAME"));
+          }
           return reject(new Error("ERROR_REGISTERING_USER"));
         }
 
-        try {
-          sendConfirmationEmail(user.username, password, mysqlPool);
-        } catch(e) {
-          console.error(e);
+        if(process.env.ENABLE_EMAIL_CONFIRMATION == "true") {
+          try {
+            sendConfirmationEmail(user.username, password, mysqlPool);
+          } catch(e) {
+            console.error(e);
+          }
         }
         
         return resolve(user);
