@@ -1,5 +1,5 @@
 
-const captureUsageData = (user_id, post_id, user_lat, user_long, user_os, view_time, mysqlPool) => {
+const capturePostView = (user_id, post_id, user_lat, user_long, user_os, view_time, mysqlPool) => {
   return new Promise((resolve, reject) => {
 
     mysqlPool.getConnection((err, connection) => {
@@ -7,17 +7,16 @@ const captureUsageData = (user_id, post_id, user_lat, user_long, user_os, view_t
       if(err)
         return reject(err);
 
-      connection.query("INSERT INTO UsageData (user_id, post_id, user_lat, user_long, user_os, view_time) VALUES" + 
+      connection.query("INSERT INTO PostViews (user_id, post_id, user_lat, user_long, user_os, view_time) VALUES" + 
         "(?, ?, ?, ?, ?, ?)", [user_id, post_id, user_lat, user_long, user_os, view_time], (err, result) => {
 
           if(err)
             return reject(err);
 
-
           return resolve(null);
-        })
+        });
     });
   });
 };
 
-module.exports = captureUsageData;
+module.exports = capturePostView;
