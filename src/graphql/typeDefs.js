@@ -17,7 +17,6 @@ const typeDefs = gql`
     name: String,
     surname: String,
     birthdate: String,
-    email: String,
     username: String,
     profile_pic: Media,
     profile_type: String,

@@ -1,8 +1,6 @@
 const jwt = require("jsonwebtoken");
 const createToken = require("../helpers/session/createToken");
-const deleteFromCache = require("../helpers/cache/deleteFromCache");
-const getSessionByToken = require("../helpers/controllers/sessions/getSessionByToken");
-const updateSessionToken = require("../helpers/controllers/sessions/updateSessionToken");
+const Session = require("../db_models/Session");
 
 const refreshToken = (refresh_token, mysqlPool) => {
   return new Promise(async (resolve, reject) => {
@@ -23,7 +21,7 @@ const refreshToken = (refresh_token, mysqlPool) => {
     // get session data from token
     let session = null;
     try {
-      session = await getSessionByToken(refresh_token, mysqlPool);
+      session = await Session.findOne({refresh_token});
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_SESSION"));
@@ -32,19 +30,13 @@ const refreshToken = (refresh_token, mysqlPool) => {
     if(!session)
       return reject(new Error("INVALID_TOKEN"));
 
-    // delete old session
-    try {
-      await deleteFromCache(`session:${user.id}:${refresh_token}`, null);
-    } catch(e) {
-      console.error(e);
-      return reject(new Error("ERROR_DELETING_OLD_SESSION"));
-    }
-
     const new_refresh_token = createToken(user, "refresh");
     const new_access_token = createToken(user, "access");
 
     try {
-      await updateSessionToken(refresh_token, new_refresh_token, mysqlPool);
+      session.refresh_token = new_refresh_token.value;
+      session.expires_at = new_refresh_token.expires_at;
+      await session.save();
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_UPDATING_SESSION"));
