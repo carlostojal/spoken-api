@@ -61,7 +61,12 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, pu
       const refresh_token = createToken(user, "refresh");
       const access_token = createToken(user, "access");
 
-      const session = Session({user_id: user.id, token: refresh_token.value, expires_at: new Date(refresh_token.expires_at), user_platform: platformData});
+      const session = Session({
+        user: user._id,
+        token: refresh_token.value,
+        expires_at: new Date(refresh_token.expires_at),
+        user_platform: platformData
+      });
 
       try {
         await session.save();

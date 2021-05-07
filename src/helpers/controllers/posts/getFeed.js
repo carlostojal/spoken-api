@@ -1,7 +1,7 @@
 const Post = require("../../../db_models/Post");
 const User = require("../../../db_models/User");
 
-const getFeed = (page, perPage, user_id) => {
+const getFeed = (user_id) => {
   return new Promise(async (resolve, reject) => {
 
     const cur_user = await User.findById(user_id);

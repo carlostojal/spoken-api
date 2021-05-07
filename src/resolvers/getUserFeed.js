@@ -12,9 +12,9 @@ const getUserFeed = (user) => {
 
     let posts;
     try {
-      posts = await getFeedFromCache(page, user.id);
+      posts = await getFeedFromCache(user.id);
       if(!posts) {
-        posts = await getFeed(page, perPage, user.id);
+        posts = await getFeed(user.id);
         try {
           for(let i = 0; i < posts.length; i++)
             savePostToCache(posts[i]);
@@ -22,7 +22,7 @@ const getUserFeed = (user) => {
           console.error(e);
           return reject(new Error("ERROR_FORMATTING_POSTS"));
         }
-        saveFeedToCache(page, user.id, posts);
+        saveFeedToCache(user.id, posts);
       }
     } catch(e) {
       console.error(e);
