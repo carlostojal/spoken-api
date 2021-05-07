@@ -12,9 +12,9 @@ const userSearch = (query, user) => {
     let users = [];
     try {
       users = User.find({$or: [
-        {username: {$regex: regex}},
-        {name: {$regex: regex}},
-        {surname: {$regex: regex}}
+        {username: {$regex: regex, $options: "i"}},
+        {name: {$regex: regex, $options: "i"}},
+        {surname: {$regex: regex, $options: "i"}}
       ]});
     } catch(e) {
       console.error(e);

@@ -98,7 +98,7 @@ const resolvers = {
     },
 
     getSessions: (parent, args, context, info) => {
-      return getSessions(context.user, context.mysqlPool);
+      return getSessions(context.user);
     }
 
   },
@@ -110,7 +110,7 @@ const resolvers = {
     },
 
     confirmAccount: (parent, args, context, info) => {
-      return confirmAccount(args.username, args.code, context.mysqlPool);
+      return confirmAccount(args.username, args.code);
     },
 
     // edit current user data
