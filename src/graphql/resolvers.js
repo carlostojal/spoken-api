@@ -22,10 +22,8 @@ const editPost = require("../resolvers/editPost");
 const promotePost = require("../resolvers/promotePost");
 const reactPost = require("../resolvers/reactPost");
 const commentPost = require("../resolvers/commentPost");
-const sharePost = require("../resolvers/sharePost");
 const setExpoPushToken = require("../resolvers/setExpoPushToken");
 const deleteSessionById = require("../resolvers/deleteSessionById");
-const capturePostAttention = require("../resolvers/capturePostAttention");
 
 const resolvers = {
   Query: {
@@ -159,10 +157,6 @@ const resolvers = {
     // create comment in post
     commentPost: (parent, args, context, info) => {
       return commentPost(args.id, context.user, args.text);
-    },
-
-    capturePostAttention: (parent, args, context, info) => {
-      return capturePostAttention(args.id, args.view_time, args.reacted, args.shared, context.user, context.mysqlPool);
     },
 
     setExpoPushToken: (parent, args, context, info) => {
