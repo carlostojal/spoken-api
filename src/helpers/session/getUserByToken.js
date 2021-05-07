@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const User = require("../../db_models/User");
 
-const getUserByToken = (token, mysqlPool) => {
+const getUserByToken = (token) => {
   return new Promise(async (resolve, reject) => {
 
     // verify and decode user token

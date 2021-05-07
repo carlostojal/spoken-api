@@ -36,7 +36,7 @@ app.get("/info", (req, res) => {
 // captures PayPal orders
 app.get("/capture_order", async (req, res) => {
   try {
-    await capturePromoteOrder(req.query.token, mysqlPool);
+    await capturePromoteOrder(req.query.token);
   } catch(e) {
     let out;
     if(e.message == "ERROR_PROMOTING_POST")
@@ -83,7 +83,7 @@ const server = new ApolloServer({
     // get user from token
     if(token) {
       try {
-        user = await getUserByToken(token, mysqlPool);
+        user = await getUserByToken(token);
       } catch(e) {
         console.error(e);
       }

@@ -148,7 +148,7 @@ const resolvers = {
     },
 
     promotePost: (parent, args, context, info) => {
-      return promotePost(args.id, context.user, context.mysqlPool);
+      return promotePost(args.id, context.user);
     },
 
     // react to post
