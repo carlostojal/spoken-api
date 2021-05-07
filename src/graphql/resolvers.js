@@ -22,6 +22,8 @@ const editPost = require("../resolvers/editPost");
 const promotePost = require("../resolvers/promotePost");
 const reactPost = require("../resolvers/reactPost");
 const commentPost = require("../resolvers/commentPost");
+const addPostTag = require("../resolvers/addPostTag");
+const deletePostTag = require("../resolvers/deletePostTag");
 const setExpoPushToken = require("../resolvers/setExpoPushToken");
 const deleteSessionById = require("../resolvers/deleteSessionById");
 
@@ -159,8 +161,16 @@ const resolvers = {
       return commentPost(args.id, context.user, args.text);
     },
 
+    addPostTag: (parent, args, context, info) => {
+      return addPostTag(args.tag_id, args.post_id, context.user);
+    },
+
+    deletePostTag: (parent, args, context, info) => {
+      return deletePostTag(args.tag_id, args.post_id, context.user);
+    },
+
     setExpoPushToken: (parent, args, context, info) => {
-      return setExpoPushToken(args.token, context.user, context.mysqlPool);
+      return setExpoPushToken(args.token, context.user);
     },
 
     deleteSessionById: (parent, args, context, info) => {

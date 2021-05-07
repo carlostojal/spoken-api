@@ -36,10 +36,10 @@ const typeDefs = gql`
     edited: Boolean,
     original_post: Post,
     promoted: Boolean,
-    tags: [PostTags]
+    tags: [Tag]
   }
 
-  type PostTags {
+  type Tag {
     _id: ID,
     name: String
   }
@@ -92,8 +92,8 @@ const typeDefs = gql`
     promotePost(id: Int!): String
     reactPost(id: Int!, user_lat: Float, user_long: Float, user_platform: String, user_os: String): Post
     commentPost(id: Int!, text: String!): Post
-    addPostTag(tag_id: Int!, post_id: Int!): PostTags
-    deletePostTag(tag_id: Int!, post_id: Int!): PostTags
+    addPostTag(tag_id: ID!, post_id: ID!): Tag
+    deletePostTag(tag_id: ID!, post_id: ID!): Tag
     capturePostAttention(id: Int!, view_time: Float!, reacted: Boolean!, shared: Boolean!): Boolean
     setExpoPushToken(token: String!): Boolean
     deleteSessionById(session_id: Int!): String
