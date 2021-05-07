@@ -13,10 +13,14 @@ const checkPostToxicity = (post) => {
     }
 
     if(toxicity_result.is_toxic) {
+      let p = null;
       try {
-        await Post.findByIdAndRemove(post.id);
+        p = Post.findById(post._id);
+        p.is_toxic = true;
+        p.toxic_cause = toxicity_result.cause;
+        await p.save();
       } catch(e) {
-        return reject(new Error("ERROR_REMOVING_POST"));
+        return reject(e);
       }
     }
 
