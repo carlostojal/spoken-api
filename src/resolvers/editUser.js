@@ -15,7 +15,7 @@ const editUser = (name, surname, email, username, password, profile_pic, profile
         return reject(new Error("ERROR_HASHING_PASSWORD"));
       }
 
-      bcrypt.hash(password, salt, (err, hash_password) => {
+      bcrypt.hash(password, salt, async (err, hash_password) => {
 
         if (err) {
           
