@@ -92,6 +92,7 @@ const typeDefs = gql`
     promotePost(id: Int!): String
     reactPost(id: Int!, user_lat: Float, user_long: Float, user_platform: String, user_os: String): Post
     commentPost(id: Int!, text: String!): Post
+    collectPostView(id: ID!, user_lat: Float, user_long: Float, user_platform: String, user_os: String, view_time: Float): Post
     addPostTag(tag_id: ID!, post_id: ID!): Tag
     deletePostTag(tag_id: ID!, post_id: ID!): Tag
     capturePostAttention(id: Int!, view_time: Float!, reacted: Boolean!, shared: Boolean!): Boolean

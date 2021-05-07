@@ -22,6 +22,7 @@ const editPost = require("../resolvers/editPost");
 const promotePost = require("../resolvers/promotePost");
 const reactPost = require("../resolvers/reactPost");
 const commentPost = require("../resolvers/commentPost");
+const collectPostView = require("../resolvers/collectPostView");
 const addPostTag = require("../resolvers/addPostTag");
 const deletePostTag = require("../resolvers/deletePostTag");
 const setExpoPushToken = require("../resolvers/setExpoPushToken");
@@ -159,6 +160,10 @@ const resolvers = {
     // create comment in post
     commentPost: (parent, args, context, info) => {
       return commentPost(args.id, context.user, args.text);
+    },
+
+    collectPostView: (parent, args, context, info) => {
+      return collectPostView(args.id, args.user_lat, args.user_long, args.user_plarform, args.user_os, args.view_time, context.user);
     },
 
     addPostTag: (parent, args, context, info) => {
