@@ -1,8 +1,8 @@
 const { AuthenticationError } = require("apollo-server");
-const getPostById = require("../helpers/controllers/posts/getPostById");
 const createPromoteOrder = require("../helpers/paypal/createPromoteOrder");
+const Post = require("../db_models/Post");
 
-const promotePost = (id, user, mysqlPool) => {
+const promotePost = (id, user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -14,7 +14,7 @@ const promotePost = (id, user, mysqlPool) => {
     // check if post exists
     let post = null;
     try {
-      post = await getPostById(id, mysqlPool);
+      post = await Post.findById(id);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_POST"));
@@ -28,7 +28,7 @@ const promotePost = (id, user, mysqlPool) => {
       return reject(new Error("POST_ALREADY_PROMOTED"));
 
     // check if the current user is the post owner
-    if(post.poster_id != user.id)
+    if(post.poster != user._id)
       return reject(new Error("BAD_PERMISSIONS"));
 
     // create the PayPal order

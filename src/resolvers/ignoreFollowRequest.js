@@ -1,16 +1,16 @@
 const { AuthenticationError } = require("apollo-server");
-const getUserById = require("../helpers/controllers/users/getUserById");
-const ignoreRelation = require("../helpers/controllers/relations/ignoreRelation");
+const User = require("../db_models/FollowRelation");
+const FollowRelation = require("../db_models/FollowRelation");
 
-const ignoreFollowRelation = (user_id, user, mysqlPool) => {
+const ignoreFollowRequest = (user_id, user) => {
   return new Promise(async (resolve, reject) => {
 
     if (!user)
       return reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
-    let user1;
+    let user1 = null;
     try {
-      user1 = await getUserById(user_id, mysqlPool);
+      user1 = await User.findById(user_id);
     } catch (e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_USER"));
@@ -20,7 +20,9 @@ const ignoreFollowRelation = (user_id, user, mysqlPool) => {
       return reject(new Error("USER_NOT_FOUND"));
 
     try {
-      await ignoreRelation(user_id, user.id, mysqlPool);
+      let relation = await FollowRelation.findOne({user: user1._id, follows: user._id});
+      relation.ignored = true;
+      await relation.save()
     } catch (e) {
       console.error(e);
       return reject(new Error("ERROR_IGNORING_RELATION"));
@@ -30,4 +32,4 @@ const ignoreFollowRelation = (user_id, user, mysqlPool) => {
   });
 };
 
-module.exports = ignoreFollowRelation;
+module.exports = ignoreFollowRequest;

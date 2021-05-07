@@ -1,12 +1,8 @@
 const { AuthenticationError } = require("apollo-server");
-const getPostById = require("../helpers/controllers/posts/getPostById");
-const userFollowsUser = require("../helpers/controllers/users/userFollowsUser");
-const userReacted = require("../helpers/controllers/reactions/userReacted");
-const removeReaction = require("../helpers/controllers/reactions/removeReaction");
-const insertReaction = require("../helpers/controllers/reactions/insertReaction");
-const formatPost = require("../helpers/formatPost");
+const Post = require("../db_models/Post");
+const PostReaction = require("../db_models/PostReaction");
 
-const reactPost = (post_id, user, mysqlPool) => {
+const reactPost = (post_id, user_lat, user_long, user_platform, user_os, user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -14,7 +10,7 @@ const reactPost = (post_id, user, mysqlPool) => {
 
     let post = null;
     try {
-      post = await getPostById(post_id, mysqlPool);
+      post = await Post.findById(post_id);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_POST"));
@@ -23,52 +19,45 @@ const reactPost = (post_id, user, mysqlPool) => {
     if(!post)
       return reject(new Error("POST_NOT_FOUND"));
 
-    try {
-      post = formatPost(post);
-    } catch(e) {
-      
-      return reject(new Error("ERROR_FORMATING_POST"));
-    }
-
-    // check if the user follows the user who made the post
-    let hasPermission = false;
-    try {
-      hasPermission = await userFollowsUser(user.id, post.poster.id, mysqlPool);
-    } catch(e) {
-      console.error(e);
-      return reject(new Error("ERROR_CHECKING_PERMISSION"));
-    }
-
-    if(!hasPermission)
+    if(user._id != post.poster && !user.following.includes(post.poster))
       return reject(new Error("BAD_PERMISSIONS"));
-    
-    // check if the current user reacted the post
-    let user_reacted = false;
+
+    let reaction = null;
     try {
-      user_reacted = await userReacted(user, post, mysqlPool);
+      reaction = await PostReaction.findOne({user: user._id, post: post._id});
+    } catch(e) {
+      return reject(new Error("ERROR_GETTING_REACTION"));
+    }
+
+    try {
+      // have reacted, so remove
+      if(reaction) {
+
+        post.reactions.pop(user._id);
+        await post.save();
+        await reaction.remove()
+
+      } else {
+        // register new reaction
+
+        post.reactions.push(user._id);
+        await post.save();
+        let new_reaction = new PostReaction({
+          user: user._id,
+          post: post._id,
+          user_location: {
+            latitude: user_lat,
+            longitude: user_long
+          },
+          user_platform,
+          user_os
+        });
+        await new_reaction.save();
+      }
     } catch(e) {
       console.error(e);
-      return reject(new Error("ERROR_CHECKING_REACTION"));
+      return reject(new Error("ERROR_PERSISTING_REACTION"));
     }
-
-    // the reaction was registered, so remove
-    if(user_reacted) {
-      try {
-        await removeReaction(user, post, mysqlPool);
-      } catch(e) {
-        console.error(e);
-        return reject(new Error("ERROR_REMOVING_REACTION"));
-      }
-    } else { // the reaction was not registered, so register
-      try {
-        await insertReaction(user_id, post_id, mysqlPool);
-      } catch(e) {
-        console.error(e);
-        return reject(new Error("ERROR_SAVING_REACTION"));
-      }
-    }
-
-    post.user_reacted = !user_reacted;
 
     return resolve(post);
   });

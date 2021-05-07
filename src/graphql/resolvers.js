@@ -7,11 +7,7 @@ const getUserData = require("../resolvers/getUserData");
 const getUserFeed = require("../resolvers/getUserFeed");
 const getUserPosts = require("../resolvers/getUserPosts");
 const getFollowRequests = require("../resolvers/getFollowRequests");
-const getFollowers = require("../resolvers/getFollowers");
-const getFollowing = require("../resolvers/getFollowing");
-const getPostReactions = require("../resolvers/getPostReactions");
 const getPostComments = require("../resolvers/getPostComments");
-const getPostTags = require("../resolvers/getPostTags");
 const userSearch = require("../resolvers/userSearch");
 const getSessions = require("../resolvers/getSessions");
 const registerUser = require("../resolvers/registerUser");
@@ -26,16 +22,16 @@ const editPost = require("../resolvers/editPost");
 const promotePost = require("../resolvers/promotePost");
 const reactPost = require("../resolvers/reactPost");
 const commentPost = require("../resolvers/commentPost");
-const sharePost = require("../resolvers/sharePost");
+const addPostTag = require("../resolvers/addPostTag");
+const deletePostTag = require("../resolvers/deletePostTag");
 const setExpoPushToken = require("../resolvers/setExpoPushToken");
 const deleteSessionById = require("../resolvers/deleteSessionById");
-const capturePostAttention = require("../resolvers/capturePostAttention");
 
 const resolvers = {
   Query: {
     // get user tokens from username and password
     getToken: async (parent, args, context, info) => {
-      const tokens = await getToken(args.username, args.password, args.userPlatform, context.req.connection.remoteAddress, context.req.headers["user-agent"], args.pushToken, context.mysqlPool);
+      const tokens = await getToken(args.username, args.password, args.userPlatform, context.req.connection.remoteAddress, context.req.headers["user-agent"], args.pushToken);
       // send refresh token as httpOnly cookie
       context.res.cookie("refresh_token", tokens.refresh_token.value, {
         maxAge: process.env.REFRESH_TOKEN_DURATION * 24 * 3600 * 1000,
@@ -46,7 +42,7 @@ const resolvers = {
 
     sendConfirmationEmail: async (parent, args, context, info) => {
       try {
-        await sendConfirmationEmail(args.username, args.password, context.mysqlPool);
+        await sendConfirmationEmail(args.username, args.password);
       } catch(e) {
         return e;
       }
@@ -66,7 +62,7 @@ const resolvers = {
       // get refresh token from cookies
       const refresh_token = getCookieByName("refresh_token", context.req.headers.cookie);
       // get new tokens from refresh token
-      const tokens = await refreshToken(refresh_token, context.mysqlPool);
+      const tokens = await refreshToken(refresh_token);
       // send new refresh token through cookies
       context.res.cookie("refresh_token", tokens.refresh_token.value, {
         maxAge: process.env.REFRESH_TOKEN_DURATION * 24 * 3600 * 1000,
@@ -77,48 +73,32 @@ const resolvers = {
 
     // get user data from ID or for the current user
     getUserData: (parent, args, context, info) => {
-      return getUserData(args.id, context.user, context.mysqlPool);
+      return getUserData(args.id, context.user);
     },
 
     // get user feed posts
     getUserFeed: (parent, args, context, info) => {
-      return getUserFeed(args.page, args.perPage, context.user, context.mysqlPool);
+      return getUserFeed(context.user);
     },
 
     getUserPosts: (parent, args, context, info) => {
-      return getUserPosts(args.page, args.perPage, args.user_id, context.user, context.mysqlPool);
+      return getUserPosts(args.page, args.perPage, args.user_id, context.user);
     },
 
     getFollowRequests: (parent, args, context, info) => {
-      return getFollowRequests(context.user, context.mysqlPool);
-    },
-
-    getFollowers: (parent, args, context, info) => {
-      return getFollowers(context.user, context.mysqlPool);
-    },
-
-    getFollowing: (parent, args, context, info) => {
-      return getFollowing(context.user, context.mysqlPool);
-    },
-
-    getPostReactions: (parent, args, context, info) => {
-      return getPostReactions(args.page, args.perPage, args.id, context.user, context.mysqlPool);
+      return getFollowRequests(context.user);
     },
 
     getPostComments: (parent, args, context, info) => {
-      return getPostComments(args.page, args.perPage, args.id, context.user, context.mysqlPool);
-    },
-
-    getPostTags: (parent, args, context, info) => {
-      return getPostTags(args.id, context.user, context.mysqlPool);
+      return getPostComments(args.id, context.user);
     },
 
     userSearch: (parent, args, context, info) => {
-      return userSearch(args.query, context.user, context.mysqlPool);
+      return userSearch(args.query, context.user);
     },
 
     getSessions: (parent, args, context, info) => {
-      return getSessions(context.user, context.mysqlPool);
+      return getSessions(context.user);
     }
 
   },
@@ -126,76 +106,75 @@ const resolvers = {
   Mutation: {
     // registers a new user
     registerUser: (parent, args, context, info) => {
-      return registerUser(args.name, args.surname, args.birthdate, args.email, args.username, args.password, args.profile_type, args.profile_privacy_type, context.mysqlPool);
+      return registerUser(args.name, args.surname, args.birthdate, args.email, args.username, args.password, args.profile_type, args.profile_privacy_type);
     },
 
     confirmAccount: (parent, args, context, info) => {
-      return confirmAccount(args.username, args.code, context.mysqlPool);
+      return confirmAccount(args.username, args.code);
     },
 
     // edit current user data
     editUser: (parent, args, context, info) => {
-      return editUser(args.name, args.surname, args.email, args.username, args.password, args.profile_pic_media_id, args.profile_type, args.profile_privacy_type, context.user, context.mysqlPool);
+      return editUser(args.name, args.surname, args.email, args.username, args.password, args.profile_pic, args.profile_type, args.profile_privacy_type, context.user);
     },
 
     // creates a new post
     createPost: (parent, args, context, info) => {
-      return createPost(args.text, args.media_id, context.user, context.mysqlPool);
+      return createPost(args.text, args.media_id, context.user);
     },
 
     // starts following user
     followUser: (parent, args, context, info) => {
-      return followUser(args.id, context.user, context.mysqlPool);
+      return followUser(args.id, context.user);
     },
 
     // accepts follow request from user ID
     acceptFollowRequest: (parent, args, context, info) => {
-      return acceptFollowRequest(args.user_id, context.user, context.mysqlPool);
+      return acceptFollowRequest(args.user_id, context.user);
     },
 
     ignoreFollowRequest: (parent, args, context, info) => {
-      return ignoreFollowRequest(args.user_id, context.user, context.mysqlPool);
+      return ignoreFollowRequest(args.user_id, context.user);
     },
 
     // deletes post from post ID
     deletePost: (parent, args, context, info) => {
-      return deletePost(args.id, context.user, context.mysqlPool);
+      return deletePost(args.id, context.user);
     },
 
     // edits post from post ID. updates text
     editPost: (parent, args, context, info) => {
-      return editPost(args.id, args.text, context.user, context.mysqlPool);
+      return editPost(args.id, args.text, context.user);
     },
 
     promotePost: (parent, args, context, info) => {
-      return promotePost(args.id, context.user, context.mysqlPool);
+      return promotePost(args.id, context.user);
     },
 
     // react to post
     reactPost: (parent, args, context, info) => {
-      return reactPost(args.id, context.user, context.mysqlPool);
+      return reactPost(args.id, args.user_lat, args.user_long, args.user_platform, args.user_os, context.user);
     },
 
     // create comment in post
     commentPost: (parent, args, context, info) => {
-      return commentPost(args.id, context.user, args.text, context.mysqlPool);
+      return commentPost(args.id, context.user, args.text);
     },
 
-    // shares a existing post
-    sharePost: (parent, args, context, info) => {
-      return sharePost(args.id, context.user, context.mysqlPool);
+    addPostTag: (parent, args, context, info) => {
+      return addPostTag(args.tag_id, args.post_id, context.user);
     },
 
-    capturePostAttention: (parent, args, context, info) => {
-      return capturePostAttention(args.id, args.view_time, args.reacted, args.shared, context.user, context.mysqlPool);
+    deletePostTag: (parent, args, context, info) => {
+      return deletePostTag(args.tag_id, args.post_id, context.user);
     },
 
     setExpoPushToken: (parent, args, context, info) => {
-      return setExpoPushToken(args.token, context.user, context.mysqlPool);
+      return setExpoPushToken(args.token, context.user);
     },
 
     deleteSessionById: (parent, args, context, info) => {
-      return deleteSessionById(args.session_id, context.user, context.mysqlPool);
+      return deleteSessionById(args.session_id, context.user);
     }
   }
 }

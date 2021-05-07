@@ -1,7 +1,7 @@
 const paypal = require("@paypal/checkout-server-sdk");
-const promotePostById = require("../controllers/posts/promotePostById");
+const Post = require("../../db_models/Post");
 
-const capturePromoteOrder = (order_id, mysqlPool) => {
+const capturePromoteOrder = (order_id) => {
   return new Promise(async (resolve, reject) => {
 
     // capture the order and check if it was approved
@@ -38,7 +38,9 @@ const capturePromoteOrder = (order_id, mysqlPool) => {
 
     // promote the post
     try {
-      await promotePostById(order.purchase_units[0].reference_id, mysqlPool);
+      let p = await Post.findById(order.purchase_units[0].reference_id);
+      p.promoted = true;
+      await p.save();
     } catch(e) {
       // if it fails, user is refunded
       try {

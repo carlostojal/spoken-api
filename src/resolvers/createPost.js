@@ -1,9 +1,9 @@
 const { AuthenticationError } = require("apollo-server");
-const insertPost = require("../helpers/controllers/posts/insertPost");
-const userIsMediaOwner = require("../helpers/controllers/media/userIsMediaOwner");
 const checkPostToxicity = require("../helpers/checkPostToxicity");
+const Post = require("../db_models/Post");
+const Media = require("../db_models/Media");
 
-const createPost = (text, media_id, user, mysqlPool) => {
+const createPost = (text, media_id, user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -18,16 +18,18 @@ const createPost = (text, media_id, user, mysqlPool) => {
     if(text.length == 0 || text.match(process.env.EMPTY_POST_REGEX))
       return reject(new Error("INVALID_TEXT"));
 
-    const post = {
-      user_id: user.id,
+    const post = new Post({
+      poster: user._id,
       text,
-      media_id
-    };
+      media: media_id
+    });
 
     if(media_id) {
       let user_is_media_owner = false;
       try {
-        user_is_media_owner = await userIsMediaOwner(media_id, user, mysqlPool);
+        const media = Media.findOne({ _id: media_id, user_id: user.id});
+        if(media)
+          user_is_media_owner = true;
       } catch(e) {
         console.error(e);
         return reject(new Error("ERROR_CHECKING_MEDIA_OWNERSHIP"));
@@ -40,14 +42,14 @@ const createPost = (text, media_id, user, mysqlPool) => {
 
     // insert simple post
     try {
-      await insertPost(post, mysqlPool);
+      await post.save();
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_REGISTERING_POST"));
     }
 
     // check if the post text is toxic (the user will not wait for this action)
-    checkPostToxicity(post, mysqlPool);
+    checkPostToxicity(post);
 
     return resolve(post);
   });

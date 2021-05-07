@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
-const getUserById = require("../controllers/users/getUserById");
+const User = require("../../db_models/User");
 
-const getUserByToken = (token, mysqlPool) => {
+const getUserByToken = (token) => {
   return new Promise(async (resolve, reject) => {
 
     // verify and decode user token
@@ -31,7 +31,7 @@ const getUserByToken = (token, mysqlPool) => {
     
     // the user was not in cache, so get from database
     try {
-      user = await getUserById(decoded.user.id, mysqlPool);
+      user = await User.findById(decoded.user._id);
     } catch(e) {
       return reject(new Error("ERROR_GETTING_USER"));
     }

@@ -1,9 +1,7 @@
 const { AuthenticationError } = require("apollo-server");
-const getPostById = require("../helpers/controllers/posts/getPostById");
-const removePostById = require("../helpers/controllers/posts/removePostById");
-const formatPost = require("../helpers/formatPost");
+const Post = require("../db_models/Post");
 
-const deletePost = (id, user, mysqlPool) => {
+const deletePost = (post_id, user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -11,7 +9,7 @@ const deletePost = (id, user, mysqlPool) => {
     
     let post = null;
     try {
-      post = await getPostById(id, mysqlPool);
+      post = await Post.findById(post_id);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_POST"));
@@ -20,21 +18,14 @@ const deletePost = (id, user, mysqlPool) => {
     if(!post)
       return reject(new Error("POST_NOT_FOUND"));
 
-    if(post.poster_id != user.id)
-      return reject(new Error("BAD_PERSMISSIONS"));
+    if(post.poster != user._id)
+      return reject(new Error("BAD_PERMISSIONS"));
 
     try {
-      await removePostById(id, mysqlPool);
+      await post.remove();
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_REMOVING_POST"));
-    }
-
-    try {
-      post = formatPost(post);
-    } catch(e) {
-      console.error(e);
-      return reject(new Error("ERROR_FORMATING_POST"));
     }
 
     return resolve(post);

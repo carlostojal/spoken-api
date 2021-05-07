@@ -10,7 +10,7 @@ const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers");
 const getUserByToken = require("./helpers/session/getUserByToken");
 const capturePromoteOrder = require("./helpers/paypal/capturePromoteOrder");
-const mysqlPool = require("./config/mysql");
+require("./config/mongoose");
 const getPostRatings = require("./helpers/usage/getPostRatings");
 
 console.log("\n** Spoken API **\n\n");
@@ -35,7 +35,7 @@ app.get("/info", (req, res) => {
 // captures PayPal orders
 app.get("/capture_order", async (req, res) => {
   try {
-    await capturePromoteOrder(req.query.token, mysqlPool);
+    await capturePromoteOrder(req.query.token);
   } catch(e) {
     let out;
     if(e.message == "ERROR_PROMOTING_POST")
@@ -82,13 +82,13 @@ const server = new ApolloServer({
     // get user from token
     if(token) {
       try {
-        user = await getUserByToken(token, mysqlPool);
+        user = await getUserByToken(token);
       } catch(e) {
         console.error(e);
       }
     }
 
-    return { req, res, user, mysqlPool };
+    return { req, res, user };
   }
 });
 server.applyMiddleware({ app, cors: corsOptions });

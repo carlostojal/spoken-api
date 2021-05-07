@@ -3,9 +3,8 @@ const getFeed = require("../helpers/controllers/posts/getFeed");
 const getFeedFromCache = require("../helpers/controllers/posts/getFeedFromCache");
 const saveFeedToCache = require("../helpers/controllers/posts/saveFeedToCache");
 const savePostToCache = require("../helpers/controllers/posts/savePostToCache");
-const formatPost = require("../helpers/formatPost");
 
-const getUserFeed = (page, perPage, user, mysqlPool) => {
+const getUserFeed = (user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -13,19 +12,17 @@ const getUserFeed = (page, perPage, user, mysqlPool) => {
 
     let posts;
     try {
-      posts = await getFeedFromCache(page, user.id);
+      posts = await getFeedFromCache(user.id);
       if(!posts) {
-        posts = await getFeed(page, perPage, user.id, mysqlPool);
+        posts = await getFeed(user.id);
         try {
-          for(let i = 0; i < posts.length; i++) {
-            posts[i] = formatPost(posts[i]);
+          for(let i = 0; i < posts.length; i++)
             savePostToCache(posts[i]);
-          }
         } catch(e) {
           console.error(e);
           return reject(new Error("ERROR_FORMATTING_POSTS"));
         }
-        saveFeedToCache(page, user.id, posts);
+        saveFeedToCache(user.id, posts);
       }
     } catch(e) {
       console.error(e);

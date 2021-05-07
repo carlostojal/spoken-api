@@ -1,61 +1,34 @@
 const { AuthenticationError } = require("apollo-server");
-const getPostById = require("../helpers/controllers/posts/getPostById");
-const userFollowsUser = require("../helpers/controllers/users/userFollowsUser");
-const formatPost = require("../helpers/formatPost");
-const checkCommentToxicity = require("../helpers/checkCommentToxicity");
-const insertPost = require("../helpers/controllers/posts/insertPost");
+const Post = require("../db_models/Post");
 
-const commentPost = (post_id, user, text, mysqlPool) => {
+const commentPost = (post_id, user, text) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
       return reject(new AuthenticationError("BAD_AUTHENTICATION"));
     
     let post = null;
-
     try {
-      post = await getPostById(post_id, mysqlPool);
+      post = await Post.findById(post_id);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_POST"));
     }
 
-    let has_permission = false;
-
-    try {
-      has_permission = await userFollowsUser(user.id, post.poster_id, mysqlPool);
-    } catch(e) {
-      console.error(e);
-      return reject(new Error("ERROR_CHECKING_PERMISSION"));
-    }
-
-    if(!has_permission)
+    if(user._id != post.poster && !user.following.includes(post.poster))
       return reject(new Error("BAD_PERMISSIONS"));
 
-    const comment = {
-      user_id: user.id,
-      original_post_id: post.id,
+    const comment = new Post({
+      user: user._id,
+      original_post: post._id,
       text
-    };
+    });
 
     try {
-      await insertPost(comment, mysqlPool);
+      await comment.save();
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_REGISTERING_COMMENT"));
-    }
-
-    try {
-      post = formatPost(post);
-    } catch(e) {
-      console.error(e);
-      return reject(new Error("ERROR_FORMATING_POST"));
-    }
-
-    try {
-      checkCommentToxicity(comment, mysqlPool);
-    } catch(e) {
-      console.error(e);
     }
 
     return resolve(post);

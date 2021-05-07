@@ -1,15 +1,15 @@
 const { AuthenticationError } = require("apollo-server");
-const getSessionsController = require("../helpers/controllers/sessions/getSessions");
+const Session = require("../db_models/Session");
 
-const getSessions = (user, mysqlPool) => {
+const getSessions = (user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
       return reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
-    let sessions = null;
+    let sessions = [];
     try {
-      sessions = await getSessionsController(user.id, mysqlPool);
+      sessions = await Session.find({user: user._id});
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_SESSIONS"));

@@ -1,24 +1,19 @@
 const { AuthenticationError } = require("apollo-server");
-const getUserById = require("../helpers/controllers/users/getUserById");
-const insertRelation = require("../helpers/controllers/relations/insertRelation");
-const removeRelation = require("../helpers/controllers/relations/removeRelation");
-const sendNotification = require("../helpers/sendNotification");
+const User = require("../db_models/User");
+const FollowRelation = require("../db_models/FollowRelation");
 
-const followUser = (id, user, mysqlPool) => {
+const followUser = (id, user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
       reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
-    if(!id)
-      reject(new Error("NO_USER_ID_PROVIDED"));
-
-    if(id == user.id)
+    if(id == user._id)
       reject(new Error("USER_FOLLOWING_HIMSELF"));
 
     let user1 = null;
     try {
-      user1 = await getUserById(id, mysqlPool);
+      user1 = await User.findById(id);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_USER"));
@@ -29,35 +24,40 @@ const followUser = (id, user, mysqlPool) => {
 
     const accepted = user1.profile_privacy_type == "public";
 
-    const followRelation = {
-      user: user.id,
-      follows: user1.id,
-      accepted
-    };
-
     try {
-      await insertRelation(followRelation, mysqlPool);
 
-      try {
-        sendNotification("New follower", `"${user.username}" started following you.`, user1.id, mysqlPool);
-      } catch(e) {
-        console.error(e);
-        console.error(new Error("ERROR_SENDING_NOTIFICATION"));
+      let existing = await FollowRelation.findOne({user: user._id, follows: user1._id});
+      let cur_user = await User.findById(user._id);
+
+      if(existing) {
+
+        cur_user.following.pop(user1._id);
+        user1.followers.pop(cur_user._id);
+        await cur_user.save();
+        await user1.save();
+        await existing.remove();
+
+      } else {
+
+        if(accepted) {
+          cur_user.following.push(id);
+          user1.followers.push(user._id);
+          await cur_user.save();
+          await user1.save();
+        }
+
+        const followRelation = new FollowRelation({
+          user: user._id,
+          follows: user1._id,
+          accepted
+        });
+
+        await followRelation.save();
+
       }
 
     } catch(e) {
-      
-      if(e.errno == 1062) { // duplicate key (relation already exists)
-        // will remove the relation
-        try {
-          await removeRelation(user.id, user1.id, mysqlPool);
-        } catch(e) {
-          console.error(e);
-          return reject(new Error("ERROR_REMOVING_RELATION"));
-        }
-      } else {
         return reject(new Error("ERROR_CREATING_RELATION"));
-      }
     }
 
     return resolve(user1);

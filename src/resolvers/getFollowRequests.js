@@ -1,30 +1,20 @@
 const { AuthenticationError } = require("apollo-server");
-const getFollowedRelations = require("../helpers/controllers/relations/getFollowedRelations");
-const formatRelation = require("../helpers/formatRelation");
+const FollowRelation = require("../db_models/FollowRelation");
 
-const getFollowRequests = (user, mysqlPool) => {
+const getFollowRequests = (user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
       reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
-    let requests = null;
+    let requests = [];
     try {
-      requests = await getFollowedRelations(user.id, false, false, mysqlPool);
+      requests = await FollowRelation.find({follows: user._id, accepted: false, ignored: false})
+        .populate("user")
+        .populate("user.profile_pic");
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_RELATIONS"));
-    }
-
-    if(!requests)
-      return resolve(null);
-      
-    try {
-      for(let i = 0; i < requests.length; i++)
-        requests[i] = formatRelation(requests[i]);
-    } catch(e) {
-      console.error(e);
-      return reject(new Error("ERROR_FORMATING_RELATIONS"));
     }
 
     return resolve(requests);

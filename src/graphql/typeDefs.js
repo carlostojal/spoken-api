@@ -13,11 +13,10 @@ const typeDefs = gql`
   }
 
   type User {
-    id: ID,
+    _id: ID,
     name: String,
     surname: String,
     birthdate: String,
-    email: String,
     username: String,
     profile_pic: Media,
     profile_type: String,
@@ -27,25 +26,26 @@ const typeDefs = gql`
   }
 
   type Post {
-    id: ID,
+    _id: ID,
     poster: User,
     time: String,
     text: String,
-    media: Media
+    media: Media,
+    reactions: [User],
+    comments: [Post],
     edited: Boolean,
     original_post: Post,
-    user_reacted: Boolean,
     promoted: Boolean,
-    tags: [PostTags]
+    tags: [Tag]
   }
 
-  type PostTags {
-    id: ID,
+  type Tag {
+    _id: ID,
     name: String
   }
 
   type Media {
-    id: ID,
+    _id: ID,
     url: String,
     is_nsfw: Boolean,
     nsfw_cause: String
@@ -59,7 +59,7 @@ const typeDefs = gql`
   }
 
   type Session {
-    id: ID,
+    _id: ID,
     created_at: String,
     expires_at: String,
     user_platform: String
@@ -70,15 +70,11 @@ const typeDefs = gql`
     sendConfirmationEmail(username: String!, password: String!): String
     logout: User
     refreshToken: String
-    getUserData(id: Int): User
-    getUserFeed(page: Int!, perPage: Int!): [Post]
-    getUserPosts(page: Int!, perPage: Int!, user_id: Int): [Post]
+    getUserData(id: ID): User
+    getUserFeed: [Post]
+    getUserPosts(user_id: ID): [Post]
     getFollowRequests: [FollowRelation]
-    getFollowers: [FollowRelation]
-    getFollowing: [FollowRelation]
-    getPostReactions(page: Int!, perPage: Int!, id: Int!): [User]
-    getPostComments(page: Int!, perPage: Int!, id: Int!): [Post]
-    getPostTags(id: Int!): [PostTags]
+    getPostComments(id: Int!): [Post]
     userSearch(query: String!): [User]
     getSessions: [Session]
   }
@@ -86,7 +82,7 @@ const typeDefs = gql`
   type Mutation {
     registerUser(name: String!, surname: String!, birthdate: String!, email: String!, username: String!, password: String!, profile_pic_media_id: Int, profile_type: ProfileType!, profile_privacy_type: ProfilePrivacyType!): User
     confirmAccount(username: String!, code: Int!): User
-    editUser(name: String!, surname: String!, email: String!, username: String!, password: String!, profile_pic_mediaid: Int, profile_type: ProfileType!, profile_privacy_type: ProfilePrivacyType!): User
+    editUser(name: String!, surname: String!, email: String!, username: String!, password: String!, profile_pic: ID, profile_type: ProfileType!, profile_privacy_type: ProfilePrivacyType!): User
     createPost(text: String!, media_id: Int): Post
     followUser(id: String!): User
     acceptFollowRequest(user_id: Int!): User
@@ -94,14 +90,13 @@ const typeDefs = gql`
     deletePost(id: Int!): Post
     editPost(id: Int!, text: String!): Post
     promotePost(id: Int!): String
-    reactPost(id: Int!): Post
+    reactPost(id: Int!, user_lat: Float, user_long: Float, user_platform: String, user_os: String): Post
     commentPost(id: Int!, text: String!): Post
-    addPostTag(tag_id: Int!, post_id: Int!): PostTags
-    deletePostTag(tag_id: Int!, post_id: Int!): PostTags
-    sharePost(id: Int!): Post
+    addPostTag(tag_id: ID!, post_id: ID!): Tag
+    deletePostTag(tag_id: ID!, post_id: ID!): Tag
     capturePostAttention(id: Int!, view_time: Float!, reacted: Boolean!, shared: Boolean!): Boolean
     setExpoPushToken(token: String!): Boolean
-    deleteSessionById(session_id: Int!): String
+    deleteSessionById(session_id: Int!): Session
   }
 `;
 

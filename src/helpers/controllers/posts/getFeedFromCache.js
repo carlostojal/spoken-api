@@ -1,5 +1,5 @@
 
-const getFeedFromCache = (page, user_id) => {
+const getFeedFromCache = (user_id) => {
   return new Promise(async (resolve, reject) => {
 
     let redisClient;
@@ -9,7 +9,7 @@ const getFeedFromCache = (page, user_id) => {
       return reject(e);
     }
 
-    redisClient.get(`feed:${user_id}:${page}`, (err, result) => {
+    redisClient.get(`feed:${user_id}`, (err, result) => {
 
       if(err)
         return reject(err);

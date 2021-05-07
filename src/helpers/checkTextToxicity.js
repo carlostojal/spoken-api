@@ -4,7 +4,7 @@ const toxicity = require("@tensorflow-models/toxicity");
 const toxicity = require("../models/toxicity/src");
 */
 
-const checkTextToxicity = (text, mysqlPool) => {
+const checkTextToxicity = (text) => {
   return new Promise(async (resolve, reject) => {
     /*
     const threshold = 0.9;

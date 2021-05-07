@@ -1,10 +1,7 @@
 const { AuthenticationError } = require("apollo-server");
-const getPostById = require("../helpers/controllers/posts/getPostById");
-const userFollowsUser = require("../helpers/controllers/users/userFollowsUser");
-const getCommentsByPostId = require("../helpers/controllers/posts/getCommentsByPostId");
-const formatPost = require("../helpers/formatPost");
+const Post = require("../db_models/Post");
 
-const getPostComments = (page, perPage, post_id, user, mysqlPool) => {
+const getPostComments = (post_id, user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -13,7 +10,7 @@ const getPostComments = (page, perPage, post_id, user, mysqlPool) => {
     // get the post from the DB
     let post = null;
     try {
-      post = await getPostById(post_id, mysqlPool);
+      post = Post.findById(post_id);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_POST"));
@@ -22,32 +19,21 @@ const getPostComments = (page, perPage, post_id, user, mysqlPool) => {
     if(!post)
       return reject(new Error("POST_NOT_FOUND"));
 
-    // check if the user follows who made the post
-    let has_permission = user.id == post.poster_id;
-    if(!has_permission) {
-      try {
-        has_permission = await userFollowsUser(user.id, post.poster_id, mysqlPool);
-      } catch(e) {
-        console.error(e);
-        return reject(new Error("ERROR_CHECKING_PERMISSIONS"));
-      }
-    }
-
-    if(!has_permission)
+    if(user._id != post.poster && !user.following.includes(post.poster))
       return reject(new Error("BAD_PERMISSIONS"));
 
     // get comments from the DB
-    let comments = null;
+    let comments = [];
     try {
-      comments = await getCommentsByPostId(post_id, page, perPage, mysqlPool);
+      comments = Post.find({original_post: post_id})
+        .populate("poster")
+        .populate("poster.profile_pic")
+        .populate("media")
+        .populate("tags");
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_COMMENTS"));
     }
-
-    comments.map((comment) => {
-      comment = formatPost(comment);
-    });
 
     return resolve(comments);
   });
