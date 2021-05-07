@@ -7,6 +7,11 @@ const postSchema = new Schema({
   text: String,
   media: {type: Schema.Types.ObjectId, ref: "Media"},
   tags: [{type: Schema.Types.ObjectId, ref: "Tag"}],
+  // in this array are stored the IDs of the users which have reacted
+  // the detailed data is stored in the PostReactions documents
+  // the reactions here are passed to the frontend
+  reactions: [{type: Schema.Types.ObjectId, ref: "User"}],
+  comments: [{type: Schema.Types.ObjectId, ref: "Post"}],
   original_post: {type: Schema.Types.ObjectId, ref: "Post"},
   edited: Boolean,
   promoted: Boolean,

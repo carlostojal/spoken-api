@@ -153,7 +153,7 @@ const resolvers = {
 
     // react to post
     reactPost: (parent, args, context, info) => {
-      return reactPost(args.id, context.user, context.mysqlPool);
+      return reactPost(args.id, args.user_lat, args.user_long, args.user_platform, args.user_os, context.user);
     },
 
     // create comment in post

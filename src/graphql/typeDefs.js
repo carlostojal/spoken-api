@@ -30,10 +30,10 @@ const typeDefs = gql`
     poster: User,
     time: String,
     text: String,
-    media: Media
+    media: Media,
+    reactions: [User],
     edited: Boolean,
     original_post: Post,
-    user_reacted: Boolean,
     promoted: Boolean,
     tags: [PostTags]
   }
@@ -89,7 +89,7 @@ const typeDefs = gql`
     deletePost(id: Int!): Post
     editPost(id: Int!, text: String!): Post
     promotePost(id: Int!): String
-    reactPost(id: Int!): Post
+    reactPost(id: Int!, user_lat: Float, user_long: Float, user_platform: String, user_os: String): Post
     commentPost(id: Int!, text: String!): Post
     addPostTag(tag_id: Int!, post_id: Int!): PostTags
     deletePostTag(tag_id: Int!, post_id: Int!): PostTags

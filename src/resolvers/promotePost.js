@@ -1,5 +1,4 @@
 const { AuthenticationError } = require("apollo-server");
-const getPostById = require("../helpers/controllers/posts/getPostById");
 const createPromoteOrder = require("../helpers/paypal/createPromoteOrder");
 const Post = require("../db_models/Post");
 
