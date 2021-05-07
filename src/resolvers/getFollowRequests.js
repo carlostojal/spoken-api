@@ -9,7 +9,9 @@ const getFollowRequests = (user) => {
 
     let requests = [];
     try {
-      requests = await FollowRelation.find({follows: user._id, accepted: false, ignored: false}).populate("user").populate("user.profile_pic");
+      requests = await FollowRelation.find({follows: user._id, accepted: false, ignored: false})
+        .populate("user")
+        .populate("user.profile_pic");
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_RELATIONS"));

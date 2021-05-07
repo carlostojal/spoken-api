@@ -8,7 +8,10 @@ const getFeed = (page, perPage, user_id) => {
     
     let posts = [];
     try {
-      posts = await Post.find({poster: {$in: cur_user.following}}).populate("poster").populate("media");
+      posts = await Post.find({poster: {$in: cur_user.following}})
+        .populate("poster")
+        .populate("poster.profile_pic")
+        .populate("media");
     } catch(e) {
       console.error(e);
       return reject(e);

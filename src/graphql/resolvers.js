@@ -91,12 +91,8 @@ const resolvers = {
       return getFollowRequests(context.user);
     },
 
-    getPostReactions: (parent, args, context, info) => {
-      return getPostReactions(args.page, args.perPage, args.id, context.user, context.mysqlPool);
-    },
-
     getPostComments: (parent, args, context, info) => {
-      return getPostComments(args.page, args.perPage, args.id, context.user, context.mysqlPool);
+      return getPostComments(args.id, context.user);
     },
 
     getPostTags: (parent, args, context, info) => {
