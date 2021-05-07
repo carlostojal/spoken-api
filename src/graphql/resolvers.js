@@ -174,7 +174,7 @@ const resolvers = {
     },
 
     deleteSessionById: (parent, args, context, info) => {
-      return deleteSessionById(args.session_id, context.user, context.mysqlPool);
+      return deleteSessionById(args.session_id, context.user);
     }
   }
 }

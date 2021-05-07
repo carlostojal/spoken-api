@@ -96,7 +96,7 @@ const typeDefs = gql`
     deletePostTag(tag_id: ID!, post_id: ID!): Tag
     capturePostAttention(id: Int!, view_time: Float!, reacted: Boolean!, shared: Boolean!): Boolean
     setExpoPushToken(token: String!): Boolean
-    deleteSessionById(session_id: Int!): String
+    deleteSessionById(session_id: Int!): Session
   }
 `;
 
