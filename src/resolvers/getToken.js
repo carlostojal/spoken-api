@@ -72,7 +72,7 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, pu
 
       try {
         user.push_token = pushToken;
-        user.save();
+        await user.save();
       } catch(e) {
         console.error(e);
       }

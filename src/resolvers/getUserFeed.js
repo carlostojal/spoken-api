@@ -4,7 +4,7 @@ const getFeedFromCache = require("../helpers/controllers/posts/getFeedFromCache"
 const saveFeedToCache = require("../helpers/controllers/posts/saveFeedToCache");
 const savePostToCache = require("../helpers/controllers/posts/savePostToCache");
 
-const getUserFeed = (page, perPage, user, mysqlPool) => {
+const getUserFeed = (page, perPage, user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -14,7 +14,7 @@ const getUserFeed = (page, perPage, user, mysqlPool) => {
     try {
       posts = await getFeedFromCache(page, user.id);
       if(!posts) {
-        posts = await getFeed(page, perPage, user.id, mysqlPool);
+        posts = await getFeed(page, perPage, user.id);
         try {
           for(let i = 0; i < posts.length; i++)
             savePostToCache(posts[i]);

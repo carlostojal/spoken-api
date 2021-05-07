@@ -18,10 +18,10 @@ const createPost = (text, media_id, user) => {
     if(text.length == 0 || text.match(process.env.EMPTY_POST_REGEX))
       return reject(new Error("INVALID_TEXT"));
 
-    const post = Post({
-      user_id: user.id,
+    const post = new Post({
+      poster: user._id,
       text,
-      media_id
+      media: media_id
     });
 
     if(media_id) {
