@@ -82,7 +82,7 @@ const typeDefs = gql`
     getPostComments(id: Int!): [Post]
     userSearch(query: String!): [User]
     getSessions: [Session]
-    getPostViewsByHour(id: ID!): [Analytic]
+    getPostViewsByHour(id: ID!): Analytic
   }
 
   type Mutation {
