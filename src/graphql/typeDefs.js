@@ -94,7 +94,6 @@ const typeDefs = gql`
     commentPost(id: Int!, text: String!): Post
     addPostTag(tag_id: Int!, post_id: Int!): PostTags
     deletePostTag(tag_id: Int!, post_id: Int!): PostTags
-    sharePost(id: Int!): Post
     capturePostAttention(id: Int!, view_time: Float!, reacted: Boolean!, shared: Boolean!): Boolean
     setExpoPushToken(token: String!): Boolean
     deleteSessionById(session_id: Int!): String

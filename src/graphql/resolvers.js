@@ -161,11 +161,6 @@ const resolvers = {
       return commentPost(args.id, context.user, args.text);
     },
 
-    // shares a existing post
-    sharePost: (parent, args, context, info) => {
-      return sharePost(args.id, context.user, context.mysqlPool);
-    },
-
     capturePostAttention: (parent, args, context, info) => {
       return capturePostAttention(args.id, args.view_time, args.reacted, args.shared, context.user, context.mysqlPool);
     },
