@@ -4,7 +4,7 @@ const sendConfirmationEmail = require("./sendConfirmationEmail");
 const checkPasswordStrength = require("check-password-strength");
 const User = require("../db_models/User");
 
-const registerUser = (name, surname, birthdate, email, username, password, profile_type, profile_privacy_type, mysqlPool) => {
+const registerUser = (name, surname, birthdate, email, username, password, profile_type, profile_privacy_type) => {
   return new Promise((resolve, reject) => {
 
     // convert email and username to lower case
@@ -77,7 +77,7 @@ const registerUser = (name, surname, birthdate, email, username, password, profi
 
         if(process.env.ENABLE_EMAIL_CONFIRMATION == "true") {
           try {
-            sendConfirmationEmail(user.username, password, mysqlPool);
+            sendConfirmationEmail(user.username, password);
           } catch(e) {
             console.error(e);
           }

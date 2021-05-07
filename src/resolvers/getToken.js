@@ -5,7 +5,7 @@ const createToken = require("../helpers/session/createToken");
 const User = require("../db_models/User");
 const Session = require("../db_models/Session");
 
-const getToken = (username, password, userPlatform, remoteAddress, userAgent, pushToken, mysqlPool) => {
+const getToken = (username, password, userPlatform, remoteAddress, userAgent, pushToken) => {
   return new Promise(async (resolve, reject) => {
 
     let user; 

@@ -1,50 +1,39 @@
 const { Expo } = require("expo-server-sdk");
+const User = require("../db_models/User");
 
-const sendNotification = (title, body, user_id, mysqlPool) => {
+const sendNotification = (title, body, user_id) => {
   return new Promise(async (resolve, reject) => {
 
-    console.log("sending follow notification");
+    let user = null;
+    try {
+      user = await User.findById(user_id);
+    } catch(e) {
+      console.error(e);
+      return reject(e);
+    }
 
-    mysqlPool.getConnection((err, connection) => {
+    if(user.push_token) {
 
-      if(err)
-        return reject(err);
-      
-      connection.query("SELECT push_token FROM Users WHERE id = ?", [user_id], async (err, result) => {
+      if(!Expo.isExpoPushToken(user.push_token))
+        return reject(new Error("INVALID_PUSH_TOKEN"));
 
-        connection.release();
+      const expo = new Expo();
 
-        if(err)
-          return reject(err);
-  
-        result = JSON.parse(JSON.stringify(result))[0];
-  
-        if(result.push_token) {
-  
-          if(!Expo.isExpoPushToken(result.push_token))
-            return reject(new Error("INVALID_PUSH_TOKEN"));
-  
-          const expo = new Expo();
-  
-          let messages = [{
-            to: result.push_token,
-            title,
-            body
-          }];
-  
-          try {
-            await expo.sendPushNotificationsAsync(messages);
-            console.log("notification sent");
-          } catch(e) {
-            return reject(e);
-          }
-        }
-  
-        return resolve(null);
-      });
-    });
+      let messages = [{
+        to: user.push_token,
+        title,
+        body
+      }];
 
-    
+      try {
+        await expo.sendPushNotificationsAsync(messages);
+      } catch(e) {
+        console.error(e);
+        return reject(e);
+      }
+    }
+  
+    return resolve(null);
 
   });
 };

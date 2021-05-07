@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const { AuthenticationError } = require("apollo-server");
 const User = require("../db_models/User");
 
-const editUser = (name, surname, email, username, password, profile_pic, profile_type, profile_privacy_type, user, mysqlPool) => {
+const editUser = (name, surname, email, username, password, profile_pic, profile_type, profile_privacy_type, user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
