@@ -73,8 +73,6 @@ const typeDefs = gql`
     getUserFeed(page: Int!, perPage: Int!): [Post]
     getUserPosts(page: Int!, perPage: Int!, user_id: Int): [Post]
     getFollowRequests: [FollowRelation]
-    getFollowers: [FollowRelation]
-    getFollowing: [FollowRelation]
     getPostReactions(page: Int!, perPage: Int!, id: Int!): [User]
     getPostComments(page: Int!, perPage: Int!, id: Int!): [Post]
     getPostTags(id: Int!): [PostTags]

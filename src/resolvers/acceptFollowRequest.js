@@ -1,10 +1,8 @@
 const { AuthenticationError } = require("apollo-server");
-const acceptRelation = require("../helpers/controllers/relations/acceptRelation");
-const getUserById = require("../helpers/controllers/users/getUserById");
 const User = require("../db_models/User");
 const FollowRelation = require("../db_models/FollowRelation");
 
-const acceptFollowRequest = (user_id, user, mysqlPool) => {
+const acceptFollowRequest = (user_id, user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)

@@ -7,8 +7,6 @@ const getUserData = require("../resolvers/getUserData");
 const getUserFeed = require("../resolvers/getUserFeed");
 const getUserPosts = require("../resolvers/getUserPosts");
 const getFollowRequests = require("../resolvers/getFollowRequests");
-const getFollowers = require("../resolvers/getFollowers");
-const getFollowing = require("../resolvers/getFollowing");
 const getPostReactions = require("../resolvers/getPostReactions");
 const getPostComments = require("../resolvers/getPostComments");
 const getPostTags = require("../resolvers/getPostTags");
@@ -91,14 +89,6 @@ const resolvers = {
 
     getFollowRequests: (parent, args, context, info) => {
       return getFollowRequests(context.user, context.mysqlPool);
-    },
-
-    getFollowers: (parent, args, context, info) => {
-      return getFollowers(context.user, context.mysqlPool);
-    },
-
-    getFollowing: (parent, args, context, info) => {
-      return getFollowing(context.user, context.mysqlPool);
     },
 
     getPostReactions: (parent, args, context, info) => {
