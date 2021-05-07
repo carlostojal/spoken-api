@@ -69,9 +69,9 @@ const typeDefs = gql`
     sendConfirmationEmail(username: String!, password: String!): String
     logout: User
     refreshToken: String
-    getUserData(id: Int): User
-    getUserFeed(page: Int!, perPage: Int!): [Post]
-    getUserPosts(page: Int!, perPage: Int!, user_id: Int): [Post]
+    getUserData(id: ID): User
+    getUserFeed: [Post]
+    getUserPosts(user_id: ID): [Post]
     getFollowRequests: [FollowRelation]
     getPostReactions(page: Int!, perPage: Int!, id: Int!): [User]
     getPostComments(page: Int!, perPage: Int!, id: Int!): [Post]

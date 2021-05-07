@@ -4,7 +4,7 @@ const getFeedFromCache = require("../helpers/controllers/posts/getFeedFromCache"
 const saveFeedToCache = require("../helpers/controllers/posts/saveFeedToCache");
 const savePostToCache = require("../helpers/controllers/posts/savePostToCache");
 
-const getUserFeed = (page, perPage, user) => {
+const getUserFeed = (user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)

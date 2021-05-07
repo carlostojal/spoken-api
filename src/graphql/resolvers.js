@@ -33,7 +33,7 @@ const resolvers = {
   Query: {
     // get user tokens from username and password
     getToken: async (parent, args, context, info) => {
-      const tokens = await getToken(args.username, args.password, args.userPlatform, context.req.connection.remoteAddress, context.req.headers["user-agent"], args.pushToken, context.mysqlPool);
+      const tokens = await getToken(args.username, args.password, args.userPlatform, context.req.connection.remoteAddress, context.req.headers["user-agent"], args.pushToken);
       // send refresh token as httpOnly cookie
       context.res.cookie("refresh_token", tokens.refresh_token.value, {
         maxAge: process.env.REFRESH_TOKEN_DURATION * 24 * 3600 * 1000,
@@ -64,7 +64,7 @@ const resolvers = {
       // get refresh token from cookies
       const refresh_token = getCookieByName("refresh_token", context.req.headers.cookie);
       // get new tokens from refresh token
-      const tokens = await refreshToken(refresh_token, context.mysqlPool);
+      const tokens = await refreshToken(refresh_token);
       // send new refresh token through cookies
       context.res.cookie("refresh_token", tokens.refresh_token.value, {
         maxAge: process.env.REFRESH_TOKEN_DURATION * 24 * 3600 * 1000,
@@ -75,20 +75,20 @@ const resolvers = {
 
     // get user data from ID or for the current user
     getUserData: (parent, args, context, info) => {
-      return getUserData(args.id, context.user, context.mysqlPool);
+      return getUserData(args.id, context.user);
     },
 
     // get user feed posts
     getUserFeed: (parent, args, context, info) => {
-      return getUserFeed(args.page, args.perPage, context.user, context.mysqlPool);
+      return getUserFeed(context.user);
     },
 
     getUserPosts: (parent, args, context, info) => {
-      return getUserPosts(args.page, args.perPage, args.user_id, context.user, context.mysqlPool);
+      return getUserPosts(args.page, args.perPage, args.user_id, context.user);
     },
 
     getFollowRequests: (parent, args, context, info) => {
-      return getFollowRequests(context.user, context.mysqlPool);
+      return getFollowRequests(context.user);
     },
 
     getPostReactions: (parent, args, context, info) => {
@@ -116,7 +116,7 @@ const resolvers = {
   Mutation: {
     // registers a new user
     registerUser: (parent, args, context, info) => {
-      return registerUser(args.name, args.surname, args.birthdate, args.email, args.username, args.password, args.profile_type, args.profile_privacy_type, context.mysqlPool);
+      return registerUser(args.name, args.surname, args.birthdate, args.email, args.username, args.password, args.profile_type, args.profile_privacy_type);
     },
 
     confirmAccount: (parent, args, context, info) => {
@@ -130,21 +130,21 @@ const resolvers = {
 
     // creates a new post
     createPost: (parent, args, context, info) => {
-      return createPost(args.text, args.media_id, context.user, context.mysqlPool);
+      return createPost(args.text, args.media_id, context.user);
     },
 
     // starts following user
     followUser: (parent, args, context, info) => {
-      return followUser(args.id, context.user, context.mysqlPool);
+      return followUser(args.id, context.user);
     },
 
     // accepts follow request from user ID
     acceptFollowRequest: (parent, args, context, info) => {
-      return acceptFollowRequest(args.user_id, context.user, context.mysqlPool);
+      return acceptFollowRequest(args.user_id, context.user);
     },
 
     ignoreFollowRequest: (parent, args, context, info) => {
-      return ignoreFollowRequest(args.user_id, context.user, context.mysqlPool);
+      return ignoreFollowRequest(args.user_id, context.user);
     },
 
     // deletes post from post ID

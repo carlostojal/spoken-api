@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const createToken = require("../helpers/session/createToken");
 const Session = require("../db_models/Session");
 
-const refreshToken = (refresh_token, mysqlPool) => {
+const refreshToken = (refresh_token) => {
   return new Promise(async (resolve, reject) => {
 
     // get user by decoding token
