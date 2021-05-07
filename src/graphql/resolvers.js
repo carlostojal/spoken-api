@@ -158,7 +158,7 @@ const resolvers = {
 
     // create comment in post
     commentPost: (parent, args, context, info) => {
-      return commentPost(args.id, context.user, args.text, context.mysqlPool);
+      return commentPost(args.id, context.user, args.text);
     },
 
     // shares a existing post

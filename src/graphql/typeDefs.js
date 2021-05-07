@@ -32,6 +32,7 @@ const typeDefs = gql`
     text: String,
     media: Media,
     reactions: [User],
+    comments: [Post],
     edited: Boolean,
     original_post: Post,
     promoted: Boolean,

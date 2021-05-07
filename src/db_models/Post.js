@@ -13,9 +13,9 @@ const postSchema = new Schema({
   reactions: [{type: Schema.Types.ObjectId, ref: "User"}],
   comments: [{type: Schema.Types.ObjectId, ref: "Post"}],
   original_post: {type: Schema.Types.ObjectId, ref: "Post"},
-  edited: Boolean,
-  promoted: Boolean,
-  is_toxic: Boolean,
+  edited: {type: Schema.Types.Boolean, default: false},
+  promoted: {type: Schema.Types.Boolean, default: false},
+  is_toxic: {type: Schema.Types.Boolean, default: false},
   toxic_cause: String,
   review_status: String
 });
