@@ -10,6 +10,7 @@ const getFollowRequests = require("../resolvers/getFollowRequests");
 const getPostComments = require("../resolvers/getPostComments");
 const userSearch = require("../resolvers/userSearch");
 const getSessions = require("../resolvers/getSessions");
+const getPostViewsByHour = require("../resolvers/getPostViewsByHour");
 const registerUser = require("../resolvers/registerUser");
 const confirmAccount = require("../resolvers/confirmAccount");
 const editUser = require("../resolvers/editUser");
@@ -100,6 +101,10 @@ const resolvers = {
 
     getSessions: (parent, args, context, info) => {
       return getSessions(context.user);
+    },
+
+    getPostViewsByHour: (parent, args, context, info) => {
+      return getPostViewsByHour(args.id, context.user);
     }
 
   },

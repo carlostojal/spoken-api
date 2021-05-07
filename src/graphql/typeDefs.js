@@ -64,6 +64,11 @@ const typeDefs = gql`
     expires_at: String,
     user_platform: String
   }
+  
+  type Analytic {
+    labels: [String],
+    values: [Float]
+  }
 
   type Query {
     getToken(username: String!, password: String!, userPlatform: String, pushToken: String): String
@@ -77,6 +82,7 @@ const typeDefs = gql`
     getPostComments(id: Int!): [Post]
     userSearch(query: String!): [User]
     getSessions: [Session]
+    getPostViewsByHour(id: ID!): [Analytic]
   }
 
   type Mutation {
