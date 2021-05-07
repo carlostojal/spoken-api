@@ -28,7 +28,8 @@ const getPostComments = (post_id, user) => {
       comments = Post.find({original_post: post_id})
         .populate("poster")
         .populate("poster.profile_pic")
-        .populate("media");
+        .populate("media")
+        .populate("tags");
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_COMMENTS"));

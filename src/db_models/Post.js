@@ -6,6 +6,7 @@ const postSchema = new Schema({
   time: {type: Schema.Types.Date, default: Date.now},
   text: String,
   media: {type: Schema.Types.ObjectId, ref: "Media"},
+  tags: [{type: Schema.Types.ObjectId, ref: "Tag"}],
   original_post: {type: Schema.Types.ObjectId, ref: "Post"},
   edited: Boolean,
   promoted: Boolean,

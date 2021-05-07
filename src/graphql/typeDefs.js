@@ -74,7 +74,6 @@ const typeDefs = gql`
     getUserPosts(user_id: ID): [Post]
     getFollowRequests: [FollowRelation]
     getPostComments(id: Int!): [Post]
-    getPostTags(id: Int!): [PostTags]
     userSearch(query: String!): [User]
     getSessions: [Session]
   }
