@@ -42,7 +42,7 @@ const resolvers = {
 
     sendConfirmationEmail: async (parent, args, context, info) => {
       try {
-        await sendConfirmationEmail(args.username, args.password, context.mysqlPool);
+        await sendConfirmationEmail(args.username, args.password);
       } catch(e) {
         return e;
       }
