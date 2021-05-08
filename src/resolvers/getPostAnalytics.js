@@ -10,7 +10,7 @@ const getPostAnalytics = (post_id, type, user) => {
 
     let views = [];
     try {
-      views = await PostView.find({post: post_id});
+      views = await PostView.find({post: post_id}).populate("user");
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_VIEWS"))
@@ -60,6 +60,24 @@ const getPostAnalytics = (post_id, type, user) => {
           }
         });
         break;
+
+        case "views_by_age_range":
+          views.map((view) => {
+            const age = new Date().getFullYear() - new Date(view.user.birthdate).getFullYear();
+            result.labels = ["0-11", "12-18", "19-24", "25-49", "50+"];
+            result.values = [0, 0, 0, 0, 0];
+            if(age < 12)
+              result.values[0]++;
+            else if(age < 19)
+              result.values[1]++;
+            else if(age < 25)
+              result.values[2]++;
+            else if(age < 50)
+              result.values[3]++;
+            else
+              result.values[4]++;
+          });
+          break;
 
       default:
         return reject(new Error("NOT_IMPLEMENTED"));
