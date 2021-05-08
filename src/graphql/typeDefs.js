@@ -18,6 +18,7 @@ const typeDefs = gql`
     views_by_os
     views_by_platform
     views_by_age_range
+    reactions_by_age_range
     views_promoted_vs_regular
   }
 
