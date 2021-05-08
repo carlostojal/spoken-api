@@ -21,7 +21,7 @@ const refreshToken = (refresh_token) => {
     // get session data from token
     let session = null;
     try {
-      session = await Session.findOne({refresh_token});
+      session = await Session.findOne({token: refresh_token});
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_SESSION"));
@@ -34,7 +34,7 @@ const refreshToken = (refresh_token) => {
     const new_access_token = createToken(user, "access");
 
     try {
-      session.refresh_token = new_refresh_token.value;
+      session.token = new_refresh_token.value;
       session.expires_at = new_refresh_token.expires_at;
       await session.save();
     } catch(e) {
