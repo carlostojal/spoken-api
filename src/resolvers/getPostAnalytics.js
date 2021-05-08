@@ -36,7 +36,21 @@ const getPostAnalytics = (post_id, type, user) => {
           }
         });
         break;
-        
+
+      case "views_by_os":
+        views.map((view) => {
+          let os = view.user_os;
+          // if there is a view at this hour, increment the count
+          if(result.labels.includes(os)) {
+            result.values[result.labels.indexOf(os)]++;
+          } else {
+            // else there is not, so append both the label and the value to the arrays
+            result.labels.push(os);
+            result.values.push(1);
+          }
+        });
+        break;
+
       default:
         return reject(new Error("NOT_IMPLEMENTED"));
     }
