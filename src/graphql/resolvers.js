@@ -84,7 +84,7 @@ const resolvers = {
     },
 
     getUserPosts: (parent, args, context, info) => {
-      return getUserPosts(args.page, args.perPage, args.user_id, context.user);
+      return getUserPosts(args.user_id, context.user);
     },
 
     getFollowRequests: (parent, args, context, info) => {
