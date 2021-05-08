@@ -12,6 +12,16 @@ const typeDefs = gql`
     private
   }
 
+  enum AnalyticsType {
+    views_by_hour
+    reactions_by_user_interests
+    views_by_os
+    views_by_platform
+    views_by_age_range
+    reactions_by_age_range
+    views_promoted_vs_regular
+  }
+
   type User {
     _id: ID,
     name: String,
@@ -64,6 +74,11 @@ const typeDefs = gql`
     expires_at: String,
     user_platform: String
   }
+  
+  type Analytics {
+    labels: [String],
+    values: [Float]
+  }
 
   type Query {
     getToken(username: String!, password: String!, userPlatform: String, pushToken: String): String
@@ -77,6 +92,7 @@ const typeDefs = gql`
     getPostComments(id: Int!): [Post]
     userSearch(query: String!): [User]
     getSessions: [Session]
+    getPostAnalytics(id: ID!, type: AnalyticsType!): Analytics
   }
 
   type Mutation {
@@ -92,6 +108,7 @@ const typeDefs = gql`
     promotePost(id: Int!): String
     reactPost(id: Int!, user_lat: Float, user_long: Float, user_platform: String, user_os: String): Post
     commentPost(id: Int!, text: String!): Post
+    collectPostView(id: ID!, user_lat: Float, user_long: Float, user_platform: String, user_os: String, view_time: Float): Post
     addPostTag(tag_id: ID!, post_id: ID!): Tag
     deletePostTag(tag_id: ID!, post_id: ID!): Tag
     capturePostAttention(id: Int!, view_time: Float!, reacted: Boolean!, shared: Boolean!): Boolean

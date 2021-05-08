@@ -10,6 +10,7 @@ const getFollowRequests = require("../resolvers/getFollowRequests");
 const getPostComments = require("../resolvers/getPostComments");
 const userSearch = require("../resolvers/userSearch");
 const getSessions = require("../resolvers/getSessions");
+const getPostAnalytics = require("../resolvers/getPostAnalytics");
 const registerUser = require("../resolvers/registerUser");
 const confirmAccount = require("../resolvers/confirmAccount");
 const editUser = require("../resolvers/editUser");
@@ -22,6 +23,7 @@ const editPost = require("../resolvers/editPost");
 const promotePost = require("../resolvers/promotePost");
 const reactPost = require("../resolvers/reactPost");
 const commentPost = require("../resolvers/commentPost");
+const collectPostView = require("../resolvers/collectPostView");
 const addPostTag = require("../resolvers/addPostTag");
 const deletePostTag = require("../resolvers/deletePostTag");
 const setExpoPushToken = require("../resolvers/setExpoPushToken");
@@ -99,6 +101,10 @@ const resolvers = {
 
     getSessions: (parent, args, context, info) => {
       return getSessions(context.user);
+    },
+
+    getPostAnalytics: (parent, args, context, info) => {
+      return getPostAnalytics(args.id, args.type, context.user);
     }
 
   },
@@ -159,6 +165,10 @@ const resolvers = {
     // create comment in post
     commentPost: (parent, args, context, info) => {
       return commentPost(args.id, context.user, args.text);
+    },
+
+    collectPostView: (parent, args, context, info) => {
+      return collectPostView(args.id, args.user_lat, args.user_long, args.user_plarform, args.user_os, args.view_time, context.user);
     },
 
     addPostTag: (parent, args, context, info) => {

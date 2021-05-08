@@ -10,7 +10,8 @@ const postViewSchema = new Schema({
   },
   user_platform: String,
   user_os: String,
-  time: {type: Schema.Types.Date, default: Date.now}
+  time: {type: Schema.Types.Date, default: Date.now},
+  view_time: Number
 });
 
 module.exports = mongoose.model("PostView", postViewSchema);
