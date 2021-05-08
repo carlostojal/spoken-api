@@ -12,6 +12,15 @@ const typeDefs = gql`
     private
   }
 
+  enum AnalyticsType {
+    views_by_hour
+    reactions_by_user_interests
+    views_by_os
+    views_by_platform
+    views_by_age_range
+    views_promoted_vs_regular
+  }
+
   type User {
     _id: ID,
     name: String,
@@ -65,7 +74,7 @@ const typeDefs = gql`
     user_platform: String
   }
   
-  type Analytic {
+  type Analytics {
     labels: [String],
     values: [Float]
   }
@@ -82,7 +91,7 @@ const typeDefs = gql`
     getPostComments(id: Int!): [Post]
     userSearch(query: String!): [User]
     getSessions: [Session]
-    getPostViewsByHour(id: ID!): Analytic
+    getPostAnalytics(id: ID!, type: AnalyticsType!): Analytics
   }
 
   type Mutation {
