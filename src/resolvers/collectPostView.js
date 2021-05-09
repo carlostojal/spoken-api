@@ -31,9 +31,6 @@ const collectPostView = (post_id, user_lat, user_long, user_platform, user_os, v
       view_time
     });
 
-    console.log(user_platform);
-    console.log(postView);
-
     try {
       await postView.save();
     } catch(e) {

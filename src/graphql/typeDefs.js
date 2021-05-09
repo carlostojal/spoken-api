@@ -22,6 +22,11 @@ const typeDefs = gql`
     views_promoted_vs_regular
   }
 
+  enum MediaType {
+    image
+    audio
+  }
+
   type UserPermissions {
     collect_usage_data: Boolean
   }
@@ -60,8 +65,11 @@ const typeDefs = gql`
   type Media {
     _id: ID,
     url: String,
+    keywords: [String],
     is_nsfw: Boolean,
-    nsfw_cause: String
+    nsfw_cause: String,
+    review_status: String,
+    type: MediaType
   }
 
   type FollowRelation {
