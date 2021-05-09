@@ -89,7 +89,7 @@ const typeDefs = gql`
     getUserFeed: [Post]
     getUserPosts(user_id: ID): [Post]
     getFollowRequests: [FollowRelation]
-    getPostComments(id: Int!): [Post]
+    getPostComments(id: ID!): [Post]
     userSearch(query: String!): [User]
     getSessions: [Session]
     getPostAnalytics(id: ID!, type: AnalyticsType!): Analytics
@@ -99,21 +99,20 @@ const typeDefs = gql`
     registerUser(name: String!, surname: String!, birthdate: String!, email: String!, username: String!, password: String!, profile_pic_media_id: Int, profile_type: ProfileType!, profile_privacy_type: ProfilePrivacyType!): User
     confirmAccount(username: String!, code: Int!): User
     editUser(name: String!, surname: String!, email: String!, username: String!, password: String!, profile_pic: ID, profile_type: ProfileType!, profile_privacy_type: ProfilePrivacyType!): User
-    createPost(text: String!, media_id: Int): Post
+    createPost(text: String!, media_id: ID): Post
     followUser(id: String!): User
-    acceptFollowRequest(user_id: Int!): User
-    ignoreFollowRequest(user_id: Int!): User
-    deletePost(id: Int!): Post
-    editPost(id: Int!, text: String!): Post
-    promotePost(id: Int!): String
-    reactPost(id: Int!, user_lat: Float, user_long: Float, user_platform: String, user_os: String): Post
-    commentPost(id: Int!, text: String!): Post
+    acceptFollowRequest(user_id: ID!): User
+    ignoreFollowRequest(user_id: ID!): User
+    deletePost(id: ID!): Post
+    editPost(id: ID!, text: String!): Post
+    promotePost(id: ID!): String
+    reactPost(id: ID!, user_lat: Float, user_long: Float, user_platform: String, user_os: String): Post
+    commentPost(id: ID!, text: String!): Post
     collectPostView(id: ID!, user_lat: Float, user_long: Float, user_platform: String, user_os: String, view_time: Float): Post
     addPostTag(tag_id: ID!, post_id: ID!): Tag
     deletePostTag(tag_id: ID!, post_id: ID!): Tag
-    capturePostAttention(id: Int!, view_time: Float!, reacted: Boolean!, shared: Boolean!): Boolean
     setExpoPushToken(token: String!): Boolean
-    deleteSessionById(session_id: Int!): Session
+    deleteSessionById(session_id: ID!): Session
   }
 `;
 
