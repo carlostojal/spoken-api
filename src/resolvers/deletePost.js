@@ -18,7 +18,7 @@ const deletePost = (post_id, user) => {
     if(!post)
       return reject(new Error("POST_NOT_FOUND"));
 
-    if(post.poster != user._id)
+    if(!post.poster.equals(user._id))
       return reject(new Error("BAD_PERMISSIONS"));
 
     try {
