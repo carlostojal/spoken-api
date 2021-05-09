@@ -168,7 +168,7 @@ const resolvers = {
     },
 
     collectPostView: (parent, args, context, info) => {
-      return collectPostView(args.id, args.user_lat, args.user_long, args.user_plarform, args.user_os, args.view_time, context.user);
+      return collectPostView(args.id, args.user_lat, args.user_long, args.user_platform, args.user_os, args.view_time, context.user);
     },
 
     addPostTag: (parent, args, context, info) => {

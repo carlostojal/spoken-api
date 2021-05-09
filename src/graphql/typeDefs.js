@@ -22,6 +22,10 @@ const typeDefs = gql`
     views_promoted_vs_regular
   }
 
+  type UserPermissions {
+    collect_usage_data: Boolean
+  }
+
   type User {
     _id: ID,
     name: String,
@@ -30,9 +34,8 @@ const typeDefs = gql`
     username: String,
     profile_pic: Media,
     profile_type: String,
-    profile_privacy_type: String
-    is_followed: Boolean
-    is_himself: Boolean
+    profile_privacy_type: String,
+    permissions: UserPermissions
   }
 
   type Post {

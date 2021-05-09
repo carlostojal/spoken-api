@@ -2,7 +2,7 @@ const { AuthenticationError } = require("apollo-server");
 const Post = require("../db_models/Post");
 const PostView = require("../db_models/PostView");
 
-const collectPostView = (post_id, user_lat, user_long, user_plarform, user_os, view_time, user) => {
+const collectPostView = (post_id, user_lat, user_long, user_platform, user_os, view_time, user) => {
   return new Promise(async (resolve, reject) => {
 
     if(!user)
@@ -26,10 +26,13 @@ const collectPostView = (post_id, user_lat, user_long, user_plarform, user_os, v
         latitude: user_lat,
         longitude: user_long,
       },
-      user_plarform,
+      user_platform,
       user_os,
       view_time
     });
+
+    console.log(user_platform);
+    console.log(postView);
 
     try {
       await postView.save();

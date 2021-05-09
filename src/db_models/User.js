@@ -16,7 +16,10 @@ const userSchema = new Schema({
   profile_pic: {type: Schema.Types.ObjectId, ref: "Media"},
   profile_privacy_type: String,
   profile_type: String,
-  push_token: String
+  push_token: String,
+  permissions: {
+    collect_usage_data: {type: Boolean, default: true}
+  }
 });
 
 module.exports = mongoose.model("User", userSchema);
