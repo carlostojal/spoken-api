@@ -8,11 +8,17 @@ const getFeed = (user_id) => {
     
     let posts = [];
     try {
-      posts = await Post.find({poster: {$in: cur_user.following}})
+      posts = await Post.find({$or: [
+        {poster: {$in: cur_user.following}},
+        {poster: user_id}
+      ]})
         .populate("poster")
         .populate("poster.profile_pic")
         .populate("media")
-        .populate("tags");
+        .populate("tags")
+        .populate("reactions")
+        .populate("comments")
+        .sort(["time", -1]);
     } catch(e) {
       console.error(e);
       return reject(e);
