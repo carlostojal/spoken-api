@@ -18,7 +18,7 @@ const getFeed = (user_id) => {
         .populate("tags")
         .populate("reactions")
         .populate("comments")
-        .sort(["time", -1]);
+        .sort([["time", -1]]);
     } catch(e) {
       console.error(e);
       return reject(e);
