@@ -37,9 +37,13 @@ const typeDefs = gql`
     surname: String,
     birthdate: String,
     username: String,
+    followers: [User],
+    following: [User],
+    interests: [Tag],
     profile_pic: Media,
     profile_type: String,
     profile_privacy_type: String,
+    doing_detox: Boolean,
     permissions: UserPermissions
   }
 
@@ -122,6 +126,8 @@ const typeDefs = gql`
     collectPostView(id: ID!, user_lat: Float, user_long: Float, user_platform: String, user_os: String, view_time: Float): Post
     addPostTag(tag_id: ID!, post_id: ID!): Tag
     deletePostTag(tag_id: ID!, post_id: ID!): Tag
+    addUserInterest(tag_id: ID!): Tag
+    deleteUserInterest(tag_id: ID!): Tag
     setExpoPushToken(token: String!): Boolean
     deleteSessionById(session_id: ID!): Session
   }

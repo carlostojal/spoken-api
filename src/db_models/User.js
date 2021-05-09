@@ -13,9 +13,11 @@ const userSchema = new Schema({
   followers: [{type: Schema.Types.ObjectId, ref: "User"}],
   following: [{type: Schema.Types.ObjectId, ref: "User"}],
   posts: [{type: Schema.Types.ObjectId, ref: "Post"}],
+  interests: [{type: Schema.Types.ObjectId, ref: "Tag"}],
   profile_pic: {type: Schema.Types.ObjectId, ref: "Media"},
   profile_privacy_type: String,
   profile_type: String,
+  doing_detox: {type: Boolean, default: false},
   push_token: String,
   permissions: {
     collect_usage_data: {type: Boolean, default: true}

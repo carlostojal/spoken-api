@@ -28,6 +28,8 @@ const addPostTag = require("../resolvers/addPostTag");
 const deletePostTag = require("../resolvers/deletePostTag");
 const setExpoPushToken = require("../resolvers/setExpoPushToken");
 const deleteSessionById = require("../resolvers/deleteSessionById");
+const addUserInterest = require("../resolvers/addUserInterest");
+const deleteUserInterest = require("../resolvers/deleteUserInterest");
 
 const resolvers = {
   Query: {
@@ -177,6 +179,14 @@ const resolvers = {
 
     deletePostTag: (parent, args, context, info) => {
       return deletePostTag(args.tag_id, args.post_id, context.user);
+    },
+
+    addUserInterest: (parent, args, context, info) => {
+      return addUserInterest(args.tag_id, context.user);
+    },
+
+    deleteUserInterest: (parent, args, context, info) => {
+      return deleteUserInterest(args.tag_id, context.user);
     },
 
     setExpoPushToken: (parent, args, context, info) => {
