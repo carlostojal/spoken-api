@@ -23,6 +23,16 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, pu
     if(!user)
       return reject(new Error("USER_NOT_FOUND"));
 
+    if(user.doing_detox) {
+      user.doing_detox = false;
+      try {
+        await user.save();
+      } catch(e) {
+        console.error(e);
+        return reject(new Error("ERROR_REMOVING_DETOX"));
+      }
+    }
+
     bcrypt.compare(password, user.password, async (err, compareSuccess) => { // compare the provided password with the user one
     
       if (err)

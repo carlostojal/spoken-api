@@ -37,6 +37,8 @@ const addUserInterest = (tag_id, user) => {
     } catch(e) {
       return reject(new Error("ERROR_SAVING_USER"));
     }
+
+    return resolve(cur_user);
   });
 };
 

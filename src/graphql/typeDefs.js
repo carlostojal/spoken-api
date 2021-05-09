@@ -128,6 +128,7 @@ const typeDefs = gql`
     deletePostTag(tag_id: ID!, post_id: ID!): Tag
     addUserInterest(tag_id: ID!): Tag
     deleteUserInterest(tag_id: ID!): Tag
+    startDetox: User
     setExpoPushToken(token: String!): Boolean
     deleteSessionById(session_id: ID!): Session
   }
