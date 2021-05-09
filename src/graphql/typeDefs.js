@@ -25,6 +25,7 @@ const typeDefs = gql`
   enum MediaType {
     image
     audio
+    unknown
   }
 
   type UserPermissions {
