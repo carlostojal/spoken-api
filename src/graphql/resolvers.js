@@ -6,6 +6,7 @@ const refreshToken = require("../resolvers/refreshToken");
 const getUserData = require("../resolvers/getUserData");
 const getUserFeed = require("../resolvers/getUserFeed");
 const getUserPosts = require("../resolvers/getUserPosts");
+const getUserMedia = require("../resolvers/getUserMedia");
 const getFollowRequests = require("../resolvers/getFollowRequests");
 const getPostComments = require("../resolvers/getPostComments");
 const userSearch = require("../resolvers/userSearch");
@@ -88,6 +89,10 @@ const resolvers = {
 
     getUserPosts: (parent, args, context, info) => {
       return getUserPosts(args.user_id, context.user);
+    },
+
+    getUserMedia: (parent, args, context, info) => {
+      return getUserMedia(args.user_id, context.user);
     },
 
     getFollowRequests: (parent, args, context, info) => {

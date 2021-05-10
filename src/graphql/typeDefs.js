@@ -110,6 +110,7 @@ const typeDefs = gql`
     getUserData(id: ID): User
     getUserFeed: [Post]
     getUserPosts(user_id: ID): [Post]
+    getUserMedia(user_id: ID): [Media]
     getFollowRequests: [FollowRelation]
     getPostComments(id: ID!): [Post]
     userSearch(query: String!): [User]
