@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const createToken = require("../helpers/session/createToken");
 const Session = require("../db_models/Session");
 
-const refreshToken = (refresh_token) => {
+const refreshToken = (refresh_token, user_lat, user_long) => {
   return new Promise(async (resolve, reject) => {
 
     // get user by decoding token
@@ -34,8 +34,15 @@ const refreshToken = (refresh_token) => {
     const new_access_token = createToken(user, "access");
 
     try {
+      let user_location = null;
+      if(user_lat && user_long) {
+        user_location = {
+          coordinates: [user_lat, user_long]
+        };
+      }
       session.token = new_refresh_token.value;
       session.expires_at = new_refresh_token.expires_at;
+      session.user_location = user_location;
       await session.save();
     } catch(e) {
       console.error(e);

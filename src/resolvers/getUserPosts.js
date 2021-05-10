@@ -27,10 +27,15 @@ const getUserPosts = (user_id, user) => {
     let posts = [];
     try {
       posts = await Post.find({poster: user_id || user._id})
+        .populate("original_post")
+        .populate("original_post.poster")
         .populate("poster")
         .populate("poster.profile_pic")
         .populate("media")
-        .populate("tags");
+        .populate("tags")
+        .populate("reactions")
+        .populate("comments")
+        .sort([["time", -1]]);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_POSTS"));

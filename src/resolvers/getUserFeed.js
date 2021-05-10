@@ -10,9 +10,9 @@ const getUserFeed = (user) => {
     if(!user)
       return reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
-    let posts;
+    let posts = null;
     try {
-      posts = await getFeedFromCache(user.id);
+      // posts = await getFeedFromCache(user.id);
       if(!posts) {
         posts = await getFeed(user.id);
         try {

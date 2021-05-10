@@ -12,6 +12,7 @@ const postSchema = new Schema({
   // the reactions here are passed to the frontend
   reactions: [{type: Schema.Types.ObjectId, ref: "User"}],
   comments: [{type: Schema.Types.ObjectId, ref: "Post"}],
+  viewers: [{type: Schema.Types.ObjectId, ref: "User"}],
   original_post: {type: Schema.Types.ObjectId, ref: "Post"},
   edited: {type: Schema.Types.Boolean, default: false},
   promoted: {type: Schema.Types.Boolean, default: false},

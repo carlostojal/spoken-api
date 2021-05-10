@@ -5,7 +5,7 @@ const createToken = require("../helpers/session/createToken");
 const User = require("../db_models/User");
 const Session = require("../db_models/Session");
 
-const getToken = (username, password, userPlatform, remoteAddress, userAgent, pushToken) => {
+const getToken = (username, password, userPlatform, remoteAddress, userAgent, pushToken, user_lat, user_long) => {
   return new Promise(async (resolve, reject) => {
 
     let user; 
@@ -71,11 +71,20 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, pu
       const refresh_token = createToken(user, "refresh");
       const access_token = createToken(user, "access");
 
+      let user_location = null;
+
+      if(user_lat && user_long) {
+        user_location = {
+          coordinates: [user_lat, user_long]
+        };
+      }
+
       const session = Session({
         user: user._id,
         token: refresh_token.value,
         expires_at: new Date(refresh_token.expires_at),
-        user_platform: platformData
+        user_platform: platformData,
+        user_location
       });
 
       try {

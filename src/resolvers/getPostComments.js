@@ -29,7 +29,10 @@ const getPostComments = (post_id, user) => {
         .populate("poster")
         .populate("poster.profile_pic")
         .populate("media")
-        .populate("tags");
+        .populate("tags")
+        .populate("reactions")
+        .populate("comments")
+        .sort([["time", -1]]);
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_COMMENTS"));

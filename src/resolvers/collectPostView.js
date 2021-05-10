@@ -18,6 +18,16 @@ const collectPostView = (post_id, user_lat, user_long, user_platform, user_os, v
 
     if(!post)
       return reject(new Error("POST_NOT_FOUND"));
+
+    if(!post.viewers.includes(user._id)) {
+      post.viewers.push(user._id);
+      try {
+        await post.save();
+      } catch(e) {
+        console.error(e);
+        return reject(new Error("ERROR_SAVING_POST"));
+      }
+    }
     
     const postView = new PostView({
       user: user._id,

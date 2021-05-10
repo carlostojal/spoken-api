@@ -97,10 +97,10 @@ const typeDefs = gql`
   }
 
   type Query {
-    getToken(username: String!, password: String!, userPlatform: String, pushToken: String): String
+    getToken(username: String!, password: String!, userPlatform: String, pushToken: String, user_lat: Float, user_long: Float): String
     sendConfirmationEmail(username: String!, password: String!): String
     logout: User
-    refreshToken: String
+    refreshToken(userPlatform: String, user_lat: Float, user_long: Float): String
     getUserData(id: ID): User
     getUserFeed: [Post]
     getUserPosts(user_id: ID): [Post]

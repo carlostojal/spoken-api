@@ -35,7 +35,7 @@ const resolvers = {
   Query: {
     // get user tokens from username and password
     getToken: async (parent, args, context, info) => {
-      const tokens = await getToken(args.username, args.password, args.userPlatform, context.req.connection.remoteAddress, context.req.headers["user-agent"], args.pushToken);
+      const tokens = await getToken(args.username, args.password, args.userPlatform, context.req.connection.remoteAddress, context.req.headers["user-agent"], args.pushToken, args.user_lat, args.user_long);
       // send refresh token as httpOnly cookie
       context.res.cookie("refresh_token", tokens.refresh_token.value, {
         maxAge: process.env.REFRESH_TOKEN_DURATION * 24 * 3600 * 1000,
@@ -66,7 +66,7 @@ const resolvers = {
       // get refresh token from cookies
       const refresh_token = getCookieByName("refresh_token", context.req.headers.cookie);
       // get new tokens from refresh token
-      const tokens = await refreshToken(refresh_token);
+      const tokens = await refreshToken(refresh_token, args.user_lat, args.user_long);
       // send new refresh token through cookies
       context.res.cookie("refresh_token", tokens.refresh_token.value, {
         maxAge: process.env.REFRESH_TOKEN_DURATION * 24 * 3600 * 1000,
