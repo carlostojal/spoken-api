@@ -11,6 +11,7 @@ const getPostComments = require("../resolvers/getPostComments");
 const userSearch = require("../resolvers/userSearch");
 const getSessions = require("../resolvers/getSessions");
 const getPostAnalytics = require("../resolvers/getPostAnalytics");
+const getNearbyUsers = require("../resolvers/getNearbyUsers");
 const registerUser = require("../resolvers/registerUser");
 const confirmAccount = require("../resolvers/confirmAccount");
 const editUser = require("../resolvers/editUser");
@@ -107,6 +108,10 @@ const resolvers = {
 
     getPostAnalytics: (parent, args, context, info) => {
       return getPostAnalytics(args.id, args.type, context.user);
+    },
+
+    getNearbyUsers: (parent, args, context, info) => {
+      return getNearbyUsers(args.current_lat, args.current_long, args.max_distance, context.user);
     }
 
   },

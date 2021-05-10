@@ -95,6 +95,7 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, pu
       }
 
       try {
+        user.sessions.push(session._id);
         user.push_token = pushToken;
         await user.save();
       } catch(e) {

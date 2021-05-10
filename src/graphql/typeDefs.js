@@ -109,6 +109,7 @@ const typeDefs = gql`
     userSearch(query: String!): [User]
     getSessions: [Session]
     getPostAnalytics(id: ID!, type: AnalyticsType!): Analytics
+    getNearbyUsers(current_lat: Float!, current_long: Float!, max_distance: Int!): [User]
   }
 
   type Mutation {

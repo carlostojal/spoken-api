@@ -18,6 +18,7 @@ const userSchema = new Schema({
   profile_privacy_type: String,
   profile_type: String,
   doing_detox: {type: Boolean, default: false},
+  sessions: [{type: Schema.Types.ObjectId, ref: "Session"}],
   push_token: String,
   permissions: {
     collect_usage_data: {type: Boolean, default: true}
