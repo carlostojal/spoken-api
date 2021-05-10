@@ -8,6 +8,7 @@ const sessionSchema = new Schema({
   token: String,
   created_at: {type: Schema.Types.Date, default: Date.now},
   expires_at: Date,
+  last_refresh: {type: Schema.Types.Date, default: Date.now},
   user_platform: String,
   user_location: {
     type: LocationPointSchema,

@@ -32,6 +32,10 @@ const typeDefs = gql`
     collect_usage_data: Boolean
   }
 
+  type Location {
+    coordinates: [Float]
+  }
+
   type User {
     _id: ID,
     name: String,
@@ -86,9 +90,11 @@ const typeDefs = gql`
 
   type Session {
     _id: ID,
+    user: User,
     created_at: String,
     expires_at: String,
-    user_platform: String
+    user_platform: String,
+    user_location: Location
   }
   
   type Analytics {
