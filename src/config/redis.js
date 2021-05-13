@@ -3,7 +3,8 @@ const redis = require("redis");
 module.exports = new Promise((resolve, reject) => {
   console.log("Starting Redis client...");
 
-  const client = redis.createClient();
+  const client = redis.createClient(process.env.REDIS_PORT, process.env.REDIS_HOST);
+  client.auth(process.env.REDIS_PASSWORD)
 
   client.on("connect", () => {
     console.log("Redis client connected.\n");
