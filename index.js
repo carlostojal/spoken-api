@@ -5,7 +5,6 @@ const cors = require("cors");
 const os = require("os");
 require("dotenv").config({ path: ".env" });
 require("log-timestamp");
-require("./src/helpers/jobs")(); // cron jobs
 const typeDefs = require("./src/graphql/typeDefs");
 const resolvers = require("./src/graphql/resolvers");
 const getUserByToken = require("./src/helpers/session/getUserByToken");

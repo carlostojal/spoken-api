@@ -4,7 +4,7 @@ const User = require("../db_models/User");
 const getNearbyUsers = (current_lat, current_long, max_distance, user) => {
   return new Promise(async (resolve, reject) => {
 
-    if(max_distance > process.env.MAX_QUERY_DISTANCE)
+    if(max_distance > process.env.MAX_NEARBY_QUERY_DISTANCE)
       return reject(new Error("RANGE_TOO_BIG"));
 
     let sessions = null;
