@@ -9,16 +9,18 @@ const getNearbyUsers = (current_lat, current_long, max_distance, user) => {
 
     let sessions = null;
     try {
-      sessions = await Session.find({$and: [
-        {user_location: {$near: {
-          $maxDistance: max_distance,
-          $geometry: {
-            type: "Point",
-            coordinates: [current_lat, current_long]
+      sessions = await Session.find({$and: [{
+        user_location: {
+          $near: {
+              $maxDistance: max_distance,
+              $geometry: {
+                type: "Point",
+                coordinates: [current_lat, current_long]
+              }
           }
-          }}
-        },
-        {last_refresh: {$gte: Date.now() - (process.env.ACTIVE_USER_SESSION_AGE * 60 * 1000)}}
+        }
+      },
+      {last_refresh: {$gte: Date.now() - (process.env.ACTIVE_USER_SESSION_AGE * 60 * 1000)}}
       ]})
         .populate("user")
         .populate("user.profile_pic");
