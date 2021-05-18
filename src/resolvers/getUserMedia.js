@@ -11,7 +11,7 @@ const getUserMedia = (user_id, user) => {
     
     let media = null;
     try {
-      media = await Media.find({user: target_user, type: "image"});
+      media = await Media.find({user: target_user, type: "image"}).sort("-time");
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_MEDIA"));
