@@ -27,10 +27,21 @@ const getUserPosts = (user_id, user) => {
     let posts = [];
     try {
       posts = await Post.find({poster: user_id || user._id})
-        .populate("original_post")
-        .populate("original_post.poster")
-        .populate("poster")
-        .populate("poster.profile_pic")
+        .populate({
+          path: "original_post",
+          populate: {
+            path: "poster",
+            populate: {
+              path: "profile_pic"
+            }
+          }
+        })
+        .populate({
+          path: "poster",
+          populate: {
+            path: "profile_pic"
+          }
+        })
         .populate("media")
         .populate("tags")
         .populate("reactions")

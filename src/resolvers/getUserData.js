@@ -16,7 +16,10 @@ const getUserData = (id, user) => {
     try {
       returnUser = await getUserFromCache(id);
       if(!returnUser)
-        returnUser = await User.findById(id).populate("profile_pic");
+        returnUser = await User.findById(id)
+          .populate("profile_pic")
+          .populate("followers")
+          .populate("following");
     } catch(e) {
       console.error(e);
       return reject(new Error("ERROR_GETTING_USER"));

@@ -19,7 +19,7 @@ const reactPost = (post_id, user_lat, user_long, user_platform, user_os, user) =
     if(!post)
       return reject(new Error("POST_NOT_FOUND"));
 
-    if(user._id != post.poster && !user.following.includes(post.poster))
+    if(!user._id.equals(post.poster) && !user.following.includes(post.poster))
       return reject(new Error("BAD_PERMISSIONS"));
 
     let reaction = null;
