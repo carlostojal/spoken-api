@@ -32,10 +32,10 @@ const collectPostView = (post_id, user_lat, user_long, user_platform, user_os, v
     const postView = new PostView({
       user: user._id,
       post: post_id,
-      user_location: {
-        latitude: user_lat,
-        longitude: user_long,
-      },
+      user_location: user_lat && user_long ? 
+      {
+        coordinates: [user_lat, user_long]
+      } : null,
       user_platform,
       user_os,
       view_time

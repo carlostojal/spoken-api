@@ -45,10 +45,10 @@ const reactPost = (post_id, user_lat, user_long, user_platform, user_os, user) =
         let new_reaction = new PostReaction({
           user: user._id,
           post: post._id,
-          user_location: {
-            latitude: user_lat,
-            longitude: user_long
-          },
+          user_location: user_lat && user_long ? 
+          {
+            coordinates: [user_lat, user_long]
+          } : null,
           user_platform,
           user_os
         });
