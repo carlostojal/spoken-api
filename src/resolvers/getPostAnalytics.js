@@ -12,7 +12,7 @@ const getPostAnalytics = (post_id, type, user) => {
     let reactions = [];
 
     // get from the database what is being requested
-    if(type.includes("views")) {
+    if(type.includes("view")) {
       try {
         views = await PostView.find({post: post_id}).populate("user");
       } catch(e) {
@@ -35,7 +35,28 @@ const getPostAnalytics = (post_id, type, user) => {
 
     switch(type) {
 
+      case "average_view_time":
+        let sum = 0;
+        views.map((view) => {
+          sum += view.view_time
+        });
+        console.log(sum);
+        console.log(views.length);
+        console.log(sum / views.length);
+        result.labels.push("average");
+        result.values.push(sum / views.length);
+        break;
+
       case "views_by_hour":
+        views.sort((a, b) => {
+          const a_date = new Date(a.time).getHours();
+          const b_date = new Date(b.time).getHours();
+          if(a_date > b_date)
+            return 1;
+          else if(a_date < b_date)
+            return -1;
+          return 0;
+        });
         views.map((view) => {
           let hour = new Date(view.time).getHours();
           // if there is a view at this hour, increment the count
@@ -74,10 +95,10 @@ const getPostAnalytics = (post_id, type, user) => {
         break;
 
       case "views_by_age_range":
+        result.labels = ["0-11", "12-18", "19-24", "25-49", "50+"];
+        result.values = [0, 0, 0, 0, 0];
         views.map((view) => {
           const age = new Date().getFullYear() - new Date(view.user.birthdate).getFullYear();
-          result.labels = ["0-11", "12-18", "19-24", "25-49", "50+"];
-          result.values = [0, 0, 0, 0, 0];
           if(age < 12)
             result.values[0]++;
           else if(age < 19)

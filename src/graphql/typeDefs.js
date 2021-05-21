@@ -13,6 +13,7 @@ const typeDefs = gql`
   }
 
   enum AnalyticsType {
+    average_view_time
     views_by_hour
     reactions_by_user_interests
     views_by_os
