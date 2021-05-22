@@ -20,7 +20,7 @@ const getUserPosts = (user_id, user) => {
       }
 
       // if the account is private, check if the user follows
-      if(user1.profile_privacy_type == "private" && !user.following.includes(user1._id))
+      if(user1.profile_privacy_type == "private" && !user.following.includes(user1._id) && !user1._id.equals(user._id))
         return reject(new Error("NOT_ALLOWED"));
     }
 
