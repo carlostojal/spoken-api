@@ -1,22 +1,20 @@
 
-const getFeedFromCache = (user_id) => {
-  return new Promise(async (resolve, reject) => {
+const getFeedFromCache = async (user_id) => {
 
     let redisClient;
     try {
       redisClient = await require("../../../config/redis");
     } catch(e) {
-      return reject(e);
+      throw e;
     }
 
     redisClient.get(`feed:${user_id}`, (err, result) => {
 
       if(err)
-        return reject(err);
+        throw err;
 
-      return resolve(result ? JSON.parse(result) : null);
+      return result ? JSON.parse(result) : null;
     });
-  });
 };
 
 module.exports = getFeedFromCache;

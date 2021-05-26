@@ -2,44 +2,42 @@ const { AuthenticationError } = require("apollo-server");
 const User = require("../db_models/User");
 const Tag = require("../db_models/Tag");
 
-const deleteUserInterest = (tag_id, user) => {
-  return new Promise(async (resolve, reject) => {
+const deleteUserInterest = async (tag_id, user) => {
 
-    if(!user)
-      return reject(new AuthenticationError("BAD_AUTHENTICATION"));
+  if(!user)
+    throw new AuthenticationError("BAD_AUTHENTICATION");
 
-    if(!user.interests.includes(tag_id))
-      return reject(new Error("INTEREST_NOT_ADDED"));
+  if(!user.interests.includes(tag_id))
+    throw new Error("INTEREST_NOT_ADDED");
 
-    let tag = null;
-    try {
-      tag = await Tag.findById(tag_id);
-    } catch(e) {
-      console.error(e);
-      return reject(new Error("ERROR_GETTING_TAG"));
-    }
+  let tag = null;
+  try {
+    tag = await Tag.findById(tag_id);
+  } catch(e) {
+    console.error(e);
+    throw new Error("ERROR_GETTING_TAG");
+  }
 
-    if(!tag)
-      return reject(new Error("TAG_NOT_FOUND"));
+  if(!tag)
+    throw new Error("TAG_NOT_FOUND");
 
-    let cur_user = null;
-    try {
-      cur_user = await User.findById(user._id);
-    } catch(e) {
-      console.error(e);
-      return reject(new Error("ERROR_GETTING_USER"));
-    }
+  let cur_user = null;
+  try {
+    cur_user = await User.findById(user._id);
+  } catch(e) {
+    console.error(e);
+    throw new Error("ERROR_GETTING_USER");
+  }
 
-    cur_user.interests.pop(tag_id);
+  cur_user.interests.pop(tag_id);
 
-    try {
-      await cur_user.save();
-    } catch(e) {
-      return reject(new Error("ERROR_SAVING_USER"));
-    }
+  try {
+    await cur_user.save();
+  } catch(e) {
+    throw new Error("ERROR_SAVING_USER");
+  }
 
-    return resolve(cur_user);
-  });
+  return cur_user;
 };
 
 module.exports = deleteUserInterest;

@@ -2,66 +2,64 @@ const { AuthenticationError } = require("apollo-server");
 const User = require("../db_models/User");
 const FollowRelation = require("../db_models/FollowRelation");
 
-const followUser = (id, user) => {
-  return new Promise(async (resolve, reject) => {
+const followUser = async (id, user) => {
 
-    if(!user)
-      reject(new AuthenticationError("BAD_AUTHENTICATION"));
+  if(!user)
+    throw new AuthenticationError("BAD_AUTHENTICATION");
 
-    if(id == user._id)
-      reject(new Error("USER_FOLLOWING_HIMSELF"));
+  if(id == user._id)
+    throw new Error("USER_FOLLOWING_HIMSELF");
 
-    let user1 = null;
-    try {
-      user1 = await User.findById(id);
-    } catch(e) {
-      console.error(e);
-      return reject(new Error("ERROR_GETTING_USER"));
-    }
+  let user1 = null;
+  try {
+    user1 = await User.findById(id);
+  } catch(e) {
+    console.error(e);
+    throw new Error("ERROR_GETTING_USER");
+  }
 
-    if(!user1)
-      return reject(new Error("USER_NOT_FOUND"));
+  if(!user1)
+    throw new Error("USER_NOT_FOUND");
 
-    const accepted = user1.profile_privacy_type == "public";
+  const accepted = user1.profile_privacy_type == "public";
 
-    try {
+  try {
 
-      let existing = await FollowRelation.findOne({user: user._id, follows: user1._id});
-      let cur_user = await User.findById(user._id);
+    let existing = await FollowRelation.findOne({user: user._id, follows: user1._id});
+    let cur_user = await User.findById(user._id);
 
-      if(existing) {
+    if(existing) {
 
-        cur_user.following.pop(user1._id);
-        user1.followers.pop(cur_user._id);
+      cur_user.following.pop(user1._id);
+      user1.followers.pop(cur_user._id);
+      await cur_user.save();
+      await user1.save();
+      await existing.remove();
+
+    } else {
+
+      if(accepted) {
+        cur_user.following.push(id);
+        user1.followers.push(user._id);
         await cur_user.save();
         await user1.save();
-        await existing.remove();
-
-      } else {
-
-        if(accepted) {
-          cur_user.following.push(id);
-          user1.followers.push(user._id);
-          await cur_user.save();
-          await user1.save();
-        }
-
-        const followRelation = new FollowRelation({
-          user: user._id,
-          follows: user1._id,
-          accepted
-        });
-
-        await followRelation.save();
-
       }
 
-    } catch(e) {
-        return reject(new Error("ERROR_CREATING_RELATION"));
+      const followRelation = new FollowRelation({
+        user: user._id,
+        follows: user1._id,
+        accepted
+      });
+
+      await followRelation.save();
+
     }
 
-    return resolve(user1);
-  });
+  } catch(e) {
+      throw new Error("ERROR_CREATING_RELATION");
+  }
+
+  return user1;
 };
 
 module.exports = followUser;

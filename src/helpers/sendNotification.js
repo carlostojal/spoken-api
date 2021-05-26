@@ -1,21 +1,20 @@
 const { Expo } = require("expo-server-sdk");
 const User = require("../db_models/User");
 
-const sendNotification = (title, body, user_id) => {
-  return new Promise(async (resolve, reject) => {
-
-    let user = null;
+const sendNotification = async (title, body, user_id) => {
+    
+  let user = null;
     try {
       user = await User.findById(user_id);
     } catch(e) {
       console.error(e);
-      return reject(e);
+      throw e;
     }
 
     if(user.push_token) {
 
       if(!Expo.isExpoPushToken(user.push_token))
-        return reject(new Error("INVALID_PUSH_TOKEN"));
+        throw new Error("INVALID_PUSH_TOKEN");
 
       const expo = new Expo();
 
@@ -29,13 +28,11 @@ const sendNotification = (title, body, user_id) => {
         await expo.sendPushNotificationsAsync(messages);
       } catch(e) {
         console.error(e);
-        return reject(e);
+        throw e;
       }
     }
   
-    return resolve(null);
-
-  });
+    return;
 };
 
 module.exports = sendNotification;

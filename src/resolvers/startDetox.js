@@ -2,36 +2,34 @@ const { AuthenticationError } = require("apollo-server");
 const User = require("../db_models/User");
 const Session = require("../db_models/Session");
 
-const startDetox = (user) => {
-  return new Promise(async (resolve, reject) => {
+const startDetox = async (user) => {
 
-    if(!user)
-      return reject(new AuthenticationError("BAD_AUTHENTICATION"));
+  if(!user)
+    throw new AuthenticationError("BAD_AUTHENTICATION");
 
-    let cur_user = null;
-    try {
-      cur_user = await User.findById(user._id);
-    } catch(e) {
-      console.error(e);
-      return reject(new Error("ERROR_GETTING_USER"));
-    }
+  let cur_user = null;
+  try {
+    cur_user = await User.findById(user._id);
+  } catch(e) {
+    console.error(e);
+    throw new Error("ERROR_GETTING_USER");
+  }
 
-    cur_user.doing_detox = true;
+  cur_user.doing_detox = true;
 
-    try {
-      await cur_user.save();
-    } catch(e) {
-      return reject(new Error("ERROR_SAVING_USER"));
-    }
+  try {
+    await cur_user.save();
+  } catch(e) {
+    throw new Error("ERROR_SAVING_USER");
+  }
 
-    try {
-      await Session.deleteMany({user: user._id});
-    } catch(e) {
-      return reject(new Error("ERROR_ENDING_SESSIONS"));
-    }
+  try {
+    await Session.deleteMany({user: user._id});
+  } catch(e) {
+    throw new Error("ERROR_ENDING_SESSIONS");
+  }
 
-    return resolve(cur_user);
-  });
+  return cur_user;
 };
 
 module.exports = startDetox;

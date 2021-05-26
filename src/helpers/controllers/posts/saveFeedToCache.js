@@ -1,21 +1,19 @@
 
-const saveFeedToCache = (user_id, feed) => {
-  return new Promise(async (resolve, reject) => {
+const saveFeedToCache = async (user_id, feed) => {
 
-    let redisClient;
-    try {
-      redisClient = await require("../../../config/redis");
-    } catch(e) {
-      return reject(e);
-    }
+  let redisClient;
+  try {
+    redisClient = await require("../../../config/redis");
+  } catch(e) {
+    throw e;
+  }
 
-    redisClient.set(`feed:${user_id}`, JSON.stringify(feed), "EX", process.env.USER_FEED_CACHE_DURATION, (err, result) => {
-      
-      if(err)
-        return reject(err);
+  redisClient.set(`feed:${user_id}`, JSON.stringify(feed), "EX", process.env.USER_FEED_CACHE_DURATION, (err, result) => {
+    
+    if(err)
+      throw err;
 
-      return resolve(null);
-    });
+    return null;
   });
 };
 

@@ -4,8 +4,7 @@ const toxicity = require("@tensorflow-models/toxicity");
 const toxicity = require("../models/toxicity/src");
 */
 
-const checkTextToxicity = (text) => {
-  return new Promise(async (resolve, reject) => {
+const checkTextToxicity = async (text) => {
     /*
     const threshold = 0.9;
 
@@ -14,7 +13,7 @@ const checkTextToxicity = (text) => {
       model = await toxicity.load(threshold);
     } catch(e) {
       console.error(e);
-      return reject(new Error("ERROR_STARTING_TOXICITY_CHECKER"));
+      throw new Error("ERROR_STARTING_TOXICITY_CHECKER");
     }
 
     let predictions;
@@ -22,7 +21,7 @@ const checkTextToxicity = (text) => {
       predictions = await model.classify(text);
     } catch(e) {
       console.error(e);
-      return reject(new Error("ERROR_CHECKING_TOXICITY"));
+      throw new Error("ERROR_CHECKING_TOXICITY");
     }*/
 
     let result = {
@@ -38,8 +37,7 @@ const checkTextToxicity = (text) => {
       }
     });*/
 
-    return resolve(result);
-  });
+    return result;
 };
 
 module.exports = checkTextToxicity;

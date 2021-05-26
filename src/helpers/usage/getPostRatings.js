@@ -1,23 +1,21 @@
 
-const getPostRatings = () => {
-  return new Promise(async (resolve, reject) => {
+const getPostRatings = async () => {
 
-    let redisClient;
-    try {
-      redisClient = await require("../../config/redis");
-    } catch(e) {
-      return reject(e);
-    }
+  let redisClient;
+  try {
+    redisClient = await require("../../config/redis");
+  } catch(e) {
+    throw e;
+  }
 
-    redisClient.get("post_ratings", (err, result) => {
+  redisClient.get("post_ratings", (err, result) => {
 
-      if(err)
-        return reject(err);
+    if(err)
+      throw err;
 
-      result = result ? JSON.parse(result) : [];
+    result = result ? JSON.parse(result) : [];
 
-      return resolve(result);
-    });
+    return result;
   });
 };
 

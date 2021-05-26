@@ -1,28 +1,26 @@
 
-const getUserFromCache = (id) => {
-  return new Promise(async (resolve, reject) => {
+const getUserFromCache = async (id) => {
 
-    let redisClient;
+  let redisClient;
+  try {
+    redisClient = await require("../../../config/redis");
+  } catch(e) {
+    throw e;
+  }
+
+  redisClient.get(`user:${id}`, (err, result) => {
+
+    if(err)
+      throw err;
+
+    let user = null;
     try {
-      redisClient = await require("../../../config/redis");
+      user = JSON.parse(result)
     } catch(e) {
-      return reject(e);
+      throw new Error("ERROR_PARSING_USER");
     }
 
-    redisClient.get(`user:${id}`, (err, result) => {
-
-      if(err)
-        return reject(err);
-
-      let user = null;
-      try {
-        user = JSON.parse(result)
-      } catch(e) {
-        return reject(new Error("ERROR_PARSING_USER"));
-      }
-
-      return resolve(user);
-    });
+    return user;
   });
 };
 
