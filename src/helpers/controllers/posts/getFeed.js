@@ -7,10 +7,15 @@ const getFeed = async (user_id) => {
   
   let posts = [];
   try {
-    posts = await Post.find({$or: [
-      {poster: {$in: cur_user.following}},
-      {poster: user_id}
-    ]})
+    posts = await Post.find({$and: [
+      {$or: [
+        {poster: {$in: cur_user.following}},
+        {poster: user_id},
+      ]},
+      {
+        viewers: {$ne: cur_user._id}
+      }]
+     })
       .populate({
         path: "original_post",
         populate: {
