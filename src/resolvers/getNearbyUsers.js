@@ -14,7 +14,7 @@ const getNearbyUsers = async (current_lat, current_long, max_distance, user) => 
             $maxDistance: max_distance,
             $geometry: {
               type: "Point",
-              coordinates: [current_lat, current_long]
+              coordinates: [current_long, current_lat]
             }
         }
       }

@@ -3,7 +3,7 @@ const checkPostToxicity = require("../helpers/checkPostToxicity");
 const Post = require("../db_models/Post");
 const Media = require("../db_models/Media");
 
-const createPost = async (text, media_id, user) => {
+const createPost = async (text, media_id, original_post_id, user) => {
 
   if(!user)
     throw new AuthenticationError("BAD_AUTHENTICATION");
@@ -20,7 +20,8 @@ const createPost = async (text, media_id, user) => {
   const post = new Post({
     poster: user._id,
     text,
-    media: media_id
+    media: media_id,
+    original_post: original_post_id
   });
 
   if(media_id) {

@@ -138,7 +138,7 @@ const resolvers = {
 
     // creates a new post
     createPost: (parent, args, context, info) => {
-      return createPost(args.text, args.media_id, context.user);
+      return createPost(args.text, args.media_id, args.original_post_id, context.user);
     },
 
     // starts following user

@@ -7,7 +7,7 @@ const userSearch = (query, user) => {
     if(!user)
       return reject(new AuthenticationError("BAD_AUTHENTICATION"));
 
-    const regex = new RegExp(`/${query}/`);
+    const regex = new RegExp(query);
 
     let users = [];
     try {

@@ -75,7 +75,7 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, pu
 
       if(user_lat && user_long) {
         user_location = {
-          coordinates: [user_lat, user_long]
+          coordinates: [user_long, user_lat]
         };
       }
 

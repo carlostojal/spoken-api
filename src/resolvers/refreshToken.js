@@ -36,7 +36,7 @@ const refreshToken = async (refresh_token, user_lat, user_long) => {
     let user_location = null;
     if(user_lat && user_long) {
       user_location = {
-        coordinates: [user_lat, user_long]
+        coordinates: [user_long, user_lat]
       };
     }
     session.token = new_refresh_token.value;
