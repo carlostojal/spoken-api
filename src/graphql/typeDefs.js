@@ -118,6 +118,7 @@ const typeDefs = gql`
     getSessions: [Session]
     getPostAnalytics(id: ID!, type: AnalyticsType!): Analytics
     getNearbyUsers(current_lat: Float!, current_long: Float!, max_distance: Int!): [User]
+    checkFollow(user_id: ID!): Boolean
   }
 
   type Mutation {

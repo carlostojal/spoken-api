@@ -24,16 +24,6 @@ const getUserData = async (id, user) => {
     throw new Error("ERROR_GETTING_USER");
   }
 
-  try {
-    const relation = FollowRelation.findOne({user: user.id, follows: id});
-    returnUser.is_followed = relation ? true : false;
-  } catch(e) {
-    console.error(e);
-    throw new Error("ERROR_GETTING_RELATION");
-  }
-
-  returnUser.is_himself = !id || id == user.id;
-
   return returnUser;
 }
 
