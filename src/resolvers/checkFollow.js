@@ -8,7 +8,7 @@ const checkFollow = async (user_id, user) => {
 
   let relation = null;
   try {
-    relation = await FollowRelation.find({
+    relation = await FollowRelation.findOne({
       user: user._id,
       follows: user_id,
     });
@@ -16,6 +16,9 @@ const checkFollow = async (user_id, user) => {
     console.error(e);
     throw new Error("ERROR_GETTING_RELATION");
   }
+
+  if(!relation)
+    return false;
 
   if(!relation.accepted)
     throw new Error("NOT_ACCEPTED");

@@ -56,10 +56,10 @@ const followUser = async (id, user) => {
     }
 
   } catch(e) {
-      throw new Error("ERROR_CREATING_RELATION");
+    throw new Error("ERROR_CREATING_RELATION");
   }
 
-  return user1;
+  return accepted;
 };
 
 module.exports = followUser;

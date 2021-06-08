@@ -1,29 +1,30 @@
 const { AuthenticationError } = require("apollo-server");
 const User = require("../db_models/User");
 
-const userSearch = (query, user) => {
-  return new Promise(async (resolve, reject) => {
+const userSearch = async (query, user) => {
 
-    if(!user)
-      return reject(new AuthenticationError("BAD_AUTHENTICATION"));
+  if(!user)
+    throw new AuthenticationError("BAD_AUTHENTICATION");
 
-    const regex = new RegExp(query);
+  if(query == "")
+    return [];
 
-    let users = [];
-    try {
-      users = User.find({$or: [
-        {username: {$regex: regex, $options: "i"}},
-        {name: {$regex: regex, $options: "i"}},
-        {surname: {$regex: regex, $options: "i"}}
-      ]});
-    } catch(e) {
-      console.error(e);
-      return reject(new Error("ERROR_GETTING_USERS"));
-    }
+  const regex = new RegExp(query);
 
-    return resolve(users);
+  let users = [];
+  try {
+    users = User.find({$or: [
+      {username: {$regex: regex, $options: "i"}},
+      {name: {$regex: regex, $options: "i"}},
+      {surname: {$regex: regex, $options: "i"}}
+    ]});
+  } catch(e) {
+    console.error(e);
+    throw new Error("ERROR_GETTING_USERS");
+  }
 
-  });
+  return users;
+
 };
 
 module.exports = userSearch;

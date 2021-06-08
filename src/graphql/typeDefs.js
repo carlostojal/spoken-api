@@ -126,7 +126,7 @@ const typeDefs = gql`
     confirmAccount(username: String!, code: Int!): User
     editUser(name: String!, surname: String!, email: String!, username: String!, password: String!, profile_pic: ID, profile_type: ProfileType!, profile_privacy_type: ProfilePrivacyType!): User
     createPost(text: String!, media_id: ID, original_post_id: ID): Post
-    followUser(id: ID!): User
+    followUser(id: ID!): Boolean
     acceptFollowRequest(user_id: ID!): User
     ignoreFollowRequest(user_id: ID!): User
     deletePost(id: ID!): Post
