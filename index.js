@@ -80,7 +80,6 @@ const server = new ApolloServer({
         user = await getUserByToken(token);
       } catch(e) {
         console.error(e);
-        return reject(e);
       }
     }
 

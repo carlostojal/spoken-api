@@ -37,6 +37,11 @@ const typeDefs = gql`
     coordinates: [Float]
   }
 
+  type Tokens {
+    access: String,
+    refresh: String
+  }
+
   type User {
     _id: ID,
     name: String,
@@ -104,10 +109,10 @@ const typeDefs = gql`
   }
 
   type Query {
-    getToken(username: String!, password: String!, userPlatform: String, pushToken: String, user_lat: Float, user_long: Float): String
+    getToken(username: String!, password: String!, userPlatform: String, pushToken: String, user_lat: Float, user_long: Float): Tokens
     sendConfirmationEmail(username: String!, password: String!): String
     logout: User
-    refreshToken(userPlatform: String, user_lat: Float, user_long: Float): String
+    refreshToken(userPlatform: String, user_lat: Float, user_long: Float): Tokens
     getUserData(id: ID): User
     getUserFeed: [Post]
     getUserPosts(user_id: ID): [Post]

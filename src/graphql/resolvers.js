@@ -38,13 +38,13 @@ const resolvers = {
   Query: {
     // get user tokens from username and password
     getToken: async (parent, args, context, info) => {
+
       const tokens = await getToken(args.username, args.password, args.userPlatform, context.req.connection.remoteAddress, context.req.headers["user-agent"], args.pushToken, args.user_lat, args.user_long);
-      // send refresh token as httpOnly cookie
-      context.res.cookie("refresh_token", tokens.refresh_token.value, {
-        maxAge: process.env.REFRESH_TOKEN_DURATION * 24 * 3600 * 1000,
-        httpOnly: true
-      });
-      return tokens.access_token.value;
+
+      return {
+        access: tokens.access_token.value,
+        refresh: tokens.refresh_token.value
+      };
     },
 
     sendConfirmationEmail: async (parent, args, context, info) => {
@@ -66,16 +66,14 @@ const resolvers = {
 
     // provide new access token from refresh token
     refreshToken: async (parent, args, context, info) => {
-      // get refresh token from cookies
-      const refresh_token = getCookieByName("refresh_token", context.req.headers.cookie);
+
       // get new tokens from refresh token
-      const tokens = await refreshToken(refresh_token, args.user_lat, args.user_long);
-      // send new refresh token through cookies
-      context.res.cookie("refresh_token", tokens.refresh_token.value, {
-        maxAge: process.env.REFRESH_TOKEN_DURATION * 24 * 3600 * 1000,
-        httpOnly: true
-      });
-      return tokens.access_token.value;
+      const tokens = await refreshToken(context.req.headers.session, args.user_lat, args.user_long);
+
+      return {
+        access: tokens.access_token.value,
+        refresh: tokens.refresh_token.value
+      };
     },
 
     // get user data from ID or for the current user
