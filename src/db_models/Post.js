@@ -21,4 +21,9 @@ const postSchema = new Schema({
   review_status: String
 });
 
+postSchema.index({
+  "text": "text",
+  "tags": "text",
+});
+
 module.exports = mongoose.model("Post", postSchema);

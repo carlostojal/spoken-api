@@ -25,4 +25,11 @@ const userSchema = new Schema({
   }
 });
 
+userSchema.index({
+  "name": "text",
+  "surname": "text",
+  "email": "text",
+  "username": "text"
+});
+
 module.exports = mongoose.model("User", userSchema);

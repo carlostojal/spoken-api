@@ -9,15 +9,12 @@ const userSearch = async (query, user) => {
   if(query == "")
     return [];
 
-  const regex = new RegExp(query);
-
   let users = [];
   try {
-    users = User.find({$or: [
-      {username: {$regex: regex, $options: "i"}},
-      {name: {$regex: regex, $options: "i"}},
-      {surname: {$regex: regex, $options: "i"}}
-    ]});
+    users = await User.find(
+      { $text: { $search: query } },
+      { score: { $meta: "textScore" }}
+    ).sort({ score: { $meta: "textScore" } });
   } catch(e) {
     console.error(e);
     throw new Error("ERROR_GETTING_USERS");
