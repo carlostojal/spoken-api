@@ -79,7 +79,7 @@ const server = new ApolloServer({
       try {
         user = await getUserByToken(token);
       } catch(e) {
-        console.error(e);
+        // console.error(e);
       }
     }
 

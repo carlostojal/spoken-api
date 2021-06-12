@@ -11,7 +11,7 @@ const getUserMedia = async (user_id, user) => {
 
   let user_data = null;
   try {
-    user_data = await User.findById(targetUser);
+    user_data = await User.findById(target_user);
   } catch(e) {
     console.error(e);
     throw new Error("ERROR_GETTING_USER");
