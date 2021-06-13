@@ -130,7 +130,7 @@ const typeDefs = gql`
   type Mutation {
     registerUser(name: String!, surname: String!, birthdate: String!, email: String!, username: String!, password: String!, profile_pic_media_id: Int, profile_type: ProfileType!, profile_privacy_type: ProfilePrivacyType!): User
     confirmAccount(username: String!, code: Int!): User
-    editUser(name: String!, surname: String!, email: String!, username: String!, password: String!, profile_pic: ID, profile_privacy_type: ProfilePrivacyType!): User
+    editUser(name: String!, surname: String!, email: String!, username: String!, password: String!, profile_pic: ID, profile_privacy_type: ProfilePrivacyType!, collect_usage_data: Boolean!): User
     createPost(text: String!, media_id: ID, original_post_id: ID): Post
     followUser(id: ID!): Boolean
     acceptFollowRequest(user_id: ID!): User

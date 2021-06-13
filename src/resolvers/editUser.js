@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const { AuthenticationError } = require("apollo-server");
 const User = require("../db_models/User");
 
-const editUser = (name, surname, email, username, password, profile_pic, profile_privacy_type, user) => {
+const editUser = (name, surname, email, username, password, profile_pic, profile_privacy_type, collect_usage_data, user) => {
   return new Promise((resolve, reject) => {
 
     if(!user)
@@ -38,6 +38,7 @@ const editUser = (name, surname, email, username, password, profile_pic, profile
         cur_user.password = hash_password;
         cur_user.profile_pic = profile_pic;
         cur_user.profile_privacy_type = profile_privacy_type;
+        cur_user.collect_usage_data = collect_usage_data;
 
         try {
           await cur_user.save();

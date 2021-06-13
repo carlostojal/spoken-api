@@ -136,7 +136,7 @@ const resolvers = {
 
     // edit current user data
     editUser: (parent, args, context, info) => {
-      return editUser(args.name, args.surname, args.email, args.username, args.password, args.profile_pic, args.profile_privacy_type, context.user);
+      return editUser(args.name, args.surname, args.email, args.username, args.password, args.profile_pic, args.profile_privacy_type, args.collect_usage_data, context.user);
     },
 
     // creates a new post
