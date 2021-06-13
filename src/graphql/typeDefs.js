@@ -46,6 +46,7 @@ const typeDefs = gql`
     _id: ID,
     name: String,
     surname: String,
+    email: String,
     birthdate: String,
     username: String,
     followers: [User],
