@@ -40,7 +40,7 @@ const refreshToken = async (refresh_token, user_lat, user_long) => {
       };
     }
     session.token = new_refresh_token.value;
-    session.expires_at = new_refresh_token.expires_at;
+    session.expires_at = new_refresh_token.expires_at * 1000;
     session.last_refresh = Date.now();
     session.user_location = user_location;
     await session.save();

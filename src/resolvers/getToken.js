@@ -82,7 +82,7 @@ const getToken = (username, password, userPlatform, remoteAddress, userAgent, pu
       const session = Session({
         user: user._id,
         token: refresh_token.value,
-        expires_at: new Date(refresh_token.expires_at),
+        expires_at: refresh_token.expires_at * 1000,
         user_platform: platformData,
         user_location
       });
