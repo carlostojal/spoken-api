@@ -26,7 +26,7 @@ const getPostComments = async (post_id, user) => {
   // get comments from the DB
   let comments = [];
   try {
-    comments = Post.find({original_post: post_id})
+    comments = await Post.find({original_post: post_id})
       .populate("poster")
       .populate("poster.profile_pic")
       .populate("media")
