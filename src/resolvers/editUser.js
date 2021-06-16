@@ -38,7 +38,7 @@ const editUser = (name, surname, email, username, password, profile_pic, profile
         cur_user.password = hash_password;
         cur_user.profile_pic = profile_pic;
         cur_user.profile_privacy_type = profile_privacy_type;
-        cur_user.collect_usage_data = collect_usage_data;
+        cur_user.permissions.collect_usage_data = collect_usage_data;
 
         try {
           await cur_user.save();
